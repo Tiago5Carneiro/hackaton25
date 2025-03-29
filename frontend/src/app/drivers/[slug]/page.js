@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../../styles/drivers.css';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 // Import Recharts components with dynamic loading (correct implementation)
 const RechartsComponent = dynamic(() => import('../../components/RechartsComponent'), {
@@ -15,6 +16,7 @@ export default function DriverPage() {
   const { slug } = useParams();
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [contentReady, setContentReady] = useState(false);
   
   // Mock data for driver skills (would come from API in real app)
   const driverSkills = {
@@ -193,8 +195,23 @@ export default function DriverPage() {
     // Add more drivers as needed...
   ];
   
+  // Add a timeout to ensure CSS is applied before showing content
+  useEffect(() => {
+    if (driver) {
+      // Wait for all resources to load before showing content
+      const timer = setTimeout(() => {
+        setContentReady(true);
+      }, 300); // Short delay to ensure CSS is applied
+      
+      return () => clearTimeout(timer);
+    }
+  }, [driver]);
+  
   // Find driver based on slug
   useEffect(() => {
+    setLoading(true);
+    setContentReady(false);
+    
     const foundDriver = driverStandings.find(driver => driver.slug === slug);
     
     if (foundDriver) {
@@ -285,17 +302,75 @@ export default function DriverPage() {
     });
   };
   
-  if (loading) {
-    return <div className="driver-page loading">Loading driver data...</div>;
-  }
-  
-  if (!driver) {
+  // Move the renderOverallRating function inside the component so it has access to driverSkills
+  function renderOverallRating() {
+    // Calculate average rating from all skills
+    const totalSkills = Object.values(driverSkills).reduce((sum, value) => sum + value, 0);
+    const overallRating = Math.round(totalSkills / Object.keys(driverSkills).length);
+    
+    // Determine color based on rating
+    let ratingColor;
+    let ratingDesc;
+    
+    if (overallRating >= 90) {
+      ratingColor = '#22c55e'; // green
+      ratingDesc = 'WORLD CLASS';
+    } else if (overallRating >= 85) {
+      ratingColor = '#84cc16'; // lime
+      ratingDesc = 'ELITE';
+    } else if (overallRating >= 80) {
+      ratingColor = '#84cc16'; // lime
+      ratingDesc = 'EXCELLENT';
+    } else if (overallRating >= 75) {
+      ratingColor = '#f59e0b'; // yellow
+      ratingDesc = 'GREAT';
+    } else if (overallRating >= 70) {
+      ratingColor = '#f59e0b'; // yellow
+      ratingDesc = 'GOOD';
+    } else {
+      ratingColor = '#ef4444'; // red
+      ratingDesc = 'AVERAGE';
+    }
+    
+    // Calculate percentage for the circle
+    const ratingPercent = `${overallRating}%`;
+    
     return (
-      <div className="driver-page error">
-        <h1>Driver not found</h1>
-        <Link href="/standings" className="back-link">
-          Return to Standings
-        </Link>
+      <>
+        <div 
+          className="rating-circle"
+          style={{
+            '--rating-percent': ratingPercent,
+            '--rating-color': ratingColor
+          }}
+        >
+          <div className="rating-circle-inner">
+            <div className="overall-value">{overallRating}</div>
+            <div className="overall-label">OVERALL</div>
+          </div>
+        </div>
+        <div 
+          className="rating-description"
+          style={{ '--rating-color': ratingColor }}
+        >
+          {ratingDesc}
+        </div>
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="driver-page loading-container">
+        <div className="f1-loader"></div>
+      </div>
+    );
+  }
+
+  if (!contentReady) {
+    return (
+      <div className="driver-page loading-container">
+        <div className="f1-loader"></div>
       </div>
     );
   }
@@ -346,6 +421,21 @@ export default function DriverPage() {
               src={driver.imageUrl} 
               alt={driver.name} 
               className="driver-portrait"
+              key={`${driver.slug}-${Date.now()}`} // Force re-render with unique key
+              loading="eager"
+              onLoad={() => {
+                // Image loaded successfully
+                console.log("Driver image loaded");
+              }}
+              onError={(e) => {
+                console.log("Image failed to load, using placeholder");
+                e.target.style.display = "none";
+                const parent = e.target.parentNode;
+                const placeholder = document.createElement("div");
+                placeholder.className = "image-placeholder";
+                placeholder.textContent = driver.name.split(' ').map(n => n[0]).join('');
+                parent.appendChild(placeholder);
+              }}
             />
           ) : (
             <div className="image-placeholder">
@@ -378,6 +468,152 @@ export default function DriverPage() {
           <div className="radar-chart-container">
             <RechartsComponent driver={driver} skillsData={skillsData} />
           </div>
+          
+          {/* Add Football Manager style detailed ratings */}
+          <div className="football-manager-ratings">
+  <h3>
+    Driver Attributes
+    <span></span>
+  </h3>
+  <div className="rating-grid">
+    <div className="rating-bars">
+      {/* Core Driving */}
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Pace</div>
+          <div className="rating-value">{driverSkills.pace}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(driverSkills.pace)}`}
+            style={{"--final-width": `${driverSkills.pace}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(driverSkills.pace)}</div>
+      </div>
+      
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Wet Weather Driving</div>
+          <div className="rating-value">{driverSkills.wetWeatherDriving}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(driverSkills.wetWeatherDriving)}`}
+            style={{"--final-width": `${driverSkills.wetWeatherDriving}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(driverSkills.wetWeatherDriving)}</div>
+      </div>
+      
+      {/* Consistency */}
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Consistency</div>
+          <div className="rating-value">{driverSkills.consistency}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(driverSkills.consistency)}`}
+            style={{"--final-width": `${driverSkills.consistency}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(driverSkills.consistency)}</div>
+      </div>
+      
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Tire Management</div>
+          <div className="rating-value">{driverSkills.tireManagement}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(driverSkills.tireManagement)}`}
+            style={{"--final-width": `${driverSkills.tireManagement}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(driverSkills.tireManagement)}</div>
+      </div>
+      
+      {/* Racing Skills */}
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Racecraft</div>
+          <div className="rating-value">{driverSkills.racecraft}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(driverSkills.racecraft)}`}
+            style={{"--final-width": `${driverSkills.racecraft}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(driverSkills.racecraft)}</div>
+      </div>
+      
+      {/* Additional detail attributes - these are random to add more detail */}
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Qualifying</div>
+          <div className="rating-value">{70 + Math.floor(Math.random() * 30)}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(70 + Math.floor(Math.random() * 30))}`}
+            style={{"--final-width": `${70 + Math.floor(Math.random() * 30)}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(70 + Math.floor(Math.random() * 30))}</div>
+      </div>
+      
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Overtaking</div>
+          <div className="rating-value">{70 + Math.floor(Math.random() * 30)}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(70 + Math.floor(Math.random() * 30))}`}
+            style={{"--final-width": `${70 + Math.floor(Math.random() * 30)}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(70 + Math.floor(Math.random() * 30))}</div>
+      </div>
+      
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Defending</div>
+          <div className="rating-value">{70 + Math.floor(Math.random() * 30)}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(70 + Math.floor(Math.random() * 30))}`}
+            style={{"--final-width": `${70 + Math.floor(Math.random() * 30)}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(70 + Math.floor(Math.random() * 30))}</div>
+      </div>
+      
+      <div className="rating-item">
+        <div className="rating-header">
+          <div className="rating-label">Start Performance</div>
+          <div className="rating-value">{70 + Math.floor(Math.random() * 30)}</div>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${getRatingCategory(70 + Math.floor(Math.random() * 30))}`}
+            style={{"--final-width": `${70 + Math.floor(Math.random() * 30)}%`}}
+          ></div>
+        </div>
+        <div className="rating-category">{getRatingText(70 + Math.floor(Math.random() * 30))}</div>
+      </div>
+    </div>
+    
+    {/* Overall Rating Circle */}
+    <div className="overall-rating">
+      {renderOverallRating()}
+    </div>
+  </div>
+</div>
         </div>
       </div>
           
@@ -449,4 +685,47 @@ function getTeamLogoUrl(team) {
   // Replace spaces with hyphens and convert to lowercase for URL
   const teamSlug = team.toLowerCase().replace(/\s+/g, '-');
   return `https://www.formula1.com/content/dam/fom-website/teams/2023/${teamSlug}.png.transform/2col/image.png`;
+}
+
+// Function to render star ratings (out of 10)
+function renderStars(rating) {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  
+  // Add filled stars
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(<span key={`star-${i}`} className="star filled">★</span>);
+  }
+  
+  // Add half star if needed
+  if (hasHalfStar) {
+    stars.push(<span key="half-star" className="star half-filled">★</span>);
+  }
+  
+  // Add empty stars
+  const emptyStars = 10 - fullStars - (hasHalfStar ? 1 : 0);
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(<span key={`empty-${i}`} className="star">★</span>);
+  }
+  
+  return stars;
+}
+
+// Add these helper functions before the closing bracket of the file
+
+// Helper function to get rating category based on value
+function getRatingCategory(value) {
+  if (value >= 90) return 'excellent';
+  if (value >= 80) return 'good';
+  if (value >= 70) return 'average';
+  return 'poor';
+}
+
+// Helper function to get rating text
+function getRatingText(value) {
+  if (value >= 90) return 'EXCELLENT';
+  if (value >= 80) return 'GOOD';
+  if (value >= 70) return 'AVERAGE';
+  return 'NEEDS IMPROVEMENT';
 }
