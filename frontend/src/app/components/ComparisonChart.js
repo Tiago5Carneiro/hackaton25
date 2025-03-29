@@ -42,7 +42,7 @@ export default function ComparisonChart({ data, driver1, driver2 }) {
       />
       <PolarRadiusAxis 
         angle={30} 
-        domain={[0, 100]} 
+        domain={[75, 100]}
         tick={{ fontSize: 10 }}
       />
       <Radar 

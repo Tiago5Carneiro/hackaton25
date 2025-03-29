@@ -95,28 +95,35 @@
 }
 
 .driver-image {
-  width: 200px;
-  height: 200px;
+  width: 200px !important;
+  height: 200px !important;
+  min-width: 200px !important;
+  min-height: 200px !important;
   border-radius: 50%;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .driver-image:hover {
-  transform: scale(1.05);
   box-shadow: 0 8px 25px rgba(225, 6, 0, 0.4);
 }
 
 .driver-portrait {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.3s ease;
+  display: block !important;
 }
 
 .driver-portrait:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .image-placeholder {
@@ -146,8 +153,8 @@
 }
 
 .driver-stats-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column !important;
   gap: 2rem;
   margin-bottom: 3rem;
 }
@@ -329,10 +336,10 @@
 
 .loading::after {
   content: '';
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   margin-top: 20px;
-  border: 4px solid #333;
+  border: 5px solid rgba(225, 6, 0, 0.3);
   border-top-color: #e10600;
   border-radius: 50%;
   animation: spin 1s infinite linear;
@@ -399,7 +406,7 @@
   }
   
   .driver-stats-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
   
   .driver-basic-info {
@@ -423,15 +430,6 @@
     height: auto;
     min-height: 350px;
   }
-
-.chart-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 300px;
-  color: #e0e0e0;
-  font-size: 1.2rem;
 }
 
 /* Make sure the SVG fills the container */
@@ -468,4 +466,325 @@
   stroke: #e10600 !important;
   stroke-width: 2px !important;
 }
+
+/* Replace the current loading styles with this simplified version */
+
+/* Clean, minimalistic loading animation */
+.loading-container {
+  position: relative;
+  min-height: 70vh;
+  background-color: #121212;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.f1-loader {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.f1-loader::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid rgba(225, 6, 0, 0.1);
+  border-top-color: #e10600;
+  animation: f1Spin 1.2s linear infinite;
+}
+
+@keyframes f1Spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Clean up existing loading styles */
+.loading-overlay,
+.loading-progress,
+.progress-step,
+.loading-skeleton,
+.skeleton-header,
+.skeleton-back,
+.skeleton-title-container,
+.skeleton-title,
+.skeleton-subtitle,
+.skeleton-image,
+.skeleton-stats-container,
+.skeleton-card,
+.skeleton-results {
+  display: none;
+}
+
+/* Keep the driver image fixed size */
+.driver-image {
+  width: 200px !important;
+  height: 200px !important;
+  min-width: 200px !important;
+  min-height: 200px !important;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.driver-portrait {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block !important;
+}
+
+/* Ensure stats container is always a column */
+.driver-stats-container {
+  display: flex;
+  flex-direction: column !important;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Replace the football manager style ratings with this modern version */
+.football-manager-ratings {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #333;
+  position: relative;
+}
+
+.football-manager-ratings h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+}
+
+.rating-bars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.rating-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.6s forwards;
+  position: relative;
+}
+
+.rating-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.rating-label {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  font-weight: 500;
+}
+
+.rating-value {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.rating-bar-container {
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  width: 85%; /* Make bars shorter */
+  transition: box-shadow 0.3s ease;
+}
+
+.rating-item:hover .rating-bar-container {
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.2);
+}
+
+.rating-bar {
+  height: 100%;
+  border-radius: 4px;
+  background-color: #e10600;
+  width: 0;
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+  animation: growBar 1s forwards 0.2s;
+}
+
+.rating-item:hover .rating-bar {
+  filter: brightness(1.2); /* Make the bar brighter on hover */
+}
+
+.rating-category {
+  position: absolute;
+  right: 0;
+  top: -20px; /* Position it above the bar instead of at the top of the item */
+  font-size: 0.7rem;
+  color: #666;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(5px); /* Start slightly lower for animation */
+  background-color: #1a1a1a;
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 10;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rating-item:hover .rating-category {
+  opacity: 1;
+  transform: translateY(0); /* Move up on hover */
+}
+
+/* Add different colors based on rating value */
+.rating-bar.excellent {
+  background-color: #22c55e;
+}
+
+.rating-bar.good {
+  background-color: #84cc16;
+}
+
+.rating-bar.average {
+  background-color: #f59e0b;
+}
+
+.rating-bar.poor {
+  background-color: #ef4444;
+}
+
+/* Add overall rating circle styles */
+.overall-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.rating-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 1rem;
+  background: #262626;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.rating-circle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--rating-color) 0% var(--rating-percent), 
+    #333 var(--rating-percent) 100%
+  );
+  mask: radial-gradient(transparent 60%, #fff 61%);
+  -webkit-mask: radial-gradient(transparent 60%, #fff 61%);
+}
+
+.rating-circle-inner {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.overall-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
+
+.overall-label {
+  font-size: 0.8rem;
+  color: #b0b0b0;
+  margin-top: 0.25rem;
+}
+
+.rating-description {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--rating-color);
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .rating-grid {
+    grid-template-columns: 1fr;
   }
+  
+  .rating-bars {
+    grid-template-columns: 1fr;
+  }
+  
+  .overall-rating {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Add CSS for the compare button section */
+.compare-section {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.compare-button {
+  background-color: #e10600;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(225, 6, 0, 0.3);
+}
+
+.compare-button:hover {
+  background-color: #c10500;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(225, 6, 0, 0.4);
+}
