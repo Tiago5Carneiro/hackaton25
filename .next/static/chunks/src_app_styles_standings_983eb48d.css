@@ -1,0 +1,414 @@
+/* [project]/src/app/styles/standings.css [app-client] (css) */
+.standings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.standings-header {
+  margin-bottom: 2.5rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+  position: relative;
+  display: inline-block;
+}
+
+.page-title:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -.5rem;
+  width: 3rem;
+  height: .25rem;
+  background-color: var(--f1-red, #e10600);
+  border-radius: .125rem;
+}
+
+.tabs-container {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.tab-button {
+  padding: 1rem .25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid #0000;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.tab-button.active {
+  color: var(--f1-red, #e10600);
+  border-bottom-color: var(--f1-red, #e10600);
+}
+
+.tab-button:hover:not(.active) {
+  color: var(--foreground);
+  border-bottom-color: var(--card-border);
+}
+
+.drivers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding: auto;
+}
+
+.highlighted-driver-card {
+  display: flex;
+  background-color: var(--card-bg);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px #0000001a;
+  border-left: 4px solid var(--f1-gray, #e0e0e0);
+  transition: transform .3s, box-shadow .3s;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.highlighted-driver-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px #00000026;
+  border-left-color: var(--f1-red, #e10600);
+}
+
+.driver-image-container {
+  position: relative;
+  min-width: 200px;
+  height: 280px;
+  overflow: hidden;
+}
+
+.driver-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.highlighted-content {
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.driver-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.position-badge {
+  min-width: 3rem;
+  height: 3rem;
+  background-color: var(--f1-red, #e10600);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: .5rem;
+}
+
+.position-1 {
+  background-color: gold;
+  color: #333;
+}
+
+.position-2 {
+  background-color: silver;
+  color: #333;
+}
+
+.position-3 {
+  background-color: #cd7f32;
+  color: #fff;
+}
+
+.driver-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.driver-details {
+  display: flex;
+  gap: 3.5rem;
+  margin-top: 1.75rem;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.detail-label {
+  text-transform: uppercase;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .5px;
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.points-display {
+  margin-top: 2rem;
+  background-color: var(--accent-bg, #00000008);
+  padding: 1.25rem 1.75rem;
+  border-radius: .75rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.points-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.points-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--f1-red, #e10600);
+}
+
+.driver-card {
+  display: flex;
+  background-color: var(--card-bg);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px #0000000f;
+  border-left: 4px solid var(--card-border);
+  transition: transform .3s, box-shadow .3s;
+  height: 120px;
+  position: relative;
+}
+
+.driver-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px #0000001a;
+  border-left-color: var(--f1-red, #e10600);
+}
+
+.driver-card .driver-image-container {
+  position: relative;
+  width: 120px;
+  min-width: 120px;
+  height: 120px;
+  overflow: hidden;
+}
+
+.driver-card .highlighted-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.driver-card .driver-header {
+  margin-bottom: 0;
+}
+
+.driver-card .driver-name {
+  font-size: 1.25rem;
+}
+
+.driver-card .position-badge {
+  min-width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.125rem;
+}
+
+.driver-card .driver-details {
+  margin-top: 0;
+  gap: 2rem;
+}
+
+.driver-card .detail-group {
+  gap: .25rem;
+}
+
+.driver-card .detail-value {
+  font-size: 1rem;
+}
+
+.driver-card .points-display {
+  margin-top: 0;
+  background-color: #0000;
+  padding: 0;
+}
+
+.driver-card .points-value {
+  font-size: 1.5rem;
+}
+
+.constructors-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--card-bg);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px #0000000f;
+}
+
+.constructors-table th {
+  background-color: var(--accent-bg, #00000008);
+  color: var(--foreground);
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  font-size: .875rem;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.constructors-table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--foreground);
+  font-size: 1rem;
+}
+
+.constructors-table tr:last-child td {
+  border-bottom: none;
+}
+
+.constructors-table tr:hover {
+  background-color: var(--hover-bg, #00000005);
+}
+
+.team-position {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.position-indicator {
+  min-width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: .875rem;
+  font-weight: 700;
+}
+
+.team-name {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.team-points {
+  font-weight: 700;
+}
+
+.team-wins {
+  color: var(--muted);
+}
+
+.flag-icon {
+  width: 20px;
+  height: 15px;
+  margin-left: .5rem;
+  vertical-align: middle;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px #0003;
+}
+
+.team-logo {
+  height: 30px;
+  width: 40px;
+  margin-right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+.team-color {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .constructors-table th {
+    background-color: #ffffff0d;
+  }
+
+  .constructors-table tr:hover {
+    background-color: #ffffff08;
+  }
+
+  .points-display {
+    background-color: #ffffff0d;
+  }
+}
+
+@media (width <= 768px) {
+  .highlighted-driver-card {
+    flex-direction: column;
+    height: auto;
+    padding: auto;
+  }
+
+  .driver-image-container {
+    width: 100%;
+    height: 200px;
+  }
+
+  .highlighted-content {
+    padding: 1.25rem;
+  }
+
+  .driver-details {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .driver-name {
+    font-size: 1.5rem;
+  }
+
+  .constructors-table {
+    font-size: .875rem;
+  }
+
+  .constructors-table th, .constructors-table td {
+    padding: .75rem 1rem;
+  }
+}
+
+
+/*# sourceMappingURL=src_app_styles_standings_983eb48d.css.map*/

@@ -1,0 +1,522 @@
+/* [project]/src/app/styles/drivers.css [app-client] (css) */
+.driver-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #121212;
+  color: #f5f5f5;
+  animation: .5s ease-out fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: #e0e0e0;
+  text-decoration: none;
+  transition: color .2s, transform .2s;
+  padding: .5rem 0;
+}
+
+.back-link:hover {
+  color: #e10600;
+  transform: translateX(-4px);
+}
+
+.driver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  gap: 2rem;
+}
+
+.driver-info {
+  flex: 1;
+}
+
+.driver-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: .5rem;
+  color: #fff;
+  position: relative;
+  display: inline-block;
+}
+
+.driver-name:after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: #e10600;
+  transition: width .3s;
+  animation: .8s .3s forwards nameUnderline;
+}
+
+@keyframes nameUnderline {
+  to {
+    width: 100%;
+  }
+}
+
+.driver-position {
+  font-size: 1.25rem;
+  color: #b0b0b0;
+  margin-bottom: 1.5rem;
+}
+
+.position-number {
+  font-weight: 700;
+  color: #e10600;
+}
+
+.driver-basic-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  margin-bottom: .5rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #9e9e9e;
+}
+
+.value {
+  margin-left: .5rem;
+  color: #e0e0e0;
+}
+
+.driver-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px #0000004d;
+  transition: transform .3s, box-shadow .3s;
+}
+
+.driver-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px #e1060066;
+}
+
+.driver-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s;
+}
+
+.driver-portrait:hover {
+  transform: scale(1.1);
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #2d2d2d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  transition: transform .3s, box-shadow .3s;
+  animation: 1s ease-out pulseOnce;
+}
+
+.image-placeholder:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #e106004d;
+}
+
+@keyframes pulseOnce {
+  0% {
+    transform: scale(.95);
+    opacity: .7;
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.driver-stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.driver-stats, .driver-skills {
+  background-color: #1e1e1e;
+  border-radius: .5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px #0000004d;
+  transition: transform .4s cubic-bezier(.175, .885, .32, 1.275), box-shadow .4s;
+}
+
+.driver-stats:hover, .driver-skills:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px #0003;
+}
+
+.driver-stats h2, .driver-skills h2, .recent-results h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid #333;
+  color: #fff;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  background-color: #262626;
+  border-radius: .375rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 1px 2px #0003;
+  transition: transform .2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e10600;
+  opacity: 0;
+  animation: 1s .5s forwards countUp;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-label {
+  font-size: .875rem;
+  color: #b0b0b0;
+  margin-top: .5rem;
+}
+
+.skills-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  animation: .5s forwards fadeInUp;
+}
+
+.skill-item:first-child {
+  animation-delay: .1s;
+}
+
+.skill-item:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.skill-item:nth-child(3) {
+  animation-delay: .3s;
+}
+
+.skill-item:nth-child(4) {
+  animation-delay: .4s;
+}
+
+.skill-item:nth-child(5) {
+  animation-delay: .5s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skill-label {
+  width: 150px;
+  font-size: .875rem;
+  color: #b0b0b0;
+}
+
+.skill-bar-container {
+  flex: 1;
+  height: 12px;
+  background-color: #333;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-bar {
+  height: 100%;
+  border-radius: 6px;
+  width: 0;
+  animation: 1.5s ease-out forwards growBar;
+}
+
+@keyframes growBar {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: var(--final-width);
+  }
+}
+
+.skill-value {
+  position: absolute;
+  right: 8px;
+  top: -1px;
+  font-size: .75rem;
+  color: #e0e0e0;
+}
+
+.recent-results {
+  background-color: #1e1e1e;
+  border-radius: .5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px #0000004d;
+}
+
+.results-table-container {
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+  padding: .75rem 1rem;
+  text-align: left;
+}
+
+.results-table th {
+  background-color: #262626;
+  font-weight: 600;
+  color: #b0b0b0;
+}
+
+.results-table tr {
+  border-bottom: 1px solid #333;
+  transition: background-color .2s;
+}
+
+.results-table tr:last-child {
+  border-bottom: none;
+}
+
+.results-table td {
+  color: #e0e0e0;
+}
+
+.results-table tr:hover {
+  background-color: #2a2a2a;
+}
+
+.loading, .error {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #e0e0e0;
+  background-color: #121212;
+}
+
+.loading:after {
+  content: "";
+  width: 40px;
+  height: 40px;
+  margin-top: 20px;
+  border: 4px solid #333;
+  border-top-color: #e10600;
+  border-radius: 50%;
+  animation: 1s linear infinite spin;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.radar-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  overflow: visible;
+  position: relative;
+  transition: transform .3s;
+  margin: 2rem 0 3rem;
+}
+
+.radar-chart {
+  max-width: 100%;
+  max-height: 100%;
+  width: 450px;
+  height: 450px;
+  opacity: 1;
+  animation: 1.5s .3s forwards fadeIn;
+  shape-rendering: geometricPrecision;
+}
+
+.driver-nationality, .team-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.nationality-flag, .team-logo {
+  height: 24px;
+  margin-right: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px #0003;
+}
+
+.team-logo {
+  height: 30px;
+  background-color: #f5f5f5;
+  padding: 3px;
+}
+
+.nationality-text, .team-name {
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+@media (width <= 768px) {
+  .driver-header {
+    flex-direction: column;
+  }
+
+  .driver-stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-basic-info {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+  }
+
+  .radar-chart-container {
+    height: auto;
+    margin: 1rem 0 2rem;
+    overflow: visible;
+  }
+
+  .radar-chart {
+    width: 100%;
+    height: auto;
+    min-height: 350px;
+  }
+
+  .chart-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 300px;
+    color: #e0e0e0;
+    font-size: 1.2rem;
+  }
+
+  .radar-chart-container svg {
+    overflow: visible;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .recharts-tooltip-wrapper {
+    box-shadow: 0 2px 8px #0000004d;
+    background-color: #333 !important;
+    border-radius: 4px !important;
+  }
+
+  .recharts-default-tooltip {
+    background-color: #262626 !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+  }
+
+  .recharts-dot {
+    fill: #e10600 !important;
+    stroke: #fff !important;
+    stroke-width: 2px !important;
+  }
+
+  .recharts-radar-polygon {
+    fill: #e10600 !important;
+    fill-opacity: .6 !important;
+    stroke: #e10600 !important;
+    stroke-width: 2px !important;
+  }
+}
+
+
+/*# sourceMappingURL=src_app_styles_drivers_bdac3b09.css.map*/
