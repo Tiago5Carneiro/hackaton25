@@ -140,10 +140,10 @@ def add_event_bd(event_info):
 
     # Insert into PlayerEvent table
     player_event_insert = '''
-        INSERT INTO PlayerEvent (PlayerId, EventId) VALUES (%s, %s)
+        INSERT INTO PlayerEvent (PlayerId, StartDate,Location) VALUES (%s, %s, %s)
     '''
     
-    cursor.execute(player_event_insert, (winner, event_info["StartDate"]))
+    cursor.execute(player_event_insert, (winner, event_info["StartDate"],event_info["Location"]))
 
     # Commit changes
     conn.commit()
