@@ -31,11 +31,11 @@ export default function NewsPage() {
       title: "Verstappen Clinches Third Consecutive Championship After Dramatic Race",
       excerpt: "Max Verstappen secured his third Formula 1 World Championship with a stunning drive at Interlagos, overcoming early setbacks to finish on the podium.",
       category: "races",
-      image: "https://placehold.co/800x450?text=Verstappen+Champion",
+      image: "https://picsum.photos/1000/600?random=1",
       date: "March 24, 2025",
       featured: true,
       authorName: "James Allen",
-      authorAvatar: "https://placehold.co/150x150?text=JA",
+      authorAvatar: "https://picsum.photos/200/200?random=10",
       readTime: "5 min read"
     },
     {
@@ -43,10 +43,10 @@ export default function NewsPage() {
       title: "McLaren Unveils Revolutionary Car Design for 2025",
       excerpt: "McLaren has revealed significant design changes to their 2025 challenger, aiming to challenge Red Bull's dominance with innovative aerodynamic concepts.",
       category: "technical",
-      image: "https://placehold.co/800x450?text=McLaren+2025",
+      image: "https://picsum.photos/1000/600?random=2",
       date: "March 22, 2025",
       authorName: "Sam Cooper",
-      authorAvatar: "https://placehold.co/150x150?text=SC",
+      authorAvatar: "https://picsum.photos/200/200?random=11",
       readTime: "4 min read"
     },
     {
@@ -54,10 +54,10 @@ export default function NewsPage() {
       title: "Hamilton Signs Contract Extension with Mercedes",
       excerpt: "Seven-time world champion Lewis Hamilton has committed his future to Mercedes, signing a new multi-year deal that will keep him with the team through 2026.",
       category: "drivers",
-      image: "https://placehold.co/800x450?text=Hamilton+Contract",
+      image: "https://picsum.photos/1000/600?random=3",
       date: "March 20, 2025",
       authorName: "Rachel Brooks",
-      authorAvatar: "https://placehold.co/150x150?text=RB",
+      authorAvatar: "https://picsum.photos/200/200?random=12",
       readTime: "3 min read"
     },
     {
@@ -65,10 +65,10 @@ export default function NewsPage() {
       title: "F1 Announces New Race in Africa for 2026 Season",
       excerpt: "Formula 1 has confirmed that South Africa will return to the calendar in 2026, with Kyalami Circuit set to host the first African Grand Prix since 1993.",
       category: "races",
-      image: "https://placehold.co/800x450?text=African+GP",
+      image: "https://picsum.photos/1000/600?random=4",
       date: "March 18, 2025",
       authorName: "Lawrence Barretto",
-      authorAvatar: "https://placehold.co/150x150?text=LB",
+      authorAvatar: "https://picsum.photos/200/200?random=13",
       readTime: "4 min read"
     },
     {
@@ -76,10 +76,10 @@ export default function NewsPage() {
       title: "Ferrari Confirms Major Technical Restructuring",
       excerpt: "Scuderia Ferrari has announced a significant reshuffle of its technical department following a challenging start to the 2025 season.",
       category: "teams",
-      image: "https://placehold.co/800x450?text=Ferrari+Tech+Team",
+      image: "https://picsum.photos/1000/600?random=5",
       date: "March 16, 2025",
       authorName: "Anna Sanchez",
-      authorAvatar: "https://placehold.co/150x150?text=AS",
+      authorAvatar: "https://picsum.photos/200/200?random=14",
       readTime: "5 min read"
     },
     {
@@ -87,10 +87,10 @@ export default function NewsPage() {
       title: "New Sustainable Fuel Regulations Set for 2026",
       excerpt: "The FIA has finalized the new sustainable fuel regulations that will come into effect from the 2026 season, targeting a significant reduction in carbon emissions.",
       category: "technical",
-      image: "https://placehold.co/800x450?text=Sustainable+Fuel",
+      image: "https://picsum.photos/1000/600?random=6",
       date: "March 14, 2025",
       authorName: "Mark Hughes",
-      authorAvatar: "https://placehold.co/150x150?text=MH",
+      authorAvatar: "https://picsum.photos/200/200?random=15",
       readTime: "6 min read"
     },
     {
@@ -98,10 +98,10 @@ export default function NewsPage() {
       title: "Piastri Secures Maiden Victory in Thrilling Italian Grand Prix",
       excerpt: "Oscar Piastri claimed his first Formula 1 win at Monza after a race-long battle with teammate Lando Norris and Charles Leclerc's Ferrari.",
       category: "races",
-      image: "https://placehold.co/800x450?text=Piastri+Win",
+      image: "https://picsum.photos/1000/600?random=7",
       date: "March 12, 2025",
       authorName: "Will Buxton",
-      authorAvatar: "https://placehold.co/150x150?text=WB",
+      authorAvatar: "https://picsum.photos/200/200?random=16",
       readTime: "5 min read"
     },
     {
@@ -109,10 +109,10 @@ export default function NewsPage() {
       title: "Alonso Announces Retirement at End of 2025 Season",
       excerpt: "Two-time world champion Fernando Alonso has announced that the 2025 season will be his last in Formula 1, bringing an end to a legendary career spanning over two decades.",
       category: "drivers",
-      image: "https://placehold.co/800x450?text=Alonso+Retirement",
+      image: "https://picsum.photos/1000/600?random=8",
       date: "March 10, 2025",
       authorName: "Natalie Pinkham",
-      authorAvatar: "https://placehold.co/150x150?text=NP",
+      authorAvatar: "https://picsum.photos/200/200?random=17",
       readTime: "7 min read"
     },
     {
@@ -120,10 +120,10 @@ export default function NewsPage() {
       title: "Red Bull Debuts New Innovative DRS System",
       excerpt: "Red Bull Racing has introduced a revolutionary rear wing design that maximizes DRS effectiveness, pending FIA approval for its legality.",
       category: "technical",
-      image: "https://placehold.co/800x450?text=Red+Bull+DRS",
+      image: "https://picsum.photos/1000/600?random=9",
       date: "March 8, 2025",
       authorName: "Ted Kravitz",
-      authorAvatar: "https://placehold.co/150x150?text=TK",
+      authorAvatar: "https://picsum.photos/200/200?random=18",
       readTime: "5 min read"
     }
   ];

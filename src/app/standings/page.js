@@ -1,13 +1,45 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import '../styles/standings.css';
-import HighlightedDriverCard from '../components/HighlightedDriverCard';
-import DriverCard from '../components/DriverCard';
 
 export default function Standings() {
   const [activeTab, setActiveTab] = useState('drivers');
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  const driverStandings = [
+  useEffect(() => {
+    // Get tab from URL if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && (tabParam === 'drivers' || tabParam === 'constructors')) {
+      setActiveTab(tabParam);
+    }
+    
+    setIsLoaded(true);
+  }, []);
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 70, damping: 10 }
+    }
+  };
+  
+  // Sample data for drivers standings with online image sources
+  const drivers = [
     {
       id: 1,
       position: 1,
@@ -15,7 +47,13 @@ export default function Standings() {
       slug: "max-verstappen",
       nationality: "Dutch",
       team: "Red Bull Racing",
-      points: 342
+      teamColor: "#0600EF",
+      nationality: "Netherlands",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/netherlands-flag.png",
+      points: 349,
+      wins: 7,
+      podiums: 12,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/verstappen.jpg.img.1920.medium.jpg"
     },
     {
       id: 2,
@@ -24,7 +62,13 @@ export default function Standings() {
       slug: "lando-norris",
       nationality: "British",
       team: "McLaren",
-      points: 275
+      teamColor: "#FF8700",
+      nationality: "United Kingdom",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png",
+      points: 253,
+      wins: 2,
+      podiums: 10,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/norris.jpg.img.1920.medium.jpg"
     },
     {
       id: 3,
@@ -33,317 +77,374 @@ export default function Standings() {
       slug: "charles-leclerc",
       nationality: "Monégasque",
       team: "Ferrari",
-      points: 246
+      teamColor: "#DC0000",
+      nationality: "Monaco",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/monaco-flag.png",
+      points: 203,
+      wins: 1,
+      podiums: 6,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/leclerc.jpg.img.1920.medium.jpg"
     },
     {
       id: 4,
       position: 4,
-      name: "Lewis Hamilton",
-      slug: "lewis-hamilton",
-      nationality: "British",
-      team: "Mercedes",
-      points: 189
+      name: "Oscar Piastri",
+      abbreviation: "PIA",
+      team: "McLaren",
+      teamColor: "#FF8700",
+      nationality: "Australia",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/australia-flag.png",
+      points: 195,
+      wins: 1,
+      podiums: 5,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/piastri.jpg.img.1920.medium.jpg"
     },
     {
       id: 5,
       position: 5,
       name: "Carlos Sainz",
-      slug: "carlos-sainz",
-      nationality: "Spanish",
+      abbreviation: "SAI",
       team: "Ferrari",
-      points: 185
+      teamColor: "#DC0000",
+      nationality: "Spain",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/spain-flag.png",
+      points: 184,
+      wins: 1,
+      podiums: 6,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/sainz.jpg.img.1920.medium.jpg"
     },
     {
       id: 6,
       position: 6,
-      name: "Oscar Piastri",
-      slug: "oscar-piastri",
-      nationality: "Australian",
-      team: "McLaren",
-      points: 177
-    },
-    {
-      id: 7,
-      position: 7,
-      name: "Sergio Perez",
-      slug: "sergio-perez",
-      nationality: "Mexican",
-      team: "Red Bull Racing",
-      points: 150
-    },
-    {
-      id: 8,
-      position: 8,
-      name: "George Russell",
-      slug: "george-russell",
-      nationality: "British",
+      name: "Lewis Hamilton",
+      abbreviation: "HAM",
       team: "Mercedes",
-      points: 143
+      teamColor: "#00D2BE",
+      nationality: "United Kingdom",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png",
+      points: 177,
+      wins: 1,
+      podiums: 6,
+      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/hamilton.jpg.img.1920.medium.jpg"
     },
-    {
-      id: 9,
-      position: 9,
-      name: "Fernando Alonso",
-      slug: "fernando-alonso",
-      nationality: "Spanish",
-      team: "Aston Martin",
-      points: 58
-    },
-    {
-      id: 10,
-      position: 10,
-      name: "Lance Stroll",
-      slug: "lance-stroll",
-      nationality: "Canadian",
-      team: "Aston Martin",
-      points: 24
-    },
-    {
-      id: 11,
-      position: 11,
-      name: "Alex Albon",
-      slug: "alex-albon",
-      nationality: "Thai",
-      team: "Williams",
-      points: 18
-    },
-    {
-      id: 12,
-      position: 12,
-      name: "Yuki Tsunoda",
-      slug: "yuki-tsunoda",
-      nationality: "Japanese",
-      team: "RB",
-      points: 14
-    },
-    {
-      id: 13,
-      position: 13,
-      name: "Daniel Ricciardo",
-      slug: "daniel-ricciardo",
-      nationality: "Australian",
-      team: "RB",
-      points: 9
-    },
-    {
-      id: 14,
-      position: 14,
-      name: "Esteban Ocon",
-      slug: "esteban-ocon",
-      nationality: "French",
-      team: "Alpine",
-      points: 6
-    },
-    {
-      id: 15,
-      position: 15,
-      name: "Pierre Gasly",
-      slug: "pierre-gasly",
-      nationality: "French",
-      team: "Alpine",
-      points: 6
-    },
-    {
-      id: 16,
-      position: 16,
-      name: "Kevin Magnussen",
-      slug: "kevin-magnussen",
-      nationality: "Danish",
-      team: "Haas",
-      points: 5
-    },
-    {
-      id: 17,
-      position: 17,
-      name: "Nico Hulkenberg",
-      slug: "nico-hulkenberg",
-      nationality: "German",
-      team: "Haas",
-      points: 5
-    },
-    {
-      id: 18,
-      position: 18,
-      name: "Logan Sargeant",
-      slug: "logan-sargeant",
-      nationality: "American",
-      team: "Williams",
-      points: 0
-    },
-    {
-      id: 19,
-      position: 19,
-      name: "Zhou Guanyu",
-      slug: "zhou-guanyu",
-      nationality: "Chinese",
-      team: "Stake F1",
-      points: 0
-    },
-    {
-      id: 20,
-      position: 20,
-      name: "Valtteri Bottas",
-      slug: "valtteri-bottas",
-      nationality: "Finnish",
-      team: "Stake F1",
-      points: 0
-    }
+    // Add more drivers as needed
   ];
-  
-  const constructorStandings = [
+
+  // Sample data for constructors standings with online image sources
+  const constructors = [
     {
       id: 1,
       position: 1,
       name: "Red Bull Racing",
-      points: 492,
-      wins: 12
+      color: "#0600EF",
+      points: 499,
+      wins: 8,
+      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/red%20bull.jpg",
+      country: "Austria",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/austria-flag.png"
     },
     {
       id: 2,
       position: 2,
       name: "McLaren",
-      points: 452,
-      wins: 5
+      color: "#FF8700",
+      points: 448,
+      wins: 3,
+      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mclaren.jpg",
+      country: "United Kingdom",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png"
     },
     {
       id: 3,
       position: 3,
       name: "Ferrari",
-      points: 431,
-      wins: 3
+      color: "#DC0000",
+      points: 387,
+      wins: 2,
+      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/ferrari.jpg",
+      country: "Italy",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/italy-flag.png"
     },
     {
       id: 4,
       position: 4,
       name: "Mercedes",
-      points: 332,
-      wins: 2
+      color: "#00D2BE",
+      points: 334,
+      wins: 1,
+      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mercedes.jpg",
+      country: "Germany",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/germany-flag.png"
     },
     {
       id: 5,
       position: 5,
       name: "Aston Martin",
-      points: 82,
-      wins: 0
+      color: "#006F62",
+      points: 76,
+      wins: 0,
+      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/aston%20martin.jpg",
+      country: "United Kingdom",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png"
     },
     {
       id: 6,
       position: 6,
       name: "RB",
-      points: 23,
-      wins: 0
+      color: "#000080",
+      points: 35,
+      wins: 0,
+      logo: "https://media.formula1.com/content/dam/fom-website/teams/2024/rb-logo.jpg.img.640.medium.jpg",
+      country: "Italy",
+      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/italy-flag.png"
     },
-    {
-      id: 7,
-      position: 7,
-      name: "Alpine",
-      points: 12,
-      wins: 0
-    },
-    {
-      id: 8,
-      position: 8,
-      name: "Haas",
-      points: 10,
-      wins: 0
-    },
-    {
-      id: 9,
-      position: 9,
-      name: "Williams",
-      points: 18,
-      wins: 0
-    },
-    {
-      id: 10,
-      position: 10,
-      name: "Stake F1",
-      points: 0,
-      wins: 0
-    }
+    // Add more constructors as needed
   ];
+
+  // Rest of the component remains the same
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    
+    // Update URL without page reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tab);
+    window.history.pushState({}, '', url);
+  };
   
   return (
-    <div className="standings-page">
-      <h1 className="text-3xl font-bold mb-6">Championship Standings</h1>
+    <div className="standings-container">
+      <motion.div 
+        className="standings-header"
+        initial={{ opacity: 0, y: -20 }}
+        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="page-title">2025 Championship Standings</h1>
+      </motion.div>
       
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('drivers')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'drivers'
-                  ? 'border-red-600 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Drivers Championship
-            </button>
-            <button
-              onClick={() => setActiveTab('constructors')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'constructors'
-                  ? 'border-red-600 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Constructors Championship
-            </button>
-          </nav>
+      <motion.div 
+        className="tabs-container"
+        initial={{ opacity: 0, y: -10 }}
+        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
+        <div className="tabs-nav">
+          <button 
+            className={`tab-button ${activeTab === 'drivers' ? 'active' : ''}`}
+            onClick={() => handleTabChange('drivers')}
+          >
+            Drivers Championship
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'constructors' ? 'active' : ''}`}
+            onClick={() => handleTabChange('constructors')}
+          >
+            Constructors Championship
+          </button>
         </div>
-      </div>
+      </motion.div>
       
-      {activeTab === 'drivers' ? (
-        <div className="flex flex-col items-center gap-8 w-full">
-          {/* Highlighted card for the first driver */}
-          <HighlightedDriverCard driver={driverStandings[0]} />
-
-          {/* Normal cards for the other drivers */}
-          {driverStandings.slice(1).map((driver) => (
-            <DriverCard key={driver.id} driver={driver} />
-          ))}
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Pos</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Team</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Points</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Wins</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {constructorStandings.map((team) => (
-                <tr key={team.id} className={team.position <= 3 ? "bg-gray-50" : ""}>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                    {team.position === 1 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-400 rounded-full text-white font-bold">
-                        {team.position}
+      {activeTab === 'drivers' && (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+        >
+          {/* Top 3 drivers highlighted */}
+          <div className="top-drivers">
+            {drivers.slice(0, 3).map((driver, index) => (
+              <motion.div 
+                key={driver.id}
+                className="highlighted-driver-card"
+                variants={itemVariants}
+                custom={index}
+                style={{
+                  '--team-color': driver.teamColor
+                }}
+              >
+                <div className="driver-image-container">
+                  <div className="driver-image">
+                    <Image 
+                      src={driver.image}
+                      alt={driver.name}
+                      width={300}
+                      height={300}
+                      priority={index < 3}
+                      style={{ objectFit: 'cover', objectPosition: 'center' }}
+                      unoptimized={true}
+                    />
+                  </div>
+                </div>
+                
+                <div className="highlighted-content">
+                  <div className="driver-header">
+                    <span className={`position-badge position-${driver.position}`}>{driver.position}</span>
+                    <h3 className="driver-name">
+                      {driver.name}
+                      <span className="flag-icon">
+                        <Image
+                          src={driver.flag}
+                          alt={driver.nationality}
+                          width={20}
+                          height={15}
+                          style={{ objectFit: 'contain' }}
+                          unoptimized={true}
+                        />
                       </span>
-                    ) : team.position === 2 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-gray-300 rounded-full text-white font-bold">
-                        {team.position}
+                    </h3>
+                  </div>
+                  
+                  <div className="driver-details">
+                    <div className="detail-group">
+                      <span className="detail-label">Team</span>
+                      <span className="detail-value">{driver.team}</span>
+                    </div>
+                    
+                    <div className="detail-group">
+                      <span className="detail-label">Wins</span>
+                      <span className="detail-value">{driver.wins}</span>
+                    </div>
+                    
+                    <div className="detail-group">
+                      <span className="detail-label">Podiums</span>
+                      <span className="detail-value">{driver.podiums}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="points-display">
+                    <span className="points-label">Points</span>
+                    <span className="points-value">{driver.points}</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Remaining drivers */}
+          <div className="drivers-container">
+            {drivers.slice(3).map((driver, index) => (
+              <motion.div 
+                key={driver.id}
+                className="driver-card"
+                variants={itemVariants}
+                custom={index + 3}
+                style={{
+                  '--team-color': driver.teamColor
+                }}
+              >
+                <div className="driver-image-container">
+                  <div className="driver-image">
+                    <Image 
+                      src={driver.image}
+                      alt={driver.name}
+                      width={150}
+                      height={150}
+                      style={{ objectFit: 'cover', objectPosition: 'center top' }}
+                      unoptimized={true}
+                    />
+                  </div>
+                </div>
+                
+                <div className="highlighted-content">
+                  <div className="driver-header">
+                    <span className="position-badge">{driver.position}</span>
+                    <h3 className="driver-name">
+                      {driver.name}
+                      <span className="flag-icon">
+                        <Image
+                          src={driver.flag}
+                          alt={driver.nationality}
+                          width={20}
+                          height={15}
+                          style={{ objectFit: 'contain' }}
+                          unoptimized={true}
+                        />
                       </span>
-                    ) : team.position === 3 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-amber-700 rounded-full text-white font-bold">
-                        {team.position}
-                      </span>
-                    ) : (
-                      team.position
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{team.name}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm font-semibold text-gray-900">{team.points}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{team.wins}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </h3>
+                  </div>
+                  
+                  <div className="driver-details">
+                    <div className="detail-group">
+                      <span className="detail-label">Team</span>
+                      <span className="detail-value">{driver.team}</span>
+                    </div>
+                    
+                    <div className="detail-group">
+                      <span className="detail-value">{driver.wins} wins</span>
+                    </div>
+                  </div>
+                  
+                  <div className="points-display">
+                    <span className="points-value">{driver.points} pts</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       )}
+      
+        {activeTab === 'constructors' && (
+        <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate={isLoaded ? "visible" : "hidden"}
+            className="constructors-container"
+        >
+            <motion.table className="constructors-table" variants={itemVariants}>
+            <thead>
+                <tr>
+                <th>Pos</th>
+                <th>Team</th>
+                <th>Points</th>
+                <th>Wins</th>
+                </tr>
+            </thead>
+            <tbody>
+                {constructors.map((team, index) => (
+                <motion.tr 
+                    key={team.id}
+                    variants={itemVariants}
+                    custom={index}
+                >
+                    <td>
+                    <span className="team-position">
+                        <span className="position-indicator" style={{ backgroundColor: team.color }}>{team.position}</span>
+                    </span>
+                    </td>
+                    <td>
+                    <div className="team-name">
+                        <div className="team-logo" style={{ backgroundColor: 'white' }}>
+                        <Image 
+                            src={team.logo}
+                            alt={team.name}
+                            width={40}
+                            height={25}
+                            style={{ objectFit: 'contain' }}
+                            unoptimized={true}
+                        />
+                        </div>
+                        {team.name}
+                        <span className="flag-icon">
+                        <Image
+                            src={team.flag}
+                            alt={team.country}
+                            width={20}
+                            height={15}
+                            style={{ objectFit: 'contain' }}
+                            unoptimized={true}
+                        />
+                        </span>
+                    </div>
+                    </td>
+                    <td className="team-points">{team.points}</td>
+                    <td className="team-wins">{team.wins}</td>
+                </motion.tr>
+                ))}
+            </tbody>
+            </motion.table>
+        </motion.div>
+        )}
     </div>
   );
 }

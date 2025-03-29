@@ -10,6 +10,20 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'flagpedia.net',
       }
+    ,
+      {
+        protocol: 'https',
+        hostname: 'media.formula1.com',
+    },
+        {
+            protocol: 'https',
+            hostname: 'cdn-1.motorsport.com',
+        },
+        {
+            protocol: 'https',
+            hostname: 'picsum.photos',
+        },
+
     ],
   },
   reactStrictMode: true,
