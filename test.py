@@ -12,7 +12,7 @@ def get_total_events():
     events = []
     current_date = datetime.datetime.now()
     current_year = current_date.year
-    for x in range(2019,current_year):
+    for x in range(2019,current_year+1):
         print(x)
         start = datetime.datetime(x,1,1)
 
@@ -50,4 +50,5 @@ def main():
 if __name__ == "__main__":
     get_total_events()
     get_races()
+    load_races()
     main()
