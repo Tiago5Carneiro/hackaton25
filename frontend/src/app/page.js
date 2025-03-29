@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import './styles/homepage.css';
+import { useF1Data } from './context/F1DataContext';
 
 import NewsCard from './components/NewsCard';
 import RaceCountdownCard from './components/RaceCountdown';
@@ -13,10 +14,68 @@ import StandingsCard from './components/StandingsCard';
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   
+  // Get data from context with try/catch
+  let contextData = { drivers: [], constructors: [], nextRace: null, loading: true, error: null };
+  try {
+    contextData = useF1Data();
+  } catch (error) {
+    console.error("Failed to get F1 data from context:", error);
+  }
+  
+  const { drivers, constructors, nextRace, loading, error } = contextData;
+  
   useEffect(() => {
+    console.log("HomePage: Component mounted");
     setIsLoaded(true);
-  }, []);
+    
+    // Detailed logging of context data
+    console.log('HomePage: Drivers data received:', drivers);
+    console.log('HomePage: Constructors data received:', constructors);
+    console.log('HomePage: Next race data received:', nextRace);
+    console.log('HomePage: Loading state:', loading);
+    console.log('HomePage: Error state:', error);
+    
+    // If there's no data, log a warning
+    if (!drivers || drivers.length === 0) {
+      console.warn("HomePage: No drivers data available");
+    }
+    if (!constructors || constructors.length === 0) {
+      console.warn("HomePage: No constructors data available");
+    }
+    if (!nextRace) {
+      console.warn("HomePage: No next race data available");
+    }
+  }, [drivers, constructors, nextRace, loading, error]);
 
+  // Transform data for display with safer handling
+  const driverStandings = Array.isArray(drivers) && drivers.length > 0 
+    ? drivers.slice(0, 3).map(driver => ({
+        position: driver.position || '?',
+        name: driver.name || 'Unknown Driver',
+        team: driver.team || 'Unknown Team',
+        points: driver.points || 0,
+        change: "+0"
+      }))
+    : [
+        { position: 1, name: "Max Verstappen", team: "Red Bull Racing", points: 240, change: "+0" },
+        { position: 2, name: "Lando Norris", team: "McLaren", points: 189, change: "+0" },
+        { position: 3, name: "Charles Leclerc", team: "Ferrari", points: 162, change: "+0" }
+      ];
+
+  const constructorStandings = Array.isArray(constructors) && constructors.length > 0 
+    ? constructors.slice(0, 3).map(team => ({
+        position: team.position || '?',
+        name: team.name || 'Unknown Team',
+        points: team.points || 0,
+        change: "0"
+      }))
+    : [
+        { position: 1, name: "Red Bull Racing", points: 400, change: "0" },
+        { position: 2, name: "McLaren", points: 310, change: "0" },
+        { position: 3, name: "Ferrari", points: 296, change: "0" }
+      ];
+
+  // Use default news data
   const featuredNews = [
     {
       id: 1,
@@ -44,53 +103,8 @@ export default function Home() {
     },
   ];
   
-  const driverStandings = [
-    { 
-      position: 1, 
-      name: "Max Verstappen", 
-      team: "Red Bull Racing",
-      points: 342, 
-      change: "+2" 
-    },
-    { 
-      position: 2, 
-      name: "Lando Norris", 
-      team: "McLaren", 
-      points: 275, 
-      change: "0" 
-    },
-    { 
-      position: 3, 
-      name: "Charles Leclerc", 
-      team: "Ferrari", 
-      points: 246, 
-      change: "+1" 
-    },
-  ];
-
-  const constructorStandings = [
-    { 
-      position: 1, 
-      name: "Red Bull Racing", 
-      points: 492, 
-      change: "0" 
-    },
-    { 
-      position: 2, 
-      name: "McLaren", 
-      points: 452, 
-      change: "+1" 
-    },
-    { 
-      position: 3, 
-      name: "Ferrari", 
-      points: 431, 
-      change: "-1" 
-    },
-  ];
-  
-  // Informações atualizadas sobre a próxima corrida
-  const nextRace = {
+  // Handle next race data with fallback
+  const defaultRace = {
     name: "Australian Grand Prix",
     circuit: "Albert Park Circuit",
     location: "Melbourne, Australia",
@@ -100,6 +114,17 @@ export default function Home() {
     dateTime: new Date('2025-03-30T06:00:00Z').getTime()
   };
   
+  const formattedNextRace = nextRace ? {
+    name: nextRace.name || defaultRace.name,
+    circuit: nextRace.circuit || defaultRace.circuit,
+    location: nextRace.location || defaultRace.location,
+    flag: nextRace.flag || defaultRace.flag,
+    date: nextRace.date ? new Date(nextRace.date).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}) : defaultRace.date,
+    time: nextRace.time || defaultRace.time,
+    dateTime: nextRace.date && nextRace.time ? new Date(nextRace.date + 'T' + nextRace.time).getTime() : defaultRace.dateTime
+  } : defaultRace;
+  
+  // Animation configurations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -122,6 +147,17 @@ export default function Home() {
       }
     }
   };
+
+  // Show loading state if context is still loading
+  if (loading) {
+    console.log("HomePage: Displaying loading spinner");
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading F1 Hub data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`${isLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
@@ -162,15 +198,15 @@ export default function Home() {
         animate={isLoaded ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        <RaceCountdownCard race={nextRace} />
+        <RaceCountdownCard race={formattedNextRace} />
       </motion.section>
 
       {/* Featured News Section */}
-      <section className="section-container racing-section">
+      <section className="section-container">
         <div className="section-header">
-          <h2 className="section-title">Latest News</h2>
-          <Link href="/news" className="view-all-link">
-            View All
+         <h2 className="section-title">Championship Standings</h2>
+          <Link href="/standings" className="view-all-link">
+            Full Standings
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
