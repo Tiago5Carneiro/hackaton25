@@ -238,20 +238,280 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
   
-  .countdown-value {
+  /* Efeitos melhorados para números de contagem regressiva */
+.countdown-value {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s;
+    transform-origin: center center;
+  }
+  
+  /* Animação de pulso para os segundos */
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Cores para cada número para maior impacto visual */
+  .countdown-item:nth-child(1) .countdown-value {
+    color: #e10600; /* Vermelho F1 para dias */
+  }
+
+  
+  .countdown-item:nth-child(4) .countdown-value {
+    color: #ffffff; /* Branco para segundos */
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    animation: pulse 1s infinite;
+  }
+  
+  /* Efeito de flip para mudança de valores */
+  .countdown-value.flip {
+    animation: flip 0.5s ease-in-out;
+  }
+  
+  @keyframes flip {
+    0% {
+      transform: perspective(400px) rotateX(0);
+    }
+    50% {
+      transform: perspective(400px) rotateX(-90deg);
+    }
+    100% {
+      transform: perspective(400px) rotateX(0);
+    }
+  }
+  
+  /* Melhorias visuais para o card de contagem regressiva */
+  .race-countdown-card {
+    position: relative;
+    background: linear-gradient(to bottom right, #1f1f2e, #15151e);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .race-countdown-glow {
+    position: absolute;
+    inset: -50px;
+    background: linear-gradient(45deg, rgba(225, 6, 0, 0.6), rgba(255, 135, 0, 0.4));
+    filter: blur(50px);
+    opacity: 0.2;
+    z-index: 0;
+    transition: opacity 1s, filter 1s;
+  }
+  
+  /* Animação da luz de fundo ao carregar */
+  @keyframes glow-pulse {
+    0% {
+      opacity: 0.1;
+      filter: blur(50px);
+    }
+    50% {
+      opacity: 0.3;
+      filter: blur(40px);
+    }
+    100% {
+      opacity: 0.2;
+      filter: blur(50px);
+    }
+  }
+  
+  .race-countdown-card:hover .race-countdown-glow {
+    opacity: 0.3;
+    animation: glow-pulse 3s infinite;
+  }
+  
+  .race-countdown-content {
+    position: relative;
+    padding: 2rem;
+    z-index: 1;
+  }
+  
+  .race-info {
+    margin-bottom: 2rem;
+  }
+  
+  .race-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  .race-location {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+  }
+  
+  .race-flag {
+    margin-right: 0.5rem;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  
+  .race-circuit {
+    color: #aaa;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .race-date {
+    color: #e10600;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .countdown-item:hover {
+    transform: translateY(-5px);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 6px 10px rgba(0,0,0,0.3);
+  }
+  
+  countdown-value {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s;
+    transform-origin: center center;
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--primary, #e10600);
+    color: var(--foreground, white);
     line-height: 1;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Apenas um leve destaque para os segundos */
+  .seconds-value {
+    color: var(--primary, #e10600);
+  }
+  
+  /* Efeito de mudança de número suave */
+  @keyframes numberChange {
+    0% {
+      opacity: 0.7;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Item de contagem com estilo mais consistente */
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg, rgba(255, 255, 255, 0.05));
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .countdown-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
   
   .countdown-label {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--muted, #6B7280);
+    color: var(--muted, rgba(255, 255, 255, 0.6));
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+  
+  /* Card de corrida com efeito de brilho mais sutil */
+  .race-countdown-card {
+    position: relative;
+    background: var(--card-bg, linear-gradient(to bottom right, #1f1f2e, #15151e));
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  }
+  
+  .race-countdown-glow {
+    position: absolute;
+    inset: -50px;
+    background: linear-gradient(45deg, var(--primary, rgba(225, 6, 0, 0.5)), transparent);
+    filter: blur(50px);
+    opacity: 0.15;
+    z-index: 0;
+    transition: opacity 0.5s;
+  }
+  
+  .race-countdown-card:hover .race-countdown-glow {
+    opacity: 0.25;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 640px) {
+    .countdown-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    
+    .countdown-value {
+      font-size: 2rem;
+    }
+  }
+  
+  /* Ajustes para modo claro */
+  @media (prefers-color-scheme: light) {
+    .countdown-item {
+      background-color: white;
+    }
+    
+    .countdown-value {
+      color: var(--foreground, #15151e);
+    }
+    
+    .countdown-label {
+      color: var(--muted, #6B7280);
+    }
+    
+    .seconds-value {
+      color: var(--primary, #e10600);
+    }
   }
   
   /* Standings Card */

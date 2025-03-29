@@ -3,13 +3,31 @@
 :root {
   --background: #ffffff;
   --foreground: #000000;
+  --primary: #e10600;
+  --muted: #6B7280;
+  --card-bg: white;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --header-bg: #15151e;
+  --header-text: white;
+  --footer-bg: #15151e;
+  --footer-text: #f3f4f6;
+  --footer-muted: #9ca3af;
+  --f1-red: #e10600;
+  --f1-gold: #fbbf24;
+  --f1-silver: #9ca3af;
+  --f1-bronze: #92400e;
+  --f1-gray: #6B7280;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark blue background */
+    --background: #15151e;
+    --foreground: #ededed;
+    --muted: #a0a0a5;
+    --card-bg: #1f1f2e;
+    --card-border: #38383f;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

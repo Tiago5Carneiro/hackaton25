@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion'; // Certifique-se de importar motion
 
 export default function RaceCountdownCard({ race }) {
   const [timeRemaining, setTimeRemaining] = useState({
@@ -10,6 +11,8 @@ export default function RaceCountdownCard({ race }) {
     minutes: 0,
     seconds: 0
   });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
   
   // Se não for fornecida uma corrida como prop, usa esta como padrão
   const nextRace = race || {
@@ -23,6 +26,11 @@ export default function RaceCountdownCard({ race }) {
   };
   
   useEffect(() => {
+    // Definir isLoaded como true após um pequeno delay para permitir a animação
+    const loadTimer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 300);
+    
     const interval = setInterval(() => {
       const now = new Date().getTime();
       const distance = nextRace.dateTime - now;
@@ -46,17 +54,90 @@ export default function RaceCountdownCard({ race }) {
       setTimeRemaining({ days, hours, minutes, seconds });
     }, 1000);
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(loadTimer);
+    };
   }, [nextRace.dateTime]);
+  
+  // Variants para animação de contagem
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20, 
+      scale: 0.8 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+  
+  // Variants para animação dos números
+  const numberVariants = {
+    hidden: { 
+      opacity: 0,
+      scale: 0.5
+    },
+    visible: { 
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 10
+      }
+    },
+    update: (i) => ({
+      scale: [1, 1.2, 1],
+      transition: {
+        duration: 0.3
+      }
+    })
+  };
   
   return (
     <div className="race-countdown-card">
       <div className="race-countdown-glow"></div>
       <div className="race-countdown-content">
-        <div className="race-info">
-          <h2 className="race-name">{nextRace.name}</h2>
+        <motion.div 
+          className="race-info"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.h2 
+            className="race-name"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {nextRace.name}
+          </motion.h2>
           
-          <div className="race-location">
+          <motion.div 
+            className="race-location"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             {nextRace.flag ? (
               <Image 
                 src={nextRace.flag} 
@@ -64,39 +145,114 @@ export default function RaceCountdownCard({ race }) {
                 width={24} 
                 height={16}
                 className="race-flag"
-                // Fallback em caso de erro de carregamento da imagem
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
               />
             ) : null}
             <span>{nextRace.location}</span>
-          </div>
+          </motion.div>
           
-          <div className="race-circuit">{nextRace.circuit}</div>
-          <div className="race-date">{nextRace.date} - {nextRace.time}</div>
-        </div>
+          <motion.div 
+            className="race-circuit"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            {nextRace.circuit}
+          </motion.div>
+          
+          <motion.div 
+            className="race-date"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            {nextRace.date} - {nextRace.time}
+          </motion.div>
+        </motion.div>
         
-        <h3 className="text-lg font-bold mb-2">Countdown to Race Start</h3>
+        <motion.h3 
+          className="text-lg font-bold mb-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+          Countdown to Race Start
+        </motion.h3>
         
-        <div className="countdown-grid">
-          <div className="countdown-item">
-            <span className="countdown-value">{timeRemaining.days}</span>
+        <motion.div 
+          className="countdown-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+        >
+          <motion.div 
+            className="countdown-item"
+            variants={itemVariants}
+          >
+            <motion.span 
+              className="countdown-value"
+              variants={numberVariants}
+              key={`days-${timeRemaining.days}`}
+              animate={isLoaded ? "visible" : "hidden"}
+              custom={1}
+            >
+              {timeRemaining.days}
+            </motion.span>
             <span className="countdown-label">Days</span>
-          </div>
-          <div className="countdown-item">
-            <span className="countdown-value">{timeRemaining.hours}</span>
+          </motion.div>
+          
+          <motion.div 
+            className="countdown-item"
+            variants={itemVariants}
+          >
+            <motion.span 
+              className="countdown-value"
+              variants={numberVariants}
+              key={`hours-${timeRemaining.hours}`}
+              animate={isLoaded ? "visible" : "hidden"}
+              custom={2}
+            >
+              {timeRemaining.hours}
+            </motion.span>
             <span className="countdown-label">Hours</span>
-          </div>
-          <div className="countdown-item">
-            <span className="countdown-value">{timeRemaining.minutes}</span>
+          </motion.div>
+          
+          <motion.div 
+            className="countdown-item"
+            variants={itemVariants}
+          >
+            <motion.span 
+              className="countdown-value"
+              variants={numberVariants}
+              key={`minutes-${timeRemaining.minutes}`}
+              animate={isLoaded ? "visible" : "hidden"}
+              custom={3}
+            >
+              {timeRemaining.minutes}
+            </motion.span>
             <span className="countdown-label">Minutes</span>
-          </div>
-          <div className="countdown-item">
-            <span className="countdown-value">{timeRemaining.seconds}</span>
+          </motion.div>
+          
+          <motion.div 
+            className="countdown-item"
+            variants={itemVariants}
+          >
+            <motion.span 
+              className="countdown-value"
+              variants={numberVariants}
+              key={`seconds-${timeRemaining.seconds}`}
+              animate={isLoaded ? "visible" : "hidden"}
+              custom={4}
+              // Adiciona uma animação suave a cada segundo
+              style={{ display: 'inline-block' }}
+            >
+              {timeRemaining.seconds}
+            </motion.span>
             <span className="countdown-label">Seconds</span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

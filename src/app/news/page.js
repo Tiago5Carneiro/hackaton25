@@ -1,10 +1,21 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function NewsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    // Pequeno delay para garantir que as animações ocorram após a renderização
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const categories = [
     { id: 'all', name: 'All News' },
@@ -20,11 +31,11 @@ export default function NewsPage() {
       title: "Verstappen Clinches Third Consecutive Championship After Dramatic Race",
       excerpt: "Max Verstappen secured his third Formula 1 World Championship with a stunning drive at Interlagos, overcoming early setbacks to finish on the podium.",
       category: "races",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Verstappen+Champion",
       date: "March 24, 2025",
       featured: true,
       authorName: "James Allen",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=JA",
       readTime: "5 min read"
     },
     {
@@ -32,11 +43,10 @@ export default function NewsPage() {
       title: "McLaren Unveils Revolutionary Car Design for 2025",
       excerpt: "McLaren has revealed significant design changes to their 2025 challenger, aiming to challenge Red Bull's dominance with innovative aerodynamic concepts.",
       category: "technical",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=McLaren+2025",
       date: "March 22, 2025",
-      featured: true,
       authorName: "Sam Cooper",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=SC",
       readTime: "4 min read"
     },
     {
@@ -44,11 +54,10 @@ export default function NewsPage() {
       title: "Hamilton Signs Contract Extension with Mercedes",
       excerpt: "Seven-time world champion Lewis Hamilton has committed his future to Mercedes, signing a new multi-year deal that will keep him with the team through 2026.",
       category: "drivers",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Hamilton+Contract",
       date: "March 20, 2025",
-      featured: true,
       authorName: "Rachel Brooks",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=RB",
       readTime: "3 min read"
     },
     {
@@ -56,10 +65,10 @@ export default function NewsPage() {
       title: "F1 Announces New Race in Africa for 2026 Season",
       excerpt: "Formula 1 has confirmed that South Africa will return to the calendar in 2026, with Kyalami Circuit set to host the first African Grand Prix since 1993.",
       category: "races",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=African+GP",
       date: "March 18, 2025",
       authorName: "Lawrence Barretto",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=LB",
       readTime: "4 min read"
     },
     {
@@ -67,10 +76,10 @@ export default function NewsPage() {
       title: "Ferrari Confirms Major Technical Restructuring",
       excerpt: "Scuderia Ferrari has announced a significant reshuffle of its technical department following a challenging start to the 2025 season.",
       category: "teams",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Ferrari+Tech+Team",
       date: "March 16, 2025",
       authorName: "Anna Sanchez",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=AS",
       readTime: "5 min read"
     },
     {
@@ -78,10 +87,10 @@ export default function NewsPage() {
       title: "New Sustainable Fuel Regulations Set for 2026",
       excerpt: "The FIA has finalized the new sustainable fuel regulations that will come into effect from the 2026 season, targeting a significant reduction in carbon emissions.",
       category: "technical",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Sustainable+Fuel",
       date: "March 14, 2025",
       authorName: "Mark Hughes",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=MH",
       readTime: "6 min read"
     },
     {
@@ -89,10 +98,10 @@ export default function NewsPage() {
       title: "Piastri Secures Maiden Victory in Thrilling Italian Grand Prix",
       excerpt: "Oscar Piastri claimed his first Formula 1 win at Monza after a race-long battle with teammate Lando Norris and Charles Leclerc's Ferrari.",
       category: "races",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Piastri+Win",
       date: "March 12, 2025",
       authorName: "Will Buxton",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=WB",
       readTime: "5 min read"
     },
     {
@@ -100,10 +109,10 @@ export default function NewsPage() {
       title: "Alonso Announces Retirement at End of 2025 Season",
       excerpt: "Two-time world champion Fernando Alonso has announced that the 2025 season will be his last in Formula 1, bringing an end to a legendary career spanning over two decades.",
       category: "drivers",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Alonso+Retirement",
       date: "March 10, 2025",
       authorName: "Natalie Pinkham",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=NP",
       readTime: "7 min read"
     },
     {
@@ -111,10 +120,10 @@ export default function NewsPage() {
       title: "Red Bull Debuts New Innovative DRS System",
       excerpt: "Red Bull Racing has introduced a revolutionary rear wing design that maximizes DRS effectiveness, pending FIA approval for its legality.",
       category: "technical",
-      image: "https://placehold.co/600x400",
+      image: "https://placehold.co/800x450?text=Red+Bull+DRS",
       date: "March 8, 2025",
       authorName: "Ted Kravitz",
-      authorAvatar: "https://placehold.co/600x400",
+      authorAvatar: "https://placehold.co/150x150?text=TK",
       readTime: "5 min read"
     }
   ];
@@ -125,87 +134,169 @@ export default function NewsPage() {
   
   const featuredNews = filteredNews.filter(article => article.featured);
   const regularNews = filteredNews.filter(article => !article.featured);
+
+  // Variantes de animação para os cards
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 12
+      }
+    }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
   
   return (
-    <div className="container mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Latest Formula 1 News</h1>
+    <div className="news-container">
+      <motion.h1 
+        className="news-title"
+        variants={titleVariants}
+        initial="hidden"
+        animate={isLoaded ? "visible" : "hidden"}
+      >
+        Latest Formula 1 News
+      </motion.h1>
       
       {/* Category filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {categories.map(category => (
-          <button
+      <motion.div 
+        className="category-filters"
+        initial={{ opacity: 0, y: -10 }}
+        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        {categories.map((category, index) => (
+          <motion.button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium ${
-              activeCategory === category.id
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
+            className={`category-button ${activeCategory === category.id ? 'active' : ''}`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+            transition={{ delay: 0.2 + (index * 0.05), duration: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {category.name}
-          </button>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
       
       {/* Featured news section */}
       {featuredNews.length > 0 && (
-        <section className="mb-12">
-          <div className="grid md:grid-cols-3 gap-6">
+        <section className="featured-section">
+          <motion.h2 
+            className="section-title"
+            initial={{ opacity: 0, x: -20 }}
+            animate={isLoaded ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+          >
+            Featured Stories
+          </motion.h2>
+          <motion.div 
+            className="news-grid featured-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isLoaded ? "visible" : "hidden"}
+          >
             {featuredNews.map((article, index) => (
-              <Link key={article.id} href={`/news/${article.id}`}>
-                <div className={`bg-white rounded-lg shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow ${
-                  index === 0 ? 'md:col-span-3 lg:grid lg:grid-cols-2 lg:gap-6' : ''
-                }`}>
-                  <div className={`relative ${index === 0 ? 'h-64 lg:h-auto' : 'h-48'}`}>
+              <motion.div 
+                key={article.id}
+                variants={itemVariants}
+                custom={index}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              >
+                <Link href={`/news/${article.id}`} className={index === 0 ? 'main-feature' : 'news-card'}>
+                  <div className="news-image-container">
                     <Image
                       src={article.image}
                       alt={article.title}
                       fill
                       style={{ objectFit: 'cover' }}
                     />
-                    <div className="absolute top-0 left-0 bg-red-600 text-white text-xs px-2 py-1">
-                      FEATURED
-                    </div>
+                    <div className="featured-tag">FEATURED</div>
                   </div>
                   
-                  <div className="p-4">
-                    <div className="flex items-center mb-2">
-                      <span className="text-xs text-gray-500 mr-2">{article.date}</span>
-                      <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded capitalize">{article.category}</span>
+                  <div className="news-content">
+                    <div className="news-meta">
+                      <span className="news-date">{article.date}</span>
+                      <span className="news-category">{article.category}</span>
                     </div>
                     
-                    <h2 className={`font-bold mb-2 ${index === 0 ? 'text-2xl' : 'text-xl'}`}>{article.title}</h2>
-                    <p className="text-gray-600 mb-4">{article.excerpt}</p>
+                    <h2 className="news-headline">{article.title}</h2>
+                    <p className="news-excerpt">{article.excerpt}</p>
                     
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <div className="w-6 h-6 rounded-full overflow-hidden mr-2">
+                    <div className="news-footer">
+                      <div className="news-author">
+                        <div className="author-avatar">
                           <Image
                             src={article.authorAvatar}
                             alt={article.authorName}
-                            width={24}
-                            height={24}
+                            fill
+                            style={{ objectFit: 'cover' }}
                           />
                         </div>
-                        <span className="text-xs">{article.authorName}</span>
+                        <span className="author-name">{article.authorName}</span>
                       </div>
-                      <span className="text-xs text-gray-500">{article.readTime}</span>
+                      <span className="read-time">{article.readTime}</span>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
       )}
       
       {/* Regular news articles */}
       <section>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {regularNews.map(article => (
-            <Link key={article.id} href={`/news/${article.id}`}>
-              <div className="bg-white rounded-lg shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow">
-                <div className="relative h-48">
+        <motion.h2 
+          className="section-title"
+          initial={{ opacity: 0, x: -20 }}
+          animate={isLoaded ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+        >
+          Latest News
+        </motion.h2>
+        <motion.div 
+          className="news-grid regular-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+        >
+          {regularNews.map((article, index) => (
+            <motion.div 
+              key={article.id}
+              variants={itemVariants}
+              custom={index}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            >
+              <Link href={`/news/${article.id}`} className="news-card">
+                <div className="news-image-container">
                   <Image
                     src={article.image}
                     alt={article.title}
@@ -214,39 +305,44 @@ export default function NewsPage() {
                   />
                 </div>
                 
-                <div className="p-4">
-                  <div className="flex items-center mb-2">
-                    <span className="text-xs text-gray-500 mr-2">{article.date}</span>
-                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded capitalize">{article.category}</span>
+                <div className="news-content">
+                  <div className="news-meta">
+                    <span className="news-date">{article.date}</span>
+                    <span className="news-category">{article.category}</span>
                   </div>
                   
-                  <h2 className="text-xl font-bold mb-2">{article.title}</h2>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{article.excerpt}</p>
+                  <h2 className="news-headline">{article.title}</h2>
+                  <p className="news-excerpt">{article.excerpt}</p>
                   
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-6 h-6 rounded-full overflow-hidden mr-2">
+                  <div className="news-footer">
+                    <div className="news-author">
+                      <div className="author-avatar">
                         <Image
                           src={article.authorAvatar}
                           alt={article.authorName}
-                          width={24}
-                          height={24}
+                          fill
+                          style={{ objectFit: 'cover' }}
                         />
                       </div>
-                      <span className="text-xs">{article.authorName}</span>
+                      <span className="author-name">{article.authorName}</span>
                     </div>
-                    <span className="text-xs text-gray-500">{article.readTime}</span>
+                    <span className="read-time">{article.readTime}</span>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         
         {filteredNews.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600">No news articles found in this category.</p>
-          </div>
+          <motion.div 
+            className="empty-state"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <p>No news articles found in this category.</p>
+          </motion.div>
         )}
       </section>
     </div>

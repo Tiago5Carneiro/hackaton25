@@ -1,9 +1,17 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import '../styles/schedule.css';
 
 export default function SchedulePage() {
   const [selectedRace, setSelectedRace] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "completed", "upcoming"
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
   
   const currentDate = new Date();
   
@@ -76,115 +84,176 @@ export default function SchedulePage() {
       ? races.filter(race => race.completed)
       : races.filter(race => !race.completed);
   
+  // Find the next race (closest upcoming race)
+  const nextRace = races
+    .filter(race => !race.completed)
+    .reduce((closest, race) => {
+      if (!closest) return race;
+      const closestDate = new Date(closest.date);
+      const raceDate = new Date(race.date);
+      return raceDate < closestDate ? race : closest;
+    }, null);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 70, damping: 10 }
+    }
+  };
+
   return (
-    <div className="container mx-auto">
-      <h1 className="text-3xl font-bold mb-8">F1 2025 Schedule</h1>
+    <div className="schedule-container">
+      <motion.div 
+        className="schedule-header"
+        initial={{ opacity: 0, y: -20 }}
+        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="page-title">F1 2025 Race Calendar</h1>
+        <p className="schedule-subheading">
+          Follow the full schedule of the 2025 Formula 1 season. Click on any race for more details.
+        </p>
+      </motion.div>
       
       {/* Filter buttons */}
-      <div className="flex gap-4 mb-8">
+      <motion.div 
+        className="filter-buttons"
+        initial={{ opacity: 0, y: -10 }}
+        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
         <button 
           onClick={() => setFilterStatus("all")}
-          className={`px-4 py-2 rounded ${filterStatus === "all" ? 
-            "bg-red-600 text-white" : "bg-gray-200"}`}
+          className={`filter-button ${filterStatus === "all" ? "active" : ""}`}
         >
           All Races
         </button>
         <button 
           onClick={() => setFilterStatus("completed")}
-          className={`px-4 py-2 rounded ${filterStatus === "completed" ? 
-            "bg-red-600 text-white" : "bg-gray-200"}`}
+          className={`filter-button ${filterStatus === "completed" ? "active" : ""}`}
         >
-          Completed
+          Completed Races
         </button>
         <button 
           onClick={() => setFilterStatus("upcoming")}
-          className={`px-4 py-2 rounded ${filterStatus === "upcoming" ? 
-            "bg-red-600 text-white" : "bg-gray-200"}`}
+          className={`filter-button ${filterStatus === "upcoming" ? "active" : ""}`}
         >
-          Upcoming
+          Upcoming Races
         </button>
-      </div>
+      </motion.div>
       
       {selectedRace ? (
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <motion.div 
+          className="race-detail"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <button 
             onClick={() => setSelectedRace(null)}
-            className="mb-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+            className="back-button"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
             Back to schedule
           </button>
           
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold mb-2">{selectedRace.name}</h2>
-            <div className="flex flex-wrap gap-x-8 gap-y-2 text-gray-600">
-              <p>{selectedRace.date} - {selectedRace.time}</p>
+          <div className="race-detail-header">
+            <h2 className="race-detail-name">{selectedRace.name}</h2>
+            <div className="race-detail-meta">
+              <p>{selectedRace.date} • {selectedRace.time}</p>
               <p>{selectedRace.circuit}, {selectedRace.location}</p>
             </div>
           </div>
           
-          <div className="relative w-full h-72 mb-6 rounded-lg overflow-hidden">
+          <div className="race-image">
             <img 
               src={selectedRace.image} 
               alt={selectedRace.name}
-              className="object-cover w-full h-full"
             />
           </div>
           
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-2">About the race</h3>
-            <p className="text-gray-700">{selectedRace.description}</p>
-          </div>
-          
-          {selectedRace.completed && (
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Results</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-gray-600">Winner</p>
-                  <p className="font-semibold">{selectedRace.winner}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Fastest Lap</p>
-                  <p className="font-semibold">{selectedRace.fastestLap}</p>
+          <div className="race-detail-content">
+            <div className="race-detail-section">
+              <h3 className="section-title">About the race</h3>
+              <p className="race-description">{selectedRace.description}</p>
+            </div>
+            
+            {selectedRace.completed && (
+              <div className="results-container">
+                <h3 className="section-title">Race Results</h3>
+                <div className="results-grid">
+                  <div className="result-item">
+                    <span className="result-label">Winner</span>
+                    <span className="result-value">{selectedRace.winner}</span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Fastest Lap</span>
+                    <span className="result-value">{selectedRace.fastestLap}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div 
+          className="race-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+        >
           {filteredRaces.map(race => {
-            const isUpcoming = new Date(race.date) > currentDate;
+            const isNextRace = nextRace && race.id === nextRace.id;
+            const cardClassName = `race-card ${race.completed ? 'race-card-completed' : ''} ${isNextRace ? 'race-card-next' : ''}`;
             
             return (
-              <div 
+              <motion.div 
                 key={race.id}
+                variants={itemVariants}
                 onClick={() => setSelectedRace(race)}
-                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-red-600"
+                className={cardClassName}
               >
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <h2 className="text-xl font-bold mb-2">{race.name}</h2>
+                <div className="race-content">
+                  <div className="race-header">
+                    <h2 className="race-name">{race.name}</h2>
                     {race.completed ? (
-                      <span className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">Completed</span>
+                      <span className="race-status status-completed">Completed</span>
+                    ) : isNextRace ? (
+                      <span className="race-status status-next">Next Race</span>
                     ) : (
-                      <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Upcoming</span>
+                      <span className="race-status status-upcoming">Upcoming</span>
                     )}
                   </div>
                   
-                  <p className="text-gray-600 mb-4">{race.date} - {race.time}</p>
-                  <p className="mb-4">{race.circuit}, {race.location}</p>
+                  <p className="race-date">{race.date} • {race.time}</p>
+                  <p className="race-circuit">{race.circuit}, {race.location}</p>
                   
                   {race.completed && (
-                    <div className="mt-2">
-                      <p className="text-sm"><span className="font-semibold">Winner:</span> {race.winner}</p>
+                    <div className="race-results">
+                      <div className="winner-info">
+                        <span className="trophy-icon">🏆</span>
+                        <span className="winner-name">{race.winner}</span>
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       )}
     </div>
   );

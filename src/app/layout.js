@@ -2,8 +2,9 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import './styles/layout.css'
 import './styles/navbar.css'
-import './styles/footer.css' // Add this line
+import './styles/footer.css' 
 import './styles/card.css'
+import './styles/news.css'  // Adicione esta linha
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 
