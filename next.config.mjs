@@ -4,9 +4,10 @@ const nextConfig = {
       remotePatterns: [
         {
           protocol: 'https',
-          hostname: 'via.placeholder.com',
+          hostname: 'placehold.co',
           pathname: '/**',
         },
+
         // Add any other domains you might need, like:
         // {
         //   protocol: 'https',

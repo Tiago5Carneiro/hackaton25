@@ -18,7 +18,7 @@ export default function SchedulePage() {
       completed: true,
       winner: "Max Verstappen",
       fastestLap: "Lewis Hamilton",
-      image: "https://via.placeholder.com/400x200?text=Bahrain+GP",
+      image: "https://placehold.co/600x400",
       description: "The Bahrain Grand Prix is a Formula One championship race which takes place at the Bahrain International Circuit. The 5.412 km circuit was designed by Hermann Tilke, and is located in the middle of the Sakhir desert."
     },
     {
@@ -31,7 +31,7 @@ export default function SchedulePage() {
       completed: true,
       winner: "Charles Leclerc",
       fastestLap: "Max Verstappen",
-      image: "https://via.placeholder.com/400x200?text=Saudi+Arabian+GP",
+      image: "https://placehold.co/600x400",
       description: "The Saudi Arabian Grand Prix takes place on the Jeddah Corniche Circuit, which is a street circuit running along the shores of the Red Sea. It is the fastest street circuit on the Formula One calendar, with an average speed of 250 km/h."
     },
     {
@@ -42,7 +42,7 @@ export default function SchedulePage() {
       date: "March 30, 2025",
       time: "06:00 GMT",
       completed: false,
-      image: "https://via.placeholder.com/400x200?text=Australian+GP",
+      image: "https://placehold.co/600x400",
       description: "The Australian Grand Prix is held at the Albert Park Circuit, a street circuit around Albert Park Lake. The circuit has hosted the Australian Grand Prix since 1996, with the event marking the start of the Formula One season for many years."
     },
     {
@@ -53,7 +53,7 @@ export default function SchedulePage() {
       date: "April 13, 2025",
       time: "05:00 GMT",
       completed: false,
-      image: "https://via.placeholder.com/400x200?text=Japanese+GP",
+      image: "https://placehold.co/600x400",
       description: "The Japanese Grand Prix is held at the Suzuka Circuit, which is one of the most challenging and popular circuits on the Formula One calendar. The figure-8 layout is unique in Formula One and features a wide variety of corners."
     },
     {
@@ -64,7 +64,7 @@ export default function SchedulePage() {
       date: "May 4, 2025",
       time: "19:30 GMT",
       completed: false,
-      image: "https://via.placeholder.com/400x200?text=Miami+GP",
+      image: "https://placehold.co/600x400",
       description: "The Miami Grand Prix takes place at the Miami International Autodrome, set around Hard Rock Stadium. The 5.41 km circuit features 19 corners and three DRS zones, with top speeds expected to reach around 320 km/h."
     },
     // Add more races as needed

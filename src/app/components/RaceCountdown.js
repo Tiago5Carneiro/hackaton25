@@ -1,7 +1,9 @@
 "use client";
-import { useState, useEffect } from 'react';
 
-export default function RaceCountdown() {
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+
+export default function RaceCountdownCard({ race }) {
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 0,
@@ -9,82 +11,91 @@ export default function RaceCountdown() {
     seconds: 0
   });
   
-  // Example next race - in a real app this would come from an API or data source
-  const nextRace = {
+  // Se não for fornecida uma corrida como prop, usa esta como padrão
+  const nextRace = race || {
     name: "Australian Grand Prix",
     circuit: "Albert Park Circuit",
     location: "Melbourne, Australia",
+    flag: "/images/flags/australia.png", // Substitua por caminho real da imagem
     date: "March 30, 2025",
     time: "06:00 GMT",
-    // Setting this date to a future time for the countdown
     dateTime: new Date('2025-03-30T06:00:00Z').getTime()
   };
   
   useEffect(() => {
-    const updateCountdown = () => {
+    const interval = setInterval(() => {
       const now = new Date().getTime();
       const distance = nextRace.dateTime - now;
       
-      if (distance > 0) {
+      if (distance < 0) {
+        clearInterval(interval);
         setTimeRemaining({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000)
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0
         });
+        return;
       }
-    };
+      
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      setTimeRemaining({ days, hours, minutes, seconds });
+    }, 1000);
     
-    // Update immediately
-    updateCountdown();
-    
-    // Then update every second
-    const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
   }, [nextRace.dateTime]);
   
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h3 className="text-2xl font-bold">{nextRace.name}</h3>
-          <p className="text-gray-600">{nextRace.circuit}, {nextRace.location}</p>
-          <p className="text-gray-600">{nextRace.date} at {nextRace.time}</p>
+    <div className="race-countdown-card">
+      <div className="race-countdown-glow"></div>
+      <div className="race-countdown-content">
+        <div className="race-info">
+          <h2 className="race-name">{nextRace.name}</h2>
+          
+          <div className="race-location">
+            {nextRace.flag ? (
+              <Image 
+                src={nextRace.flag} 
+                alt={`${nextRace.location} flag`} 
+                width={24} 
+                height={16}
+                className="race-flag"
+                // Fallback em caso de erro de carregamento da imagem
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            ) : null}
+            <span>{nextRace.location}</span>
+          </div>
+          
+          <div className="race-circuit">{nextRace.circuit}</div>
+          <div className="race-date">{nextRace.date} - {nextRace.time}</div>
         </div>
         
-        <div className="mt-4 md:mt-0">
-          <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
-            NEXT RACE
-          </span>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-4 gap-2">
-        <div className="bg-gray-100 p-3 rounded-lg text-center">
-          <div className="text-3xl font-bold text-red-600">{timeRemaining.days}</div>
-          <div className="text-xs uppercase text-gray-600">days</div>
-        </div>
-        <div className="bg-gray-100 p-3 rounded-lg text-center">
-          <div className="text-3xl font-bold text-red-600">{timeRemaining.hours}</div>
-          <div className="text-xs uppercase text-gray-600">hours</div>
-        </div>
-        <div className="bg-gray-100 p-3 rounded-lg text-center">
-          <div className="text-3xl font-bold text-red-600">{timeRemaining.minutes}</div>
-          <div className="text-xs uppercase text-gray-600">minutes</div>
-        </div>
-        <div className="bg-gray-100 p-3 rounded-lg text-center">
-          <div className="text-3xl font-bold text-red-600">{timeRemaining.seconds}</div>
-          <div className="text-xs uppercase text-gray-600">seconds</div>
-        </div>
-      </div>
-      
-      {/* Progress bar representing time until the race */}
-      <div className="mt-6">
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div 
-            className="bg-red-600 h-2.5 rounded-full" 
-            style={{ width: `${Math.min(100, (30 - timeRemaining.days) / 30 * 100)}%` }}
-          ></div>
+        <h3 className="text-lg font-bold mb-2">Countdown to Race Start</h3>
+        
+        <div className="countdown-grid">
+          <div className="countdown-item">
+            <span className="countdown-value">{timeRemaining.days}</span>
+            <span className="countdown-label">Days</span>
+          </div>
+          <div className="countdown-item">
+            <span className="countdown-value">{timeRemaining.hours}</span>
+            <span className="countdown-label">Hours</span>
+          </div>
+          <div className="countdown-item">
+            <span className="countdown-value">{timeRemaining.minutes}</span>
+            <span className="countdown-label">Minutes</span>
+          </div>
+          <div className="countdown-item">
+            <span className="countdown-value">{timeRemaining.seconds}</span>
+            <span className="countdown-label">Seconds</span>
+          </div>
         </div>
       </div>
     </div>

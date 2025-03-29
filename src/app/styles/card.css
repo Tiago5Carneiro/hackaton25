@@ -1,0 +1,424 @@
+/* F1 Hub Card Component Styles */
+
+/* Base Card Styles */
+.card {
+    background-color: var(--card-bg, white);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Card Images */
+  .card-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+  }
+  
+  .card-image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+  }
+  
+  .card:hover .card-image {
+    transform: scale(1.05);
+  }
+  
+  .card-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+  }
+  
+  /* Card Content */
+  .card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--foreground);
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .card-description {
+    font-size: 0.875rem;
+    color: var(--muted, #6B7280);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+  
+  /* Card Footer */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+  }
+  
+  .card-date {
+    font-size: 0.75rem;
+    color: var(--muted, #6B7280);
+  }
+  
+  .card-link {
+    font-size: 0.875rem;
+    color: var(--primary, #e10600);
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  
+  .card-link svg {
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.25rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .card-link:hover svg {
+    transform: translateX(3px);
+  }
+  
+  /* News Cards Specific */
+  .news-card .card-title {
+    font-size: 1.125rem;
+  }
+  
+  .news-card .card-image-container {
+    height: 180px;
+  }
+  
+  .category-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--primary, #e10600);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+  }
+  
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .card {
+      background-color: var(--card-bg, #1f1f2e);
+      border-color: var(--card-border, #38383f);
+    }
+    
+    .card-title {
+      color: var(--foreground, #f8f8f8);
+    }
+    
+    .card-description {
+      color: var(--muted, #a0a0a5);
+    }
+    
+    .card-date {
+      color: var(--muted, #a0a0a5);
+    }
+  }
+
+/* Race Countdown Card */
+.race-countdown-card {
+    position: relative;
+    background: linear-gradient(to bottom right, #f9fafb, #f3f4f6);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+  }
+  
+  .race-countdown-glow {
+    position: absolute;
+    inset: -0.25rem;
+    background: linear-gradient(to right, var(--f1-red, #e10600), #f97316);
+    border-radius: 1rem;
+    filter: blur(1rem);
+    opacity: 0.3;
+    transition: opacity 1s;
+    z-index: -1;
+  }
+  
+  .race-countdown-card:hover .race-countdown-glow {
+    opacity: 0.5;
+  }
+  
+  .race-countdown-content {
+    padding: 2rem;
+    position: relative;
+  }
+  
+  .race-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .race-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--foreground);
+  }
+  
+  .race-location {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--muted, #6B7280);
+  }
+  
+  .race-flag {
+    width: 1.5rem;
+    height: 1rem;
+    border-radius: 0.125rem;
+    object-fit: cover;
+    margin-right: 0.5rem;
+  }
+  
+  .race-date {
+    font-size: 1.125rem;
+    color: var(--primary, #e10600);
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+  
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .countdown-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary, #e10600);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  
+  .countdown-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted, #6B7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  /* Standings Card */
+  .standings-card {
+    background: linear-gradient(to bottom right, #f9fafb, #f3f4f6);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .standings-card {
+      background: linear-gradient(to bottom right, #1f1f2e, #15151e);
+      border-color: var(--card-border, #38383f);
+    }
+  
+    .standings-title {
+      color: var(--foreground, #f8f8f8);
+    }
+  
+    .standings-name {
+      color: var(--foreground, #f8f8f8);
+    }
+  
+    .standings-points {
+      color: var(--foreground, #f8f8f8);
+    }
+  }
+  
+  .standings-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+  }
+  
+  .standings-title-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+    color: var(--primary, #e10600);
+  }
+  
+  .standings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--card-border, #e5e7eb);
+  }
+  
+  .standings-item {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border, #e5e7eb);
+  }
+  
+  .standings-position {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    margin-right: 1rem;
+    color: white;
+    font-weight: 700;
+  }
+  
+  .position-1 {
+    background-color: var(--f1-gold, #fbbf24);
+  }
+  
+  .position-2 {
+    background-color: var(--f1-silver, #9ca3af);
+  }
+  
+  .position-3 {
+    background-color: var(--f1-bronze, #92400e);
+  }
+  
+  .position-other {
+    background-color: var(--f1-gray, #6B7280);
+  }
+  
+  .standings-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .standings-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .standings-team {
+    color: var(--muted, #6B7280);
+    font-size: 0.875rem;
+  }
+  
+  .standings-points-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .standings-points {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    color: var(--foreground);
+  }
+  
+  .standings-change {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .change-positive {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  .change-negative {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  .change-neutral {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+  
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .race-countdown-card {
+      background: linear-gradient(to bottom right, #1f1f2e, #15151e);
+    }
+    
+    .countdown-item {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .change-positive {
+      background-color: rgba(6, 95, 70, 0.3);
+      color: #34d399;
+    }
+    
+    .change-negative {
+      background-color: rgba(153, 27, 27, 0.3);
+      color: #f87171;
+    }
+    
+    .change-neutral {
+      background-color: rgba(55, 65, 81, 0.3);
+      color: #d1d5db;
+    }
+  }

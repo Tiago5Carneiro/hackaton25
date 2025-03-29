@@ -1,79 +1,107 @@
 "use client";
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  
-  const routes = [
-    { name: 'Home', path: '/' },
-    { name: 'News', path: '/news' },
-    { name: 'Schedule', path: '/schedule' },
-    { name: 'Standings', path: '/standings' },
-    { name: 'Drivers', path: '/drivers' },
-    { name: 'Chat', path: '/chat' },
-  ];
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Check if link is active
+  const isActive = (path) => {
+    if (path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(path);
+  };
 
   return (
-    <nav className="bg-red-600 text-white">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold">F1 Hub</Link>
-          </div>
+    <header>
+      
+      <div className="header-container">
+        <div className="racing-flag"></div>
+        
+        <div className="logo-container">
+          <Link href="/" className="logo">
+            <span className="logo-f1">F1</span> Hub
+          </Link>
+        </div>
+
+        <nav>
+          <ul className={`nav-list ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+            <li className="nav-item">
+              <Link 
+                href="/" 
+                className={`nav-link ${isActive('/') ? 'active' : ''}`}
+              >
+                Home
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/news" 
+                className={`nav-link ${isActive('/news') ? 'active' : ''}`}
+              >
+                News
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/schedule" 
+                className={`nav-link ${isActive('/schedule') ? 'active' : ''}`}
+              >
+                Race Calendar
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/standings" 
+                className={`nav-link ${isActive('/standings') ? 'active' : ''}`}
+              >
+                Standings
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/teams" 
+                className={`nav-link ${isActive('/teams') ? 'active' : ''}`}
+              >
+                Teams
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="nav-actions">
           
-          <div className="hidden md:block">
-            <div className="flex space-x-4">
-              {routes.map((route) => (
-                <Link
-                  key={route.path}
-                  href={route.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    pathname === route.path ? 'bg-red-800' : 'hover:bg-red-700'
-                  }`}
-                >
-                  {route.name}
-                </Link>
-              ))}
-            </div>
-          </div>
+          <Link href="/login" className="nav-button">
+            Sign In
+          </Link>
           
-          <div className="md:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md hover:bg-red-700"
-            >
-              <span className="sr-only">Open menu</span>
-              {/* Hamburger icon */}
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <button 
+            className="mobile-menu-button" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </button>
-          </div>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
-      
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {routes.map((route) => (
-              <Link
-                key={route.path}
-                href={route.path}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  pathname === route.path ? 'bg-red-800' : 'hover:bg-red-700'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {route.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </nav>
+    </header>
   );
 }

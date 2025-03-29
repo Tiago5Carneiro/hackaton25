@@ -1,5 +1,9 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
+import './styles/layout.css'
+import './styles/navbar.css'
+import './styles/footer.css' // Add this line
+import './styles/card.css'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 
@@ -14,9 +18,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen flex flex-col">
+        <div className="layout-container">
           <Navigation />
-          <main className="flex-grow container mx-auto px-4 py-8">
+          <main className="main-container">
             {children}
           </main>
           <Footer />

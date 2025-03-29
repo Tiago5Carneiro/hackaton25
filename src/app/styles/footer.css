@@ -1,0 +1,197 @@
+/* F1 Hub Footer Styles */
+
+.site-footer {
+    background-color: var(--footer-bg, #15151e);
+    color: var(--footer-text, #f3f4f6);
+    padding: 2rem 0 1rem;
+  }
+  
+  .footer-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr; /* Changed ratio for better alignment */
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  
+  /* Branding Section - Left */
+  .footer-branding {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-logo-f1 {
+    color: var(--f1-red, #e10600);
+    font-weight: 900;
+  }
+  
+  .footer-tagline {
+    color: var(--footer-muted, #9ca3af);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Links Section - Middle */
+  .footer-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  .footer-heading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 2rem;
+    height: 0.125rem;
+    background-color: var(--f1-red, #e10600);
+  }
+  
+  .footer-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .footer-nav li a {
+    color: var(--footer-muted, #9ca3af);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-size: 0.875rem;
+  }
+  
+  .footer-nav li a:hover {
+    color: white;
+  }
+  
+  /* Social Section - Right */
+  .footer-social {
+    justify-self: end; /* Align to the right */
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: flex-end; /* Align icons to the right */
+  }
+  
+  .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.2s;
+  }
+  
+  .social-icons a:hover {
+    background-color: var(--f1-red, #e10600);
+    transform: translateY(-3px);
+  }
+  
+  .social-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: white;
+  }
+  
+  /* Copyright Section */
+  .footer-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--footer-muted, #9ca3af);
+    font-size: 0.75rem;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .footer-container {
+      grid-template-columns: 1fr 1fr; /* Two columns on medium screens */
+      gap: 1.5rem;
+    }
+    
+    .footer-branding {
+      grid-column: span 2; /* Make branding take full width */
+    }
+    
+    .footer-links {
+      grid-column: 1; /* Position links on left */
+    }
+    
+    .footer-social {
+      grid-column: 2; /* Position social on right */
+      justify-self: end; /* Keep aligned to right */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .footer-container {
+      grid-template-columns: 1fr; /* One column on small screens */
+      text-align: center;
+    }
+    
+    .footer-branding, .footer-links, .footer-social {
+      grid-column: span 1; /* Each section takes full width */
+      justify-self: center; /* Center all sections */
+    }
+    
+    .footer-heading::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .footer-nav {
+      align-items: center;
+    }
+    
+    .social-icons {
+      justify-content: center;
+    }
+  }
+  
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    .site-footer {
+      background-color: var(--footer-bg, #0f0f17);
+    }
+    
+    .footer-nav li a {
+      color: var(--footer-muted, #9ca3af);
+    }
+  }
+  
+  /* Footer Animation */
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--f1-red, #e10600), transparent);
+    z-index: 1;
+  }
