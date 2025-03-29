@@ -1,5 +1,8 @@
 "use client";
 import { useState } from 'react';
+import '../styles/standings.css';
+import HighlightedDriverCard from '../components/HighlightedDriverCard';
+import DriverCard from '../components/DriverCard';
 
 export default function Standings() {
   const [activeTab, setActiveTab] = useState('drivers');
@@ -241,7 +244,7 @@ export default function Standings() {
   ];
   
   return (
-    <div>
+    <div className="standings-page">
       <h1 className="text-3xl font-bold mb-6">Championship Standings</h1>
       
       <div className="mb-6">
@@ -272,45 +275,14 @@ export default function Standings() {
       </div>
       
       {activeTab === 'drivers' ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Pos</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Driver</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nationality</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Team</th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Points</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {driverStandings.map((driver) => (
-                <tr key={driver.id} className={driver.position <= 3 ? "bg-gray-50" : ""}>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                    {driver.position === 1 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-400 rounded-full text-white font-bold">
-                        {driver.position}
-                      </span>
-                    ) : driver.position === 2 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-gray-300 rounded-full text-white font-bold">
-                        {driver.position}
-                      </span>
-                    ) : driver.position === 3 ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 bg-amber-700 rounded-full text-white font-bold">
-                        {driver.position}
-                      </span>
-                    ) : (
-                      driver.position
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{driver.name}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{driver.nationality}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{driver.team}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm font-semibold text-gray-900">{driver.points}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col items-center gap-8 w-full">
+          {/* Highlighted card for the first driver */}
+          <HighlightedDriverCard driver={driverStandings[0]} />
+
+          {/* Normal cards for the other drivers */}
+          {driverStandings.slice(1).map((driver) => (
+            <DriverCard key={driver.id} driver={driver} />
+          ))}
         </div>
       ) : (
         <div className="overflow-x-auto">

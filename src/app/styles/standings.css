@@ -1,0 +1,180 @@
+body {
+  background-color: #15151e;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.standings-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 40px;
+  width: 100%;
+}
+
+.driver-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #1f1f2e;
+  border: 1px solid darkred;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.driver-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-color: red;
+}
+
+.driver-card h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.driver-card .info {
+  display: flex;
+  flex: 2;
+  gap: 15px;
+}
+
+.driver-card .info p {
+  font-size: 1rem;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.highlighted-driver-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #1f1f2e;
+  border: 2px solid darkred;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.highlighted-driver-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border-color: red;
+}
+
+.highlighted-driver-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 0;
+}
+
+.highlighted-driver-card .info {
+  display: flex;
+  flex: 1;
+  gap: 15px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.highlighted-driver-card .info p {
+  font-size: 1rem;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.driver-card p {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 8px 0;
+}
+
+.highlighted-driver-card h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.highlighted-driver-card p {
+  font-size: 1rem;
+  color: white;
+  margin: 5px 0;
+}
+
+.driver-card:focus,
+.highlighted-driver-card:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 4px;
+}
+
+.flag-icon {
+  width: 20px;
+  height: 15px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.position-badge {
+  background-color: white;
+  color: #000;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  align-self: center;
+}
+
+.highlighted-driver-card .position-badge,
+.driver-card .position-badge {
+  margin: 0;
+  align-self: center;
+}
+
+.driver-card .vertical-divider,
+.highlighted-driver-card .vertical-divider {
+  width: 3px;
+  background-color: white;
+  margin: 0 15px;
+  align-self: stretch;
+  border-radius: 10px;
+  display: block;
+}
+
+.driver-card .vertical-divider {
+  height: 60px;
+}
+
+.highlighted-driver-card .vertical-divider {
+  height: 70%;
+  align-self: center;
+  min-height: 80px;
+}

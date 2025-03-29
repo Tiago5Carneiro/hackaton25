@@ -1,21 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'placehold.co',
-          pathname: '/**',
-        },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagpedia.net',
+      }
+    ],
+  },
+  reactStrictMode: true,
+}
 
-        // Add any other domains you might need, like:
-        // {
-        //   protocol: 'https',
-        //   hostname: 'example.com',
-        //   pathname: '/**',
-        // }
-      ],
-    },
-  }
-  
-  export default nextConfig;
+export default nextConfig;
