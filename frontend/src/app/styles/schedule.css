@@ -1,0 +1,338 @@
+/* F1 Hub Schedule Page Styles */
+
+.schedule-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  
+  /* Page Header */
+  .schedule-header {
+    margin-bottom: 2.5rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--foreground);
+    position: relative;
+    display: inline-block;
+  }
+  
+  .page-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 3rem;
+    height: 0.25rem;
+    background-color: var(--f1-red, #e10600);
+    border-radius: 0.125rem;
+  }
+  
+  .schedule-subheading {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+  }
+  
+  /* Filter Buttons */
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .filter-button {
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    background-color: var(--card-bg);
+    color: var(--foreground);
+    border: 1px solid var(--card-border);
+  }
+  
+  .filter-button.active {
+    background-color: var(--f1-red, #e10600);
+    color: white;
+    box-shadow: 0 4px 8px rgba(225, 6, 0, 0.2);
+  }
+  
+  .filter-button:not(.active):hover {
+    background-color: rgba(225, 6, 0, 0.1);
+  }
+  
+  /* Race Grid */
+  .race-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .race-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .race-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  /* Race Card */
+  .race-card {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid var(--f1-red, #e10600);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+  
+  .race-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  .race-card-completed {
+    border-left-color: #9ca3af;
+  }
+  
+  .race-card-next {
+    border-left-color: #047857;
+  }
+  
+  .race-content {
+    padding: 1.5rem;
+    flex: 1;
+  }
+  
+  .race-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .race-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-right: 1rem;
+    line-height: 1.3;
+  }
+  
+  .race-status {
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  
+  .status-upcoming {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--f1-red, #e10600);
+  }
+  
+  .status-completed {
+    background-color: rgba(156, 163, 175, 0.2);
+    color: #4b5563;
+  }
+  
+  .status-next {
+    background-color: rgba(4, 120, 87, 0.15);
+    color: #047857;
+  }
+  
+  .race-date {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  
+  .race-circuit {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    color: var(--foreground);
+  }
+  
+  .race-results {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--card-border);
+  }
+  
+  .winner-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .trophy-icon {
+    margin-right: 0.5rem;
+    color: #fbbf24;
+  }
+  
+  .winner-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  /* Race Detail */
+  .race-detail {
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    padding: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.5rem;
+  }
+  
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--f1-red, #e10600);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 1.5rem;
+  }
+  
+  .back-button:hover {
+    background-color: #c70500;
+  }
+  
+  .race-detail-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  
+  .race-detail-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+  }
+  
+  .race-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .race-image {
+    position: relative;
+    width: 100%;
+    height: 18rem;
+    overflow: hidden;
+  }
+  
+  .race-image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .race-detail-content {
+    padding: 1.5rem;
+  }
+  
+  .race-detail-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--foreground);
+  }
+  
+  .race-description {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+  }
+  
+  .results-container {
+    background-color: var(--accent-bg, rgba(0, 0, 0, 0.03));
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .results-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .result-label {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  
+  .result-value {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--foreground);
+  }
+  
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .filter-button:not(.active) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .filter-button:not(.active):hover {
+      background-color: rgba(225, 6, 0, 0.2);
+    }
+    
+    .status-upcoming {
+      background-color: rgba(239, 68, 68, 0.2);
+    }
+    
+    .status-completed {
+      background-color: rgba(156, 163, 175, 0.15);
+    }
+    
+    .status-next {
+      background-color: rgba(4, 120, 87, 0.2);
+    }
+    
+    .results-container {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
