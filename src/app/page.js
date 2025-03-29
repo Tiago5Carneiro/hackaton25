@@ -142,7 +142,7 @@ export default function Home() {
                 className="hero-favicon"
               />
             </span>
-            HUB
+            Hub
           </h1>
           <p className="hero-subtitle">
             Your ultimate destination for F1 news, schedules, and standings

@@ -1,26 +1,20 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/drivers.css';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-// Use dynamic import com lazy loading
-const ChartComponent = dynamic(
-  () => import('chart.js/auto').then(module => {
-    // Registrar os componentes necessários
-    return module;
-  }),
-  { ssr: false, loading: () => <div>Loading Chart...</div> }
-);
+// Import Recharts components with dynamic loading (correct implementation)
+const RechartsComponent = dynamic(() => import('../../components/RechartsComponent'), {
+  ssr: false,
+  loading: () => <div>Loading Chart...</div>
+});
 
 export default function DriverPage() {
   const { slug } = useParams();
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [chartInstance, setChartInstance] = useState(null);
-  const chartRef = useRef(null);
-  const chartLoaded = useRef(false);
   
   // Mock data for driver skills (would come from API in real app)
   const driverSkills = {
@@ -30,6 +24,20 @@ export default function DriverPage() {
     tireManagement: Math.floor(Math.random() * 30) + 70,
     wetWeatherDriving: Math.floor(Math.random() * 30) + 70,
   };
+
+  // Format skills data for Recharts
+  const skillsData = [
+    { skill: "Pace", value: driverSkills.pace, fullMark: 100 },
+    { skill: "Consistency", value: driverSkills.consistency, fullMark: 100 },
+    { skill: "Racecraft", value: driverSkills.racecraft, fullMark: 100 },
+    { skill: "Tire Management", value: driverSkills.tireManagement, fullMark: 100 },
+    { skill: "Wet Weather", value: driverSkills.wetWeatherDriving, fullMark: 100 },
+    { skill: "Consiste", value: driverSkills.consistency, fullMark: 100 },
+    { skill: "Racecr", value: driverSkills.racecraft, fullMark: 100 },
+    { skill: "Tire Manage", value: driverSkills.tireManagement, fullMark: 100 },
+    { skill: "Wet Wea", value: driverSkills.wetWeatherDriving, fullMark: 100 },
+
+  ];
   
   // Recent results - mock data
   const recentResults = [
@@ -184,17 +192,6 @@ export default function DriverPage() {
     }
     // Add more drivers as needed...
   ];
-  
-  // Setup radar chart when component mounts and Chart.js is loaded
-  useEffect(() => {
-    if (chartRef.current && driver && typeof ChartComponent !== 'undefined') {
-      // Importe o Chart.js apenas quando necessário
-      import('chart.js/auto').then((Chart) => {
-        renderRadarChart(Chart.default);
-        chartLoaded.current = true;
-      });
-    }
-  }, [driver]);
   
   // Find driver based on slug
   useEffect(() => {
@@ -376,20 +373,14 @@ export default function DriverPage() {
             </div>
           </div>
         </div>
-        
         <div className="driver-skills">
           <h2>Driver Skills</h2>
           <div className="radar-chart-container">
-            <canvas 
-              ref={chartRef} 
-              width="400" 
-              height="400" 
-              className="radar-chart"
-            ></canvas>
+            <RechartsComponent driver={driver} skillsData={skillsData} />
           </div>
         </div>
       </div>
-      
+          
       <div className="recent-results">
         <h2>Recent Results</h2>
         <div className="results-table-container">
@@ -413,6 +404,11 @@ export default function DriverPage() {
           </table>
         </div>
       </div>
+      <div className="compare-section">
+      <Link href={`/driver_comparison?driver1=${slug}`} className="compare-button">
+        Compare With Another Driver
+      </Link>
+    </div>
     </div>
   );
 }

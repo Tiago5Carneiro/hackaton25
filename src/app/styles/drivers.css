@@ -424,12 +424,48 @@
     min-height: 350px;
   }
 
-  .nationality-flag,
-  .team-logo {
-    height: 20px;
-  }
-  
-  .team-logo {
-    height: 24px;
-  }
+.chart-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 300px;
+  color: #e0e0e0;
+  font-size: 1.2rem;
 }
+
+/* Make sure the SVG fills the container */
+.radar-chart-container svg {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible;
+}
+
+/* Style the tooltip that appears on hover */
+.recharts-tooltip-wrapper {
+  background-color: #333 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.recharts-default-tooltip {
+  background-color: #262626 !important;
+  border-color: #444 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Make sure radar points are visible */
+.recharts-dot {
+  fill: #e10600 !important;
+  stroke: #ffffff !important;
+  stroke-width: 2px !important;
+}
+
+/* Ensure the radar area is visible */
+.recharts-radar-polygon {
+  fill: #e10600 !important;
+  fill-opacity: 0.6 !important;
+  stroke: #e10600 !important;
+  stroke-width: 2px !important;
+}
+  }
