@@ -12,6 +12,7 @@ export default function Standings() {
       id: 1,
       position: 1,
       name: "Max Verstappen",
+      slug: "max-verstappen",
       nationality: "Dutch",
       team: "Red Bull Racing",
       points: 342
@@ -20,6 +21,7 @@ export default function Standings() {
       id: 2,
       position: 2,
       name: "Lando Norris",
+      slug: "lando-norris",
       nationality: "British",
       team: "McLaren",
       points: 275
@@ -28,6 +30,7 @@ export default function Standings() {
       id: 3,
       position: 3,
       name: "Charles Leclerc",
+      slug: "charles-leclerc",
       nationality: "Monégasque",
       team: "Ferrari",
       points: 246
@@ -36,6 +39,7 @@ export default function Standings() {
       id: 4,
       position: 4,
       name: "Lewis Hamilton",
+      slug: "lewis-hamilton",
       nationality: "British",
       team: "Mercedes",
       points: 189
@@ -44,6 +48,7 @@ export default function Standings() {
       id: 5,
       position: 5,
       name: "Carlos Sainz",
+      slug: "carlos-sainz",
       nationality: "Spanish",
       team: "Ferrari",
       points: 185
@@ -52,6 +57,7 @@ export default function Standings() {
       id: 6,
       position: 6,
       name: "Oscar Piastri",
+      slug: "oscar-piastri",
       nationality: "Australian",
       team: "McLaren",
       points: 177
@@ -60,6 +66,7 @@ export default function Standings() {
       id: 7,
       position: 7,
       name: "Sergio Perez",
+      slug: "sergio-perez",
       nationality: "Mexican",
       team: "Red Bull Racing",
       points: 150
@@ -68,6 +75,7 @@ export default function Standings() {
       id: 8,
       position: 8,
       name: "George Russell",
+      slug: "george-russell",
       nationality: "British",
       team: "Mercedes",
       points: 143
@@ -76,6 +84,7 @@ export default function Standings() {
       id: 9,
       position: 9,
       name: "Fernando Alonso",
+      slug: "fernando-alonso",
       nationality: "Spanish",
       team: "Aston Martin",
       points: 58
@@ -84,6 +93,7 @@ export default function Standings() {
       id: 10,
       position: 10,
       name: "Lance Stroll",
+      slug: "lance-stroll",
       nationality: "Canadian",
       team: "Aston Martin",
       points: 24
@@ -92,6 +102,7 @@ export default function Standings() {
       id: 11,
       position: 11,
       name: "Alex Albon",
+      slug: "alex-albon",
       nationality: "Thai",
       team: "Williams",
       points: 18
@@ -100,6 +111,7 @@ export default function Standings() {
       id: 12,
       position: 12,
       name: "Yuki Tsunoda",
+      slug: "yuki-tsunoda",
       nationality: "Japanese",
       team: "RB",
       points: 14
@@ -108,6 +120,7 @@ export default function Standings() {
       id: 13,
       position: 13,
       name: "Daniel Ricciardo",
+      slug: "daniel-ricciardo",
       nationality: "Australian",
       team: "RB",
       points: 9
@@ -116,6 +129,7 @@ export default function Standings() {
       id: 14,
       position: 14,
       name: "Esteban Ocon",
+      slug: "esteban-ocon",
       nationality: "French",
       team: "Alpine",
       points: 6
@@ -124,6 +138,7 @@ export default function Standings() {
       id: 15,
       position: 15,
       name: "Pierre Gasly",
+      slug: "pierre-gasly",
       nationality: "French",
       team: "Alpine",
       points: 6
@@ -132,6 +147,7 @@ export default function Standings() {
       id: 16,
       position: 16,
       name: "Kevin Magnussen",
+      slug: "kevin-magnussen",
       nationality: "Danish",
       team: "Haas",
       points: 5
@@ -140,6 +156,7 @@ export default function Standings() {
       id: 17,
       position: 17,
       name: "Nico Hulkenberg",
+      slug: "nico-hulkenberg",
       nationality: "German",
       team: "Haas",
       points: 5
@@ -148,6 +165,7 @@ export default function Standings() {
       id: 18,
       position: 18,
       name: "Logan Sargeant",
+      slug: "logan-sargeant",
       nationality: "American",
       team: "Williams",
       points: 0
@@ -156,6 +174,7 @@ export default function Standings() {
       id: 19,
       position: 19,
       name: "Zhou Guanyu",
+      slug: "zhou-guanyu",
       nationality: "Chinese",
       team: "Stake F1",
       points: 0
@@ -164,6 +183,7 @@ export default function Standings() {
       id: 20,
       position: 20,
       name: "Valtteri Bottas",
+      slug: "valtteri-bottas",
       nationality: "Finnish",
       team: "Stake F1",
       points: 0

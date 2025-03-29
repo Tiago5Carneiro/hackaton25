@@ -1,0 +1,445 @@
+.driver-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #121212;
+  color: #f5f5f5;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: #e0e0e0;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0.5rem 0;
+}
+
+.back-link:hover {
+  color: #e10600;
+  transform: translateX(-4px);
+}
+
+.driver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  gap: 2rem;
+}
+
+.driver-info {
+  flex: 1;
+}
+
+.driver-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  position: relative;
+  display: inline-block;
+}
+
+.driver-name::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: #e10600;
+  transition: width 0.3s ease;
+  animation: nameUnderline 0.8s forwards 0.3s;
+}
+
+@keyframes nameUnderline {
+  to { width: 100%; }
+}
+
+.driver-position {
+  font-size: 1.25rem;
+  color: #b0b0b0;
+  margin-bottom: 1.5rem;
+}
+
+.position-number {
+  font-weight: 700;
+  color: #e10600;
+}
+
+.driver-basic-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  margin-bottom: 0.5rem;
+  /* No transition effect for basic info items */
+}
+
+.label {
+  font-weight: 600;
+  color: #9e9e9e;
+}
+
+.value {
+  margin-left: 0.5rem;
+  color: #e0e0e0;
+}
+
+/* Update driver image */
+.driver-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.driver-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(225, 6, 0, 0.4);
+}
+
+.driver-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.driver-portrait:hover {
+  transform: scale(1.1);
+}
+
+/* Keep the existing image placeholder styles with small adjustments */
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #2d2d2d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: pulseOnce 1s ease-out;
+}
+
+.image-placeholder:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+}
+
+@keyframes pulseOnce {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.driver-stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.driver-stats, .driver-skills {
+  background-color: #1e1e1e;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              box-shadow 0.4s ease;
+}
+
+.driver-stats:hover, .driver-skills:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.driver-stats h2, .driver-skills h2, .recent-results h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #333333;
+  color: #ffffff;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  background-color: #262626;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e10600;
+  opacity: 0;
+  animation: countUp 1s forwards 0.5s;
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #b0b0b0;
+  margin-top: 0.5rem;
+}
+
+.skills-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  animation: fadeInUp 0.5s forwards;
+}
+
+.skill-item:nth-child(1) { animation-delay: 0.1s; }
+.skill-item:nth-child(2) { animation-delay: 0.2s; }
+.skill-item:nth-child(3) { animation-delay: 0.3s; }
+.skill-item:nth-child(4) { animation-delay: 0.4s; }
+.skill-item:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.skill-label {
+  width: 150px;
+  font-size: 0.875rem;
+  color: #b0b0b0;
+}
+
+.skill-bar-container {
+  flex: 1;
+  height: 12px;
+  background-color: #333333;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-bar {
+  height: 100%;
+  border-radius: 6px;
+  width: 0;
+  animation: growBar 1.5s forwards ease-out;
+}
+
+@keyframes growBar {
+  from { width: 0; }
+  to { width: var(--final-width); }
+}
+
+.skill-value {
+  position: absolute;
+  right: 8px;
+  top: -1px;
+  font-size: 0.75rem;
+  color: #e0e0e0;
+}
+
+.recent-results {
+  background-color: #1e1e1e;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  /* No transition or hover effect for recent results container */
+}
+
+.results-table-container {
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.results-table th {
+  background-color: #262626;
+  font-weight: 600;
+  color: #b0b0b0;
+}
+
+.results-table tr {
+  border-bottom: 1px solid #333333;
+  transition: background-color 0.2s ease;
+}
+
+.results-table tr:last-child {
+  border-bottom: none;
+}
+
+.results-table td {
+  color: #e0e0e0;
+}
+
+.results-table tr:hover {
+  background-color: #2a2a2a;
+}
+
+.loading, .error {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #e0e0e0;
+  background-color: #121212;
+}
+
+.loading::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  margin-top: 20px;
+  border: 4px solid #333;
+  border-top-color: #e10600;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Add these styles for the radar chart */
+.radar-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 400px;
+  padding: 1rem;
+  overflow: hidden; /* Prevent any overflow during animation */
+  position: relative; /* Ensure positioning context for absolute elements */
+  transition: transform 0.3s ease;
+}
+
+.radar-chart {
+  max-width: 100%;
+  max-height: 100%;
+  opacity: 1;  /* Mudado de 0 para 1 para garantir visibilidade */
+  animation: fadeIn 1.5s forwards 0.3s;
+  /* Use a more precise clipping to match the hexagon shape */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  shape-rendering: geometricPrecision; /* Improve line rendering */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Add styles for driver image, nationality flag, and team logo */
+
+/* Driver nationality and team info */
+.driver-nationality,
+.team-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.nationality-flag,
+.team-logo {
+  height: 24px;
+  margin-right: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.team-logo {
+  height: 30px;
+  background-color: #f5f5f5;
+  padding: 3px;
+}
+
+.nationality-text,
+.team-name {
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .driver-header {
+    flex-direction: column;
+  }
+  
+  .driver-stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .driver-basic-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .driver-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+  }
+
+  .radar-chart-container {
+    height: 300px;
+  }
+  
+  .radar-chart {
+    width: 300px;
+    height: 300px;
+  }
+
+  .nationality-flag,
+  .team-logo {
+    height: 20px;
+  }
+  
+  .team-logo {
+    height: 24px;
+  }
+}
