@@ -4,12 +4,16 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import { useF1Data } from '../context/F1DataContext';
 import '../styles/standings.css';
 
 export default function Standings() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  
+  // Get data from F1DataContext
+  const { drivers, constructors, loading: contextLoading, error: contextError, refreshDrivers, refreshConstructors } = useF1Data();
   
   // Using the URL parameter to initialize the tab state ensures consistency
   const tabParam = searchParams.get('tab');
@@ -18,6 +22,36 @@ export default function Standings() {
   
   // Track if we're coming back from a driver profile page
   const [comeBackFromDriver, setComeBackFromDriver] = useState(false);
+  
+  // Local loading state for UI purposes
+  const [loading, setLoading] = useState(true);
+  
+  // Refresh data when component mounts
+  useEffect(() => {
+    const refreshData = async () => {
+      setLoading(true);
+      
+      try {
+        // Refresh data from context
+        if (activeTab === 'drivers') {
+          await refreshDrivers();
+        } else {
+          await refreshConstructors();
+        }
+      } catch (err) {
+        console.error('Error refreshing data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Use context data directly if already loaded
+    if (!contextLoading) {
+      setLoading(false);
+    } else {
+      refreshData();
+    }
+  }, [activeTab, contextLoading, refreshDrivers, refreshConstructors]);
   
   useEffect(() => {
     // Check if this is the first render
@@ -72,172 +106,8 @@ export default function Standings() {
     router.push(`/drivers/${slug}`);
   };
   
-  // Sample data for drivers standings with online image sources
-  const drivers = [
-    {
-      id: 1,
-      position: 1,
-      name: "Max Verstappen",
-      slug: "max-verstappen",
-      nationality: "Dutch",
-      team: "Red Bull Racing",
-      teamColor: "#0600EF",
-      nationality: "Netherlands",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/netherlands-flag.png",
-      points: 349,
-      wins: 7,
-      podiums: 12,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/verstappen.jpg.img.1920.medium.jpg"
-    },
-    {
-      id: 2,
-      position: 2,
-      name: "Lando Norris",
-      slug: "lando-norris",
-      nationality: "British",
-      team: "McLaren",
-      teamColor: "#FF8700",
-      nationality: "United Kingdom",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png",
-      points: 253,
-      wins: 2,
-      podiums: 10,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/norris.jpg.img.1920.medium.jpg"
-    },
-    {
-      id: 3,
-      position: 3,
-      name: "Charles Leclerc",
-      slug: "charles-leclerc",
-      nationality: "Monégasque",
-      team: "Ferrari",
-      teamColor: "#DC0000",
-      nationality: "Monaco",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/monaco-flag.png",
-      points: 203,
-      wins: 1,
-      podiums: 6,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/leclerc.jpg.img.1920.medium.jpg"
-    },
-    {
-      id: 4,
-      position: 4,
-      name: "Oscar Piastri",
-      abbreviation: "PIA",
-      team: "McLaren",
-      teamColor: "#FF8700",
-      nationality: "Australia",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/australia-flag.png",
-      points: 195,
-      wins: 1,
-      podiums: 5,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/piastri.jpg.img.1920.medium.jpg"
-    },
-    {
-      id: 5,
-      position: 5,
-      name: "Carlos Sainz",
-      abbreviation: "SAI",
-      team: "Ferrari",
-      teamColor: "#DC0000",
-      nationality: "Spain",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/spain-flag.png",
-      points: 184,
-      wins: 1,
-      podiums: 6,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/sainz.jpg.img.1920.medium.jpg"
-    },
-    {
-      id: 6,
-      position: 6,
-      name: "Lewis Hamilton",
-      abbreviation: "HAM",
-      team: "Mercedes",
-      teamColor: "#00D2BE",
-      nationality: "United Kingdom",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png",
-      points: 177,
-      wins: 1,
-      podiums: 6,
-      image: "https://media.formula1.com/content/dam/fom-website/drivers/2023Drivers/hamilton.jpg.img.1920.medium.jpg"
-    },
-    // Add more drivers as needed
-  ];
-
-  // Sample data for constructors standings with online image sources
-  const constructors = [
-    {
-      id: 1,
-      position: 1,
-      name: "Red Bull Racing",
-      color: "#0600EF",
-      points: 499,
-      wins: 8,
-      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/red%20bull.jpg",
-      country: "Austria",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/austria-flag.png"
-    },
-    {
-      id: 2,
-      position: 2,
-      name: "McLaren",
-      color: "#FF8700",
-      points: 448,
-      wins: 3,
-      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mclaren.jpg",
-      country: "United Kingdom",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png"
-    },
-    {
-      id: 3,
-      position: 3,
-      name: "Ferrari",
-      color: "#DC0000",
-      points: 387,
-      wins: 2,
-      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/ferrari.jpg",
-      country: "Italy",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/italy-flag.png"
-    },
-    {
-      id: 4,
-      position: 4,
-      name: "Mercedes",
-      color: "#00D2BE",
-      points: 334,
-      wins: 1,
-      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mercedes.jpg",
-      country: "Germany",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/germany-flag.png"
-    },
-    {
-      id: 5,
-      position: 5,
-      name: "Aston Martin",
-      color: "#006F62",
-      points: 76,
-      wins: 0,
-      logo: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/aston%20martin.jpg",
-      country: "United Kingdom",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/great-britain-flag.png"
-    },
-    {
-      id: 6,
-      position: 6,
-      name: "RB",
-      color: "#000080",
-      points: 35,
-      wins: 0,
-      logo: "https://media.formula1.com/content/dam/fom-website/teams/2024/rb-logo.jpg.img.640.medium.jpg",
-      country: "Italy",
-      flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/italy-flag.png"
-    },
-    // Add more constructors as needed
-  ];
-
-  // Rest of the component remains the same
-   // Handle tab change with URL update
-   const handleTabChange = (tab) => {
+  // Handle tab change with URL update
+  const handleTabChange = (tab) => {
     if (tab !== activeTab) {
       setActiveTab(tab);
       
@@ -250,6 +120,24 @@ export default function Standings() {
   
   // Using a key on the motion.div ensures proper re-render
   const motionKey = `${activeTab}-${isLoaded}-${comeBackFromDriver}`;
+  
+  // Render loading state
+  if (loading || contextLoading) {
+    return (
+      <div className="standings-container">
+        <div className="loading-spinner">Loading standings data...</div>
+      </div>
+    );
+  }
+
+  // Render error state
+  if (contextError) {
+    return (
+      <div className="standings-container">
+        <div className="error-message">Failed to load data. Please try again later.</div>
+      </div>
+    );
+  }
   
   return (
     <div className="standings-container">
@@ -284,7 +172,7 @@ export default function Standings() {
         </div>
       </motion.div>
       
-      {activeTab === 'drivers' && (
+      {activeTab === 'drivers' && drivers.length > 0 && (
         <motion.div
           key={motionKey}
           variants={containerVariants}
@@ -310,7 +198,7 @@ export default function Standings() {
               >
                 <div className="driver-image-container">
                   <Image 
-                    src={driver.image}
+                    src={driver.image || '/placeholder-driver.png'} // Fallback image
                     alt={driver.name}
                     width={index < 3 ? 300 : 150}
                     height={index < 3 ? 300 : 150}
@@ -330,16 +218,18 @@ export default function Standings() {
                     </span>
                     <h3 className="driver-name">
                       {driver.name}
-                      <span className="flag-icon">
-                        <Image
-                          src={driver.flag}
-                          alt={driver.nationality}
-                          width={20}
-                          height={15}
-                          style={{ objectFit: 'contain' }}
-                          unoptimized={true}
-                        />
-                      </span>
+                      {driver.flag && (
+                        <span className="flag-icon">
+                          <Image
+                            src={driver.flag}
+                            alt={driver.nationality}
+                            width={20}
+                            height={15}
+                            style={{ objectFit: 'contain' }}
+                            unoptimized={true}
+                          />
+                        </span>
+                      )}
                     </h3>
                   </div>
                   
@@ -359,7 +249,7 @@ export default function Standings() {
                     {index < 3 && (
                       <div className="detail-group">
                         <span className="detail-label">Podiums</span>
-                        <span className="detail-value">{driver.podiums}</span>
+                        <span className="detail-value">{driver.podiums || 0}</span>
                       </div>
                     )}
                   </div>
@@ -377,7 +267,7 @@ export default function Standings() {
         </motion.div>
       )}
       
-      {activeTab === 'constructors' && (
+      {activeTab === 'constructors' && constructors.length > 0 && (
         <motion.div
           key={`constructors-${isLoaded}`}
           variants={containerVariants}
@@ -415,27 +305,31 @@ export default function Standings() {
                   </td>
                   <td>
                     <div className="team-name">
-                      <div className="team-logo" style={{ backgroundColor: 'white' }}>
-                        <Image 
-                          src={team.logo}
-                          alt={team.name}
-                          width={40}
-                          height={25}
-                          style={{ objectFit: 'contain' }}
-                          unoptimized={true}
-                        />
-                      </div>
+                      {team.logo && (
+                        <div className="team-logo" style={{ backgroundColor: 'white' }}>
+                          <Image 
+                            src={team.logo}
+                            alt={team.name}
+                            width={40}
+                            height={25}
+                            style={{ objectFit: 'contain' }}
+                            unoptimized={true}
+                          />
+                        </div>
+                      )}
                       {team.name}
-                      <span className="flag-icon">
-                        <Image
-                          src={team.flag}
-                          alt={team.country}
-                          width={20}
-                          height={15}
-                          style={{ objectFit: 'contain' }}
-                          unoptimized={true}
-                        />
-                      </span>
+                      {team.flag && (
+                        <span className="flag-icon">
+                          <Image
+                            src={team.flag}
+                            alt={team.country}
+                            width={20}
+                            height={15}
+                            style={{ objectFit: 'contain' }}
+                            unoptimized={true}
+                          />
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="team-points">{team.points}</td>

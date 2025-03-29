@@ -20,6 +20,210 @@ DB_CONFIG = {
     'auth_plugin': 'mysql_native_password'
 }
 
+def driver_nationality(driver_name):
+    """
+    Returns the nationality for a given driver name.
+    
+    Args:
+        driver_name (str): The name of the F1 driver
+    
+    Returns:
+        str: The nationality of the driver
+    """
+    if not driver_name:
+        return "Unknown"
+    
+    nationality_map = {
+        "Lewis Hamilton": "British",
+        "Max Verstappen": "Dutch",
+        "Charles Leclerc": "Monegasque",
+        "Sebastian Vettel": "German",
+        "Fernando Alonso": "Spanish",
+        "Lando Norris": "British",
+        "Carlos Sainz": "Spanish",
+        "Oscar Piastri": "Australian",
+        "Yuki Tsunoda": "Japanese",
+        "George Russell": "British",
+        "Jack Doohan": "Australian",
+        "Gabriel Bortoleto": "Brazilian",
+        "Liam Lawson": "New Zealander",
+        "Pierre Gasly": "French",
+        "Esteban Ocon": "French",
+        "Lance Stroll": "Canadian",
+        "Oliver Bearman": "British",
+        "Isack Hadjar": "French",
+        "Andrea Kimi Antonelli": "Italian",
+        "Kimi Antonelli": "Italian",
+        "Nico Hülkenberg": "German",
+        "Nico Hulkenberg": "German",
+        "Sergio Pérez": "Mexican",
+        "Sergio Perez": "Mexican",
+        "Valtteri Bottas": "Finnish",
+        "Alexander Albon": "Thai",
+        "Logan Sargeant": "American",
+        "Kevin Magnussen": "Danish",
+        "Guanyu Zhou": "Chinese",
+        "Franco Colapinto": "Argentinian",
+        "Daniel Ricciardo": "Australian"
+    }
+    
+    return nationality_map.get(driver_name, "Unknown")
+
+
+def get_nationality_code(nationality):
+    """
+    Returns the country code for a given nationality.
+    
+    Args:
+        nationality (str): The nationality
+    
+    Returns:
+        str: The two-letter country code
+    """
+    if not nationality:
+        return "unknown"
+    
+    code_map = {
+        "Dutch": "nl",
+        "British": "gb",
+        "Monegasque": "mc",
+        "Spanish": "es",
+        "Australian": "au",
+        "Mexican": "mx",
+        "Finnish": "fi",
+        "Canadian": "ca",
+        "Thai": "th",
+        "Japanese": "jp",
+        "French": "fr",
+        "Danish": "dk",
+        "German": "de",
+        "American": "us",
+        "Chinese": "cn",
+        "Italian": "it",
+        "Brazilian": "br",
+        "New Zealander": "nz",
+        "Argentinian": "ar"
+    }
+    
+    return code_map.get(nationality, "unknown")
+
+
+def get_team_color(team_name):
+    """
+    Get default team color for a given team name.
+    
+    Args:
+        team_name (str): The name of the F1 team
+    
+    Returns:
+        str: The hex color code for the team
+    """
+    if not team_name:
+        return "#666666"
+    
+    color_map = {
+        "Red Bull Racing": "#0600EF",
+        "Mercedes": "#00D2BE",
+        "Ferrari": "#DC0000",
+        "McLaren": "#FF8700",
+        "Aston Martin": "#006F62",
+        "Alpine": "#0090FF",
+        "Williams": "#005AFF",
+        "RB": "#1E41FF",
+        "Racing Bulls": "#1E41FF",
+        "VCARB": "#1E41FF",
+        "Sauber": "#900000",
+        "Haas F1 Team": "#FFFFFF"
+    }
+    
+    return color_map.get(team_name, "#666666")
+
+def get_flag_url(nationality):
+    """
+    Returns the F1 official website flag URL for a given nationality.
+    
+    Args:
+        nationality (str): The nationality of the driver
+    
+    Returns:
+        str: The URL to the nationality flag image from F1's website
+    """
+    if not nationality:
+        return ""
+    
+    # Base URL for all F1 website flags
+    base_url = "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/"
+    
+    # Map nationalities to their corresponding flag file names
+    flags_map = {
+        "Dutch": "netherlands-flag.png",
+        "British": "great-britain-flag.png",
+        "Monegasque": "monaco-flag.png",
+        "Spanish": "spain-flag.png",
+        "Australian": "australia-flag.png",
+        "Mexican": "mexico-flag.png",
+        "Finnish": "finland-flag.png",
+        "Canadian": "canada-flag.png",
+        "Thai": "thailand-flag.png",
+        "Japanese": "japan-flag.png",
+        "French": "france-flag.png",
+        "Danish": "denmark-flag.png",
+        "German": "germany-flag.png",
+        "American": "united-states-flag.png",
+        "Chinese": "china-flag.png",
+        "Italian": "italy-flag.png",
+        "Brazilian": "brazil-flag.png",
+        "New Zealander": "new-zealand-flag.png",
+        "Argentinian": "argentina-flag.png",
+        "Belgian": "belgium-flag.png",
+        "Swiss": "switzerland-flag.png",
+        "Russian": "russia-flag.png",
+        "Polish": "poland-flag.png",
+        "Swedish": "sweden-flag.png",
+        "Estonian": "estonia-flag.png",
+        "Portuguese": "portugal-flag.png",
+        "Indian": "india-flag.png",
+        "Austrian": "austria-flag.png",
+        "Bahraini": "bahrain-flag.png",
+        "Saudi Arabian": "saudi-arabia-flag.png",
+        "Emirati": "uae-flag.png",
+        "Qatari": "qatar-flag.png",
+        "Singaporean": "singapore-flag.png",
+        "Hungarian": "hungary-flag.png",
+        "Vietnamese": "vietnam-flag.png",
+        "Azerbaijani": "azerbaijan-flag.png",
+        "South African": "south-africa-flag.png",
+        "Malaysian": "malaysia-flag.png",
+        "Turkish": "turkey-flag.png",
+        "Korean": "south-korea-flag.png",
+        "Indonesian": "indonesia-flag.png"
+    }
+    
+    # Get the flag filename from the map or use a default
+    flag_filename = flags_map.get(nationality, "")
+    
+    # If we don't have a mapping for this nationality, return empty string
+    if not flag_filename:
+        return ""
+        
+    # Construct and return the full URL
+    return base_url + flag_filename
+
+
+# You can also add a convenience function that combines nationality lookup with flag URL
+def get_driver_flag(driver_name):
+    """
+    Returns the flag URL for a given driver name.
+    
+    Args:
+        driver_name (str): The name of the F1 driver
+    
+    Returns:
+        str: The URL to the driver's nationality flag image
+    """
+    nationality = driver_nationality(driver_name)
+    return get_flag_url(nationality)
+
 def get_db_connection():
     """Establish and return a database connection"""
     try:
@@ -66,9 +270,9 @@ def get_drivers_standings():
             driver['slug'] = driver['name'].lower().replace(' ', '-')
             
             # Set default values for required frontend fields
-            driver['nationality'] = "Unknown"
-            driver['flag'] = ""
-            driver['teamColor'] = "#666666"  # Default color if no mapping is available
+            driver['nationality'] = driver_nationality(driver['name'])
+            driver['flag'] = get_driver_flag(driver['name'])
+            driver['teamColor'] = get_team_color(driver['team'])
         
         return jsonify(drivers)
     
@@ -109,9 +313,9 @@ def get_constructors_standings():
             team['position'] = i + 1
             
             # Set default values for required fields
-            team['color'] = "#666666"
+            team['color'] = get_team_color(team['name'])
             team['logo'] = ""
-            team['country'] = "Unknown"
+            team['country'] = driver_nationality(team['name'])
             team['flag'] = ""
         
         return jsonify(constructors)
@@ -215,7 +419,6 @@ def get_driver_by_slug(driver_slug):
             cursor.close()
             connection.close()
 
-
 @app.route('/health', methods=['GET'])
 def health_check():
     """Simple health check endpoint"""
@@ -229,3 +432,8 @@ if __name__ == '__main__':
     
     print(f"Starting API server on {host}:{port}")
     app.run(host=host, port=port, debug=debug)
+
+
+#"get nationality hardcoded for now"
+
+
