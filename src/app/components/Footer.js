@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,7 +11,16 @@ export default function Footer() {
         {/* Logo and tagline */}
         <div className="footer-branding">
           <Link href="/" className="footer-logo">
-            <span className="footer-logo-f1">F1</span> Hub
+            <span className="footer-logo-icon">
+              <Image 
+                src="/favicon.ico" 
+                alt="F1 Hub Logo" 
+                width={20} 
+                height={20}
+                className="footer-favicon"
+              />
+            </span>
+            Hub
           </Link>
           <p className="footer-tagline">Your ultimate destination for Formula 1</p>
         </div>

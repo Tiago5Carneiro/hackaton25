@@ -30,7 +30,16 @@ export default function Navigation() {
         
         <div className="logo-container">
           <Link href="/" className="logo">
-            <span className="logo-f1">F1</span> Hub
+            <div className="logo-icon">
+              <Image 
+                src="/favicon.ico" 
+                alt="F1 Hub Logo" 
+                width={24} 
+                height={24}
+                className="favicon-logo"
+              />
+            </div>
+            <span>Hub</span>
           </Link>
         </div>
 

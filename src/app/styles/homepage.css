@@ -69,6 +69,37 @@
     transform: translateY(-2px);
     box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.25);
   }
+
+  /* Add these styles for the favicon in hero title */
+.hero-logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    width: 150px;
+    height: 150px;
+    padding: 4px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
+  .hero-favicon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Adjust hero title to accommodate the favicon */
+  .hero-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: -0.02em;
+  }
   
   /* Section styles */
   .section-container {

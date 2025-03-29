@@ -133,7 +133,16 @@ export default function Home() {
         
         <div className="hero-content">
           <h1 className="hero-title">
-            F1 HUB
+            <span className="hero-logo-icon">
+              <Image 
+                src="/images/f1.png"
+                alt="F1 Hub Logo" 
+                width={40} 
+                height={40}
+                className="hero-favicon"
+              />
+            </span>
+            HUB
           </h1>
           <p className="hero-subtitle">
             Your ultimate destination for F1 news, schedules, and standings
