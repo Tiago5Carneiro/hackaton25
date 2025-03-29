@@ -215,7 +215,7 @@ export default function DriverPage() {
     const ctx = chartRef.current.getContext('2d');
     const centerX = chartRef.current.width / 2;
     const centerY = chartRef.current.height / 2;
-    const radius = Math.min(centerX, centerY) - 30;
+    const radius = Math.min(centerX, centerY) - 60; // Reduce radius to leave more space for labels
     
     // Limpar o canvas
     ctx.clearRect(0, 0, chartRef.current.width, chartRef.current.height);
@@ -268,12 +268,22 @@ export default function DriverPage() {
       ctx.lineWidth = 2;
       ctx.stroke();
       
-      // Adicionar rótulos
-      const labelX = centerX + Math.cos(angle) * (radius + 20);
-      const labelY = centerY + Math.sin(angle) * (radius + 20);
+      // Adicionar rótulos - increase distance from center and adjust alignment
+      const labelRadius = radius + 50; // Increased from 20 to 50
+      const labelX = centerX + Math.cos(angle) * labelRadius;
+      const labelY = centerY + Math.sin(angle) * labelRadius;
       ctx.fillStyle = '#b0b0b0';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
+      ctx.font = '14px Arial'; // Slightly larger font
+      
+      // Adjust text alignment based on position
+      if (Math.cos(angle) > 0.1) {
+        ctx.textAlign = 'left';
+      } else if (Math.cos(angle) < -0.1) {
+        ctx.textAlign = 'right';
+      } else {
+        ctx.textAlign = 'center';
+      }
+      
       ctx.fillText(skill[0].replace(/([A-Z])/g, ' $1').trim(), labelX, labelY);
     });
   };
