@@ -18,17 +18,19 @@ CREATE TABLE Player (
 -- Creating the Event table to store events associated with players
  CREATE TABLE Event (
     EventName VARCHAR(200) NOT NULL,
-    StartDate DATETIME NOT NULL PRIMARY KEY,
+    StartDate DATETIME NOT NULL,
     EndDate DATETIME NOT NULL,
     Country VARCHAR(100) NOT NULL,
     Location VARCHAR(100) NOT NULL,
     Winner VARCHAR(100) NOT NULL,
-    FastLap INT NOT NULL
+    FastLap INT NOT NULL,
+    PRIMARY KEY (StartDate,Location)
  );
 
 -- Junction table for many-to-many relationship
 CREATE TABLE PlayerEvent (
     PlayerId VARCHAR(100),
-    EventId DATETIME,
-    PRIMARY KEY (PlayerId, EventId)
+    StartDate DATETIME,
+    Location VARCHAR(100),
+    PRIMARY KEY (PlayerId, StartDate, Location)
 );
