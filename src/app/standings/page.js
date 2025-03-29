@@ -1,24 +1,48 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import '../styles/standings.css';
 
 export default function Standings() {
-  const [activeTab, setActiveTab] = useState('drivers');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  
+  // Using the URL parameter to initialize the tab state ensures consistency
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam === 'constructors' ? 'constructors' : 'drivers');
   const [isLoaded, setIsLoaded] = useState(false);
   
+  // Track if we're coming back from a driver profile page
+  const [comeBackFromDriver, setComeBackFromDriver] = useState(false);
+  
   useEffect(() => {
-    // Get tab from URL if available
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-    if (tabParam && (tabParam === 'drivers' || tabParam === 'constructors')) {
-      setActiveTab(tabParam);
+    // Check if this is the first render
+    const isFirstRender = !isLoaded;
+    
+    // Get tab from URL if available - only on first render
+    const tabFromUrl = searchParams.get('tab');
+    if (isFirstRender && tabFromUrl && (tabFromUrl === 'drivers' || tabFromUrl === 'constructors')) {
+      setActiveTab(tabFromUrl);
     }
     
     setIsLoaded(true);
-  }, []);
+    
+    // Track path changes to detect when we come back from driver page
+    const handleRouteChange = () => {
+      if (pathname === '/standings') {
+        setComeBackFromDriver(true);
+      }
+    };
+    
+    // Clean up function runs when component unmounts
+    return () => {
+      setComeBackFromDriver(false);
+    };
+  }, [pathname, searchParams, isLoaded]);
   
   // Animation variants
   const containerVariants = {
@@ -31,11 +55,21 @@ export default function Standings() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
+    visible: (i) => ({
       opacity: 1,
       y: 0,
-      transition: { type: "spring", stiffness: 70, damping: 10 }
-    }
+      transition: { 
+        delay: i * 0.05,
+        type: "spring", 
+        stiffness: 70, 
+        damping: comeBackFromDriver ? 20 : 10 
+      }
+    })
+  };
+  
+  // Function to handle driver click
+  const handleDriverClick = (slug) => {
+    router.push(`/drivers/${slug}`);
   };
   
   // Sample data for drivers standings with online image sources
@@ -202,21 +236,27 @@ export default function Standings() {
   ];
 
   // Rest of the component remains the same
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    
-    // Update URL without page reload
-    const url = new URL(window.location);
-    url.searchParams.set('tab', tab);
-    window.history.pushState({}, '', url);
+   // Handle tab change with URL update
+   const handleTabChange = (tab) => {
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+      
+      // Update URL without page reload
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tab);
+      window.history.pushState({}, '', url);
+    }
   };
+  
+  // Using a key on the motion.div ensures proper re-render
+  const motionKey = `${activeTab}-${isLoaded}-${comeBackFromDriver}`;
   
   return (
     <div className="standings-container">
       <motion.div 
         className="standings-header"
         initial={{ opacity: 0, y: -20 }}
-        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <h1 className="page-title">2025 Championship Standings</h1>
@@ -225,7 +265,7 @@ export default function Standings() {
       <motion.div 
         className="tabs-container"
         initial={{ opacity: 0, y: -10 }}
-        animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
       >
         <div className="tabs-nav">
@@ -246,39 +286,48 @@ export default function Standings() {
       
       {activeTab === 'drivers' && (
         <motion.div
+          key={motionKey}
           variants={containerVariants}
           initial="hidden"
-          animate={isLoaded ? "visible" : "hidden"}
+          animate="visible"
+          exit="hidden"
+          className="drivers-main-container"
         >
-          {/* Top 3 drivers highlighted */}
-          <div className="top-drivers">
-            {drivers.slice(0, 3).map((driver, index) => (
+          {/* Top drivers */}
+          <div className="drivers-container">
+            {drivers.map((driver, index) => (
               <motion.div 
                 key={driver.id}
-                className="highlighted-driver-card"
+                className={index < 3 ? "highlighted-driver-card" : "driver-card"}
                 variants={itemVariants}
                 custom={index}
                 style={{
-                  '--team-color': driver.teamColor
+                  borderLeftColor: driver.teamColor,
+                  cursor: 'pointer'
                 }}
+                onClick={() => handleDriverClick(driver.slug)}
+                layoutId={`driver-${driver.id}`}
               >
                 <div className="driver-image-container">
-                  <div className="driver-image">
-                    <Image 
-                      src={driver.image}
-                      alt={driver.name}
-                      width={300}
-                      height={300}
-                      priority={index < 3}
-                      style={{ objectFit: 'cover', objectPosition: 'center' }}
-                      unoptimized={true}
-                    />
-                  </div>
+                  <Image 
+                    src={driver.image}
+                    alt={driver.name}
+                    width={index < 3 ? 300 : 150}
+                    height={index < 3 ? 300 : 150}
+                    priority={index < 3}
+                    style={{ 
+                      objectFit: 'cover', 
+                      objectPosition: 'center top'
+                    }}
+                    unoptimized={true}
+                  />
                 </div>
                 
                 <div className="highlighted-content">
                   <div className="driver-header">
-                    <span className={`position-badge position-${driver.position}`}>{driver.position}</span>
+                    <span className={`position-badge ${index < 3 ? `position-${driver.position}` : ''}`}>
+                      {driver.position}
+                    </span>
                     <h3 className="driver-name">
                       {driver.name}
                       <span className="flag-icon">
@@ -297,7 +346,9 @@ export default function Standings() {
                   <div className="driver-details">
                     <div className="detail-group">
                       <span className="detail-label">Team</span>
-                      <span className="detail-value">{driver.team}</span>
+                      <span className="detail-value" style={{ color: driver.teamColor }}>
+                        {driver.team}
+                      </span>
                     </div>
                     
                     <div className="detail-group">
@@ -305,77 +356,19 @@ export default function Standings() {
                       <span className="detail-value">{driver.wins}</span>
                     </div>
                     
-                    <div className="detail-group">
-                      <span className="detail-label">Podiums</span>
-                      <span className="detail-value">{driver.podiums}</span>
-                    </div>
+                    {index < 3 && (
+                      <div className="detail-group">
+                        <span className="detail-label">Podiums</span>
+                        <span className="detail-value">{driver.podiums}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="points-display">
-                    <span className="points-label">Points</span>
-                    <span className="points-value">{driver.points}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          {/* Remaining drivers */}
-          <div className="drivers-container">
-            {drivers.slice(3).map((driver, index) => (
-              <motion.div 
-                key={driver.id}
-                className="driver-card"
-                variants={itemVariants}
-                custom={index + 3}
-                style={{
-                  '--team-color': driver.teamColor
-                }}
-              >
-                <div className="driver-image-container">
-                  <div className="driver-image">
-                    <Image 
-                      src={driver.image}
-                      alt={driver.name}
-                      width={150}
-                      height={150}
-                      style={{ objectFit: 'cover', objectPosition: 'center top' }}
-                      unoptimized={true}
-                    />
-                  </div>
-                </div>
-                
-                <div className="highlighted-content">
-                  <div className="driver-header">
-                    <span className="position-badge">{driver.position}</span>
-                    <h3 className="driver-name">
-                      {driver.name}
-                      <span className="flag-icon">
-                        <Image
-                          src={driver.flag}
-                          alt={driver.nationality}
-                          width={20}
-                          height={15}
-                          style={{ objectFit: 'contain' }}
-                          unoptimized={true}
-                        />
-                      </span>
-                    </h3>
-                  </div>
-                  
-                  <div className="driver-details">
-                    <div className="detail-group">
-                      <span className="detail-label">Team</span>
-                      <span className="detail-value">{driver.team}</span>
-                    </div>
-                    
-                    <div className="detail-group">
-                      <span className="detail-value">{driver.wins} wins</span>
-                    </div>
-                  </div>
-                  
-                  <div className="points-display">
-                    <span className="points-value">{driver.points} pts</span>
+                    <span className="points-label">{index < 3 ? "Points" : ""}</span>
+                    <span className="points-value">
+                      {driver.points}{index >= 3 ? " pts" : ""}
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -384,67 +377,75 @@ export default function Standings() {
         </motion.div>
       )}
       
-        {activeTab === 'constructors' && (
+      {activeTab === 'constructors' && (
         <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate={isLoaded ? "visible" : "hidden"}
-            className="constructors-container"
+          key={`constructors-${isLoaded}`}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="constructors-container"
         >
-            <motion.table className="constructors-table" variants={itemVariants}>
+          <table className="constructors-table">
             <thead>
-                <tr>
+              <tr>
                 <th>Pos</th>
                 <th>Team</th>
                 <th>Points</th>
                 <th>Wins</th>
-                </tr>
+              </tr>
             </thead>
             <tbody>
-                {constructors.map((team, index) => (
+              {constructors.map((team, index) => (
                 <motion.tr 
-                    key={team.id}
-                    variants={itemVariants}
-                    custom={index}
+                  key={team.id}
+                  variants={itemVariants}
+                  custom={index}
                 >
-                    <td>
+                  <td>
                     <span className="team-position">
-                        <span className="position-indicator" style={{ backgroundColor: team.color }}>{team.position}</span>
+                      <span 
+                        className="position-indicator" 
+                        style={{ 
+                          backgroundColor: team.position <= 3 ? team.color : 'var(--card-border)' 
+                        }}
+                      >
+                        {team.position}
+                      </span>
                     </span>
-                    </td>
-                    <td>
+                  </td>
+                  <td>
                     <div className="team-name">
-                        <div className="team-logo" style={{ backgroundColor: 'white' }}>
+                      <div className="team-logo" style={{ backgroundColor: 'white' }}>
                         <Image 
-                            src={team.logo}
-                            alt={team.name}
-                            width={40}
-                            height={25}
-                            style={{ objectFit: 'contain' }}
-                            unoptimized={true}
+                          src={team.logo}
+                          alt={team.name}
+                          width={40}
+                          height={25}
+                          style={{ objectFit: 'contain' }}
+                          unoptimized={true}
                         />
-                        </div>
-                        {team.name}
-                        <span className="flag-icon">
+                      </div>
+                      {team.name}
+                      <span className="flag-icon">
                         <Image
-                            src={team.flag}
-                            alt={team.country}
-                            width={20}
-                            height={15}
-                            style={{ objectFit: 'contain' }}
-                            unoptimized={true}
+                          src={team.flag}
+                          alt={team.country}
+                          width={20}
+                          height={15}
+                          style={{ objectFit: 'contain' }}
+                          unoptimized={true}
                         />
-                        </span>
+                      </span>
                     </div>
-                    </td>
-                    <td className="team-points">{team.points}</td>
-                    <td className="team-wins">{team.wins}</td>
+                  </td>
+                  <td className="team-points">{team.points}</td>
+                  <td className="team-wins">{team.wins}</td>
                 </motion.tr>
-                ))}
+              ))}
             </tbody>
-            </motion.table>
+          </table>
         </motion.div>
-        )}
+      )}
     </div>
   );
 }

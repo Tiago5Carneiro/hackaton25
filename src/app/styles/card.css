@@ -624,9 +624,38 @@
     font-size: 0.875rem;
   }
   
-  .standings-points-container {
+/* Update to ensure proper standings display */
+
+.standings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .standings-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .standings-position-container {
     display: flex;
     align-items: center;
+    margin-right: 1rem;
+  }
+  
+  /* CTA Section with improved background handling */
+  .cta-section {
+    position: relative;
+    padding: 4rem 2rem;
+    margin: 3rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
   }
   
   .standings-points {

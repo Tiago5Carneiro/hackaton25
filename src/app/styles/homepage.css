@@ -95,7 +95,6 @@
     left: 0;
     height: 0.25rem;
     width: 5rem;
-    background-color: var(--f1-red, #e10600);
   }
   
   .view-all-link {

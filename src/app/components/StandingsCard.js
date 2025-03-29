@@ -1,5 +1,7 @@
+"use client";
+
+import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function StandingsCard({ title, standings, type = 'driver', limit = 3, showMore = true }) {
@@ -18,87 +20,100 @@ export default function StandingsCard({ title, standings, type = 'driver', limit
       }
     })
   };
+  
+  // Função para determinar a classe de estilo da mudança de posição
+  const getChangeClass = (change) => {
+    if (change.startsWith('+')) return 'change-positive';
+    if (change.startsWith('-')) return 'change-negative';
+    return 'change-neutral';
+  };
 
   return (
-    <motion.div 
-      className="standings-card"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="card-header">
-        <h2 className="card-title">{title}</h2>
-        {showMore && (
-          <Link href={standingsUrl} className="view-all">
+    <div className="standings-card">
+      <h2 className="standings-title">
+        <svg 
+          className="standings-title-icon" 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d={type === 'driver' 
+              ? "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+              : "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"}
+          />
+        </svg>
+        {title}
+      </h2>
+      
+      <ul className="standings-list">
+        {standings.slice(0, limit).map((item, index) => (
+          <motion.li 
+            key={index} 
+            className="standings-item"
+            custom={index}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+          >
+            <div className="standings-position-container">
+              <span className={`standings-position position-${item.position <= 3 ? item.position : 'other'}`}>
+                {item.position}
+              </span>
+            </div>
+            
+            <div className="standings-info">
+              <div className="standings-name">{item.name}</div>
+              {type === 'driver' && (
+                <div className="standings-team">{item.team}</div>
+              )}
+            </div>
+            
+            <div className="standings-points-container">
+              <span className="standings-points">{item.points}</span>
+              <span className={`standings-change ${getChangeClass(item.change)}`}>
+                {item.change}
+              </span>
+            </div>
+          </motion.li>
+        ))}
+      </ul>
+      
+      {showMore && (
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <Link 
+            href={standingsUrl}
+            className="card-link"
+            style={{ 
+              display: 'inline-flex',
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginTop: '0.5rem',
+              padding: '0.5rem 1rem' 
+            }}
+          >
             View Full Standings
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+              style={{ width: '1rem', height: '1rem', marginLeft: '0.25rem' }}
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 5l7 7-7 7" 
+              />
+            </svg>
           </Link>
-        )}
-      </div>
-
-      <div className="standings-list">
-        {type === 'driver' ? (
-          // Driver standings
-          standings.slice(0, limit).map((driver, index) => (
-            <motion.div 
-              key={driver.id} 
-              className="driver-standing-item"
-              custom={index}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              style={{ '--team-color': driver.teamColor }}
-            >
-              <div className="position">{driver.position}</div>
-              <div className="driver-info">
-                <div className="driver-avatar">
-                  <Image
-                    src={driver.image || "https://placehold.co/60x60?text=Driver"}
-                    alt={driver.name}
-                    width={40}
-                    height={40}
-                    style={{ objectFit: 'cover', objectPosition: 'center top' }}
-                  />
-                </div>
-                <div className="driver-details">
-                  <span className="name">{driver.name}</span>
-                  <span className="team">{driver.team}</span>
-                </div>
-              </div>
-              <div className="driver-points">{driver.points}</div>
-            </motion.div>
-          ))
-        ) : (
-          // Constructor standings
-          standings.slice(0, limit).map((team, index) => (
-            <motion.div 
-              key={team.id} 
-              className="constructor-standing-item"
-              custom={index}
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <div className="position">{team.position}</div>
-              <div className="constructor-info">
-                <div className="team-logo">
-                  <Image
-                    src={team.logo || "https://placehold.co/80x50?text=Team"}
-                    alt={team.name}
-                    width={40}
-                    height={25}
-                    style={{ objectFit: 'contain' }}
-                  />
-                </div>
-                <div className="team-name">
-                  {team.name}
-                  <span className="team-color" style={{ backgroundColor: team.color }}></span>
-                </div>
-              </div>
-              <div className="constructor-points">{team.points}</div>
-            </motion.div>
-          ))
-        )}
-      </div>
-    </motion.div>
+        </div>
+      )}
+    </div>
   );
 }

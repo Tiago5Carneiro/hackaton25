@@ -9,6 +9,7 @@ import './styles/homepage.css';
 import NewsCard from './components/NewsCard';
 import RaceCountdownCard from './components/RaceCountdown';
 import StandingsCard from './components/StandingsCard';
+
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   
@@ -21,7 +22,7 @@ export default function Home() {
       id: 1,
       title: "F1 2025 Season Preview",
       description: "Get ready for the new season with our comprehensive preview of all teams and drivers.",
-      image: "https://placehold.co/600x400?text=F1+Season+Preview",
+      image: "https://picsum.photos/1000/600?random=7",
       date: "March 27, 2025",
       tag: "Preview"
     },
@@ -29,7 +30,7 @@ export default function Home() {
       id: 2,
       title: "New Regulations for 2025",
       description: "Learn about the technical regulations that will transform the upcoming season with more competitive racing.",
-      image: "https://placehold.co/600x400?text=New+Regulations+2025",
+      image: "https://picsum.photos/1000/600?random=7",
       date: "March 25, 2025",
       tag: "Technical"
     },
@@ -37,30 +38,63 @@ export default function Home() {
       id: 3,
       title: "Driver Transfers and Rumors",
       description: "Stay updated on the latest driver transfers and rumors that could shape the F1 grid next season.",
-      image: "https://placehold.co/600x400?text=Driver+Transfers",
+      image: "https://picsum.photos/1000/600?random=7",
       date: "March 22, 2025",
       tag: "Transfers"
     },
   ];
   
   const driverStandings = [
-    { position: 1, name: "Max Verstappen", team: "Red Bull Racing", points: 342, change: "+2" },
-    { position: 2, name: "Lando Norris", team: "McLaren", points: 275, change: "0" },
-    { position: 3, name: "Charles Leclerc", team: "Ferrari", points: 246, change: "+1" },
+    { 
+      position: 1, 
+      name: "Max Verstappen", 
+      team: "Red Bull Racing",
+      points: 342, 
+      change: "+2" 
+    },
+    { 
+      position: 2, 
+      name: "Lando Norris", 
+      team: "McLaren", 
+      points: 275, 
+      change: "0" 
+    },
+    { 
+      position: 3, 
+      name: "Charles Leclerc", 
+      team: "Ferrari", 
+      points: 246, 
+      change: "+1" 
+    },
   ];
 
   const constructorStandings = [
-    { position: 1, name: "Red Bull Racing", points: 492, change: "0" },
-    { position: 2, name: "McLaren", points: 452, change: "+1" },
-    { position: 3, name: "Ferrari", points: 431, change: "-1" },
+    { 
+      position: 1, 
+      name: "Red Bull Racing", 
+      points: 492, 
+      change: "0" 
+    },
+    { 
+      position: 2, 
+      name: "McLaren", 
+      points: 452, 
+      change: "+1" 
+    },
+    { 
+      position: 3, 
+      name: "Ferrari", 
+      points: 431, 
+      change: "-1" 
+    },
   ];
   
-  // Exemplo de informação sobre a próxima corrida
+  // Informações atualizadas sobre a próxima corrida
   const nextRace = {
     name: "Australian Grand Prix",
     circuit: "Albert Park Circuit",
     location: "Melbourne, Australia",
-    flag: "https://placehold.co/30x20?text=AUS", // Substituir por caminho real da imagem
+    flag: "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/australia-flag.png",
     date: "March 30, 2025",
     time: "06:00 GMT",
     dateTime: new Date('2025-03-30T06:00:00Z').getTime()
@@ -114,7 +148,7 @@ export default function Home() {
 
       {/* Next Race Countdown Section */}
       <motion.section 
-        className="next-race-container"
+        className="next-race-container racing-section"
         initial={{ opacity: 0, y: 20 }}
         animate={isLoaded ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.8 }}
@@ -123,7 +157,7 @@ export default function Home() {
       </motion.section>
 
       {/* Featured News Section */}
-      <section className="section-container">
+      <section className="section-container racing-section">
         <div className="section-header">
           <h2 className="section-title">Latest News</h2>
           <Link href="/news" className="view-all-link">
@@ -151,7 +185,7 @@ export default function Home() {
       {/* Standings Section */}
       <section className="section-container">
         <div className="section-header">
-          <h2 className="section-title">Championship Standings</h2>
+         <h2 className="section-title">Championship Standings</h2>
           <Link href="/standings" className="view-all-link">
             Full Standings
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,7 +221,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section with real background image */}
       <motion.section 
         className="cta-section"
         initial={{ opacity: 0, y: 40 }}
