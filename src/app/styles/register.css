@@ -1,0 +1,434 @@
+.news-detail-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--card-bg, white);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .news-detail-container.loaded {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  
+  .input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.375rem;
+    transition: border-color 0.2s;
+  }
+  
+  .input:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  
+  .button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .button:hover {
+    background-color: darken(var(--primary), 10%);
+    transform: translateY(-2px);
+  }
+  
+  .button:active {
+    transform: translateY(0);
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  
+  .success-message {
+    color: green;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .form-container {
+    animation: slideIn 0.5s ease forwards;
+  }
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(var(--racing-line-angle), 
+    transparent calc(50% - var(--racing-line-width)/2), 
+    var(--racing-line-color) 50%, 
+    transparent calc(50% + var(--racing-line-width)/2));
+  background-size: var(--racing-line-spacing) var(--racing-line-spacing);
+  background-attachment: fixed;
+  z-index: -1;
+}
+
+.register-form {
+  width: 100%;
+  max-width: 550px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.register-form::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background-color: var(--f1-red);
+  border-radius: 3px 0 0 3px;
+}
+
+.form-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.form-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: var(--f1-red);
+  border-radius: 1.5px;
+  transition: width 0.3s ease;
+  animation: titleUnderline 0.8s forwards 0.3s;
+}
+
+@keyframes titleUnderline {
+  to { width: 100px; }
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--f1-red);
+  box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.15);
+}
+
+.error-message {
+  color: var(--f1-red);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Update the submit button animation */
+
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--f1-red);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button:hover {
+  background-color: #c10500;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(225, 6, 0, 0.2);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(225, 6, 0, 0.2);
+}
+
+.submit-button:disabled {
+  background-color: #e1060080;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.submit-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.submit-button:hover::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(100, 100);
+    opacity: 0;
+  }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-redirect {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.auth-redirect p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.auth-redirect a {
+  color: var(--f1-red);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.auth-redirect a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register-form {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1.75rem;
+  }
+}
+
+/* Add these styles to your existing register.css file */
+
+.select-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--f1-red);
+  box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.15);
+}
+
+.team-select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.team-select {
+  padding-right: 5rem;  /* Increased to accommodate larger logo container */
+}
+
+/* Update the team logo container and logo styling */
+
+.team-logo-container {
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 45px;  /* Slightly increased */
+  height: 45px;  /* Slightly increased */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background-color: white;  /* Added white background */
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+  border: 1px solid var(--card-border);  /* Subtle border */
+  overflow: hidden;  /* Ensure content stays within border-radius */
+}
+
+.team-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  animation: fadeInLogo 0.3s ease-out;
+  transform: scale(0.95);  /* Slightly reduce size to avoid edges touching container */
+}
+
+@keyframes fadeInLogo {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(0.95); }
+}
+
+/* Also adjust the team select padding to accommodate the larger logo */
+.team-select {
+  padding-right: 5rem;  /* Increased to accommodate larger logo container */
+}
+
+/* Update the highlight effect */
+.team-select:focus + .team-logo-container {
+  box-shadow: 0 0 0 2px var(--f1-red), 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* Enhance dropdown options styling */
+select option {
+  padding: 0.5rem;
+  background-color: var(--card-bg);
+  color: var(--foreground);
+}
+
+/* Style hover effect for option in supported browsers */
+select option:hover,
+select option:focus {
+  background-color: var(--f1-red);
+  color: white;
+}
+
+/* For Chrome and Safari */
+select::-webkit-scrollbar {
+  width: 8px;
+}
+
+select::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb {
+  background-color: var(--f1-red);
+  border-radius: 4px;
+}
+
+/* Add a highlight effect to show the selected team */
+.team-select:focus + .team-logo-container .team-logo {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--f1-red);
+}
