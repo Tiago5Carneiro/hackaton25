@@ -70,10 +70,10 @@ export default function Navigation() {
             </li>
             <li className="nav-item">
               <Link 
-                href="/teams" 
-                className={`nav-link ${isActive('/teams') ? 'active' : ''}`}
+                href="/chat"
+                className={`nav-link ${isActive('/chat') ? 'active' : ''}`}
               >
-                Teams
+                Chat
               </Link>
             </li>
           </ul>
