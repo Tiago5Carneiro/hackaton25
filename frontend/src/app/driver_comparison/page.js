@@ -311,7 +311,7 @@ export default function DriverComparison() {
               <RadarChart outerRadius="80%" data={comparisonData}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="skill" />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                <PolarRadiusAxis angle={30} domain={[75, 100]} />
                 
                 <Radar
                   name={driver1.name}
@@ -333,6 +333,43 @@ export default function DriverComparison() {
                 <Tooltip />
               </RadarChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Add detailed bar chart comparison */}
+          <div className="bar-comparison-container">
+            <h2 className="chart-title">Attribute Comparison</h2>
+            <div className="attributes-comparison">
+              {/* Generate comparison items programmatically */}
+              {comparisonData.map((item, index) => (
+                <div className="attribute-comparison-item" key={index}>
+                  <div className="attribute-label">{item.skill}</div>
+                  <div className="attribute-bars">
+                    <div className="attribute-bar-wrapper driver1">
+                      <div className="attribute-name">{driver1.name.split(' ')[0]}</div>
+                      <div className="attribute-bar-container">
+                        <div 
+                          className="attribute-bar"
+                          // Calculate width percentage based on 75-100 scale
+                          style={{"--width": `${((item[driver1.name] - 75) / 25) * 100}%`}}
+                        ></div>
+                        <span className="attribute-value">{item[driver1.name]}</span>
+                      </div>
+                    </div>
+                    <div className="attribute-bar-wrapper driver2">
+                      <div className="attribute-name">{driver2.name.split(' ')[0]}</div>
+                      <div className="attribute-bar-container">
+                        <div 
+                          className="attribute-bar"
+                          // Calculate width percentage based on 75-100 scale
+                          style={{"--width": `${((item[driver2.name] - 75) / 25) * 100}%`}}
+                        ></div>
+                        <span className="attribute-value">{item[driver2.name]}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="stats-comparison">
@@ -413,4 +450,12 @@ function getTeamLogoUrl(team) {
   // Replace spaces with hyphens and convert to lowercase for URL
   const teamSlug = team.toLowerCase().replace(/\s+/g, '-');
   return `https://www.formula1.com/content/dam/fom-website/teams/2023/${teamSlug}.png.transform/2col/image.png`;
+}
+
+// Helper function to get rating category based on value
+function getRatingCategory(value) {
+  if (value >= 90) return 'excellent';
+  if (value >= 80) return 'good';
+  if (value >= 70) return 'average';
+  return 'poor';
 }
