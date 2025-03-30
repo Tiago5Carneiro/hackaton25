@@ -14,12 +14,38 @@ conn = mysql.connector.connect(
     port="3333"
 )
 
+def get_future_events():
+    start = datetime.datetime.now()
+
+    event_schedule = fastf1.get_events_remaining(start, include_testing= False)
+    event_schedule = event_schedule[event_schedule.EventFormat == "conventional"]
+
+    for _, event in event_schedule.iterrows():
+        cursor = conn.cursor()
+
+        insert = '''INSERT INTO FutureEvent (EventName, Date, Country, Location) 
+                    VALUES (%s,%s,%s,%s)'''
+
+        cursor.execute(insert, (
+            event["EventName"],
+            event["EventDate"],
+            event["Country"],
+            event["Location"]
+        ))
+
+        conn.commit()
+        cursor.close()
+
+
+
+
+
 def get_year_events(year):
     events = []
     
     start = datetime.datetime(year,1,1)
 
-    event_schedule = fastf1.get_events_remaining(start)
+    event_schedule = fastf1.get_events_remaining(start, include_testing= False)
 
     event_name = event_schedule['EventName'].tolist()
     event_date = pd.to_datetime(event_schedule['EventDate'])
@@ -209,6 +235,8 @@ def update_driver_bd(driverId,field,value):
 
 
 if __name__ == "__main__":
+    get_future_events()
+
     current_year = datetime.datetime.now().year
 
     player_stats = {}
@@ -216,7 +244,7 @@ if __name__ == "__main__":
 
     flag = True
 
-    for year in range(2024,2023,-1):#current_year,2024,-1):
+    for year in range(current_year,2023,-1):
         events = get_year_events(year)
         races = get_races(events)
         sprints = get_sprints(events)
