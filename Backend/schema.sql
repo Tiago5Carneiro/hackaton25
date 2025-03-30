@@ -15,6 +15,14 @@ CREATE TABLE Player (
     IsActive BOOLEAN NOT NULL
 );
 
+CREATE TABLE FutureEvent(
+    EventName VARCHAR(200) NOT NULL,
+    Date DATETIME NOT NULL,
+    Country VARCHAR(100),
+    Location VARCHAR(100),
+    PRIMARY KEY (Date,Location)
+);
+
 -- Creating the Event table to store events associated with players
  CREATE TABLE Event (
     EventName VARCHAR(200) NOT NULL,
