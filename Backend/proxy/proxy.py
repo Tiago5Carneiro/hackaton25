@@ -211,6 +211,58 @@ def get_flag_url(nationality):
     # Construct and return the full URL
     return base_url + flag_filename
 
+def get_event_image(location):
+    base_url = "https://media.formula1.com/image/upload/f_auto,c_limit,w_1440,q_auto/f_auto/q_auto/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/"
+    
+    # Map locations to their corresponding image file names
+    location_map = {
+        "Sakhir": "Bahrain.jpg",
+        "Bahrain": "Bahrain.jpg",
+        "Jeddah": "Saudi_Arabia.jpg",
+        "Saudi Arabia": "Saudi_Arabia.jpg",
+        "Suzuka": "Japan.jpg",
+        "Japan": "Japan.jpg",
+        "Imola": "Italy.jpg",
+        "Monaco": "Monaco.jpg",
+        "Barcelona": "Spain.jpg",
+        "Spain": "Spain.jpg",
+        "Montréal": "Canada.jpg", 
+        "Montreal": "Canada.jpg",
+        "Canada": "Canada.jpg",
+        "Spielberg": "Austria.jpg",
+        "Austria": "Austria.jpg",
+        "Silverstone": "Great_Britain.jpg",
+        "Great Britain": "Great_Britain.jpg",
+        "Budapest": "Hungary.jpg",
+        "Hungary": "Hungary.jpg",
+        "Zandvoort": "Netherlands.jpg",
+        "Netherlands": "Netherlands.jpg",
+        "Monza": "Italy.jpg",
+        "Italy": "Italy.jpg",
+        "Baku": "Azerbaijan.jpg",
+        "Azerbaijan": "Azerbaijan.jpg",
+        "Marina Bay": "Singapore.jpg",
+        "Singapore": "Singapore.jpg",
+        "Mexico City": "Mexico.jpg",
+        "Mexico": "Mexico.jpg",
+        "Australia": "Australia.jpg",
+        "Belgium": "Belgium.jpg",
+        "Brazil": "Brazil.jpg",
+        "Las Vegas": "Las_Vegas.jpg",
+        "Abu Dhabi": "Abu_Dhabi.jpg",
+        "Qatar": "Qatar.jpg",
+        "United States": "USA.jpg",
+        "Miami": "Miami.jpg",
+        "China": "China.jpg",
+    }
+    
+    # Return the full image URL if location is in the map
+    if location in location_map:
+        return base_url + location_map[location]
+    
+    # Return a default image or None if the location isn't mapped
+    return base_url + "Formula1.jpg"  # A default F1 image as fallback
+
 
 # You can also add a convenience function that combines nationality lookup with flag URL
 def get_driver_flag(driver_name):
@@ -458,6 +510,9 @@ def get_events():
         for i, event in enumerate(events):
             event['id'] = i + 1
             event['circuit'] = event['location']
+            event['completed'] = False
+            print(f"Processing event: {event['location']}")
+
             
             # Format dates for display
             start_date = event['startDate']
@@ -478,6 +533,8 @@ def get_events():
                 event['fastestLap'] = fastlap_result['Name'] if fastlap_result else "Unknown"
             else:
                 event['fastestLap'] = "N/A"
+
+            
                 
         return jsonify(events)
     
@@ -520,6 +577,7 @@ def get_event_by_id(event_id):
             event = all_events[event_id - 1]
             event['id'] = event_id
             event['circuit'] = event['location']
+            event['image'] = get_event_image(event['location'])
             
             # Format dates
             start_date = event['startDate']
@@ -657,6 +715,8 @@ def get_all_events():
         for i, event in enumerate(all_events):
             event['id'] = i + 1
             event['circuit'] = event['location']
+            event['image'] = get_event_image(event['location'])
+            print(f"Processing event: {event['location']}")
             
             # Format dates for display
             start_date = event['startDate']

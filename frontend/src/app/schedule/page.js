@@ -14,6 +14,8 @@ export default function SchedulePage() {
   
   // Get races from F1Data context
   const { races, loading, error, getEventById } = useF1Data();
+
+  console.log(races);
   
   const router = useRouter();
   
