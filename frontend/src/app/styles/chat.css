@@ -287,6 +287,7 @@
     min-height: 2.5rem;
     max-height: 150px;
     transition: all 0.2s;
+    overflow-y: hidden; /* Prevent scrollbar from appearing */
   }
   
   .message-input:focus {
