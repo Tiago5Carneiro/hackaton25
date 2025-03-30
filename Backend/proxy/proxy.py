@@ -1,3 +1,4 @@
+import random
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -277,6 +278,15 @@ def get_drivers_standings():
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+
+            driver['pace'] = random.randint(50, 100)
+            driver['agress'] = random.randint(50, 100)
+            driver['def'] = random.randint(50, 100)
+            driver['tireman'] = random.randint(50, 100)
+            driver['consist'] = random.randint(50, 100)
+            driver['quali'] = random.randint(50, 100)
+
+            
         
         return jsonify(drivers)
     
@@ -366,6 +376,7 @@ def get_driver_by_id(driver_id):
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+            
             return jsonify(driver)
         else:
             return jsonify({"error": "Driver not found"}), 404
@@ -415,6 +426,14 @@ def get_driver_by_slug(driver_slug):
                 driver['nationality'] = driver_nationality(driver['name'])
                 driver['flag'] = get_driver_flag(driver['name'])
                 driver['teamColor'] = get_team_color(driver['team'])
+                driver['pace'] = random.randint(50, 100)
+                driver['agress'] = random.randint(50, 100)
+                driver['def'] = random.randint(50, 100)
+                driver['tireman'] = random.randint(50, 100)
+                driver['consist'] = random.randint(50, 100)
+                driver['quali'] = random.randint(50, 100)
+                driver['position'] = drivers.index(driver) + 1
+                
                 return jsonify(driver)
         
         # If we get here, no driver was found
@@ -472,12 +491,10 @@ def get_events():
 
             # Add fastest lap holder name if available
             if event['fastLap'] and event['fastLap'] > 0:
-                fastlap_query = "SELECT Name FROM Player WHERE PlayerId = %s"
-                cursor.execute(fastlap_query, (event['fastLap'],))
-                fastlap_result = cursor.fetchone()
-                event['fastestLap'] = fastlap_result['Name'] if fastlap_result else "Unknown"
+                # miliseconds to m:s:ms
+                event['fastLap'] = event['fastLap'] / 1000
             else:
-                event['fastestLap'] = "N/A"
+                event['fastLap'] = "N/A"
                 
         return jsonify(events)
     
