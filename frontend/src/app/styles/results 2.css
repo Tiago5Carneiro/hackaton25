@@ -1,0 +1,246 @@
+/* Race Results Page Styles */
+
+.results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.results-header {
+  margin-bottom: 2.5rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--f1-red, #e10600);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 1.5rem;
+}
+
+.back-button:hover {
+  background-color: #c70500;
+}
+
+.race-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+  position: relative;
+  display: inline-block;
+}
+
+.race-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  width: 3rem;
+  height: 0.25rem;
+  background-color: var(--f1-red, #e10600);
+  border-radius: 0.125rem;
+}
+
+.race-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  color: var(--muted);
+  font-size: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Results table */
+.results-table-container {
+  background-color: var(--card-bg);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th {
+  background-color: var(--card-header-bg, rgba(0, 0, 0, 0.05));
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.results-table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 0.95rem;
+}
+
+.results-table tr:last-child td {
+  border-bottom: none;
+}
+
+.results-table .position {
+  font-weight: 700;
+  width: 60px;
+}
+
+.results-table .driver {
+  font-weight: 600;
+}
+
+.results-table .team {
+  color: var(--muted);
+}
+
+.results-table .time {
+  font-family: monospace;
+  font-size: 0.95rem;
+}
+
+.results-table .points {
+  font-weight: 600;
+  text-align: center;
+  width: 60px;
+}
+
+.winner-trophy {
+  margin-right: 0.5rem;
+  color: #fbbf24;
+  font-size: 1.1rem;
+}
+
+.fastest-lap-indicator {
+  margin-left: 0.5rem;
+  color: #8b5cf6;
+  font-weight: bold;
+}
+
+.fastest-lap {
+  position: relative;
+}
+
+.fastest-lap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #7c3aed;
+}
+
+.dnf-row {
+  opacity: 0.75;
+}
+
+.dnf-row .time-col {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.race-stats {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stats-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.stats-label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.stats-value {
+  color: var(--foreground);
+}
+
+/* Loading and Error States */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(225, 6, 0, 0.3);
+  border-top: 3px solid var(--f1-red, #e10600);
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  max-width: 500px;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.error-message h2 {
+  color: var(--f1-red, #e10600);
+  margin-bottom: 1rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: var(--f1-red, #e10600);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .results-table-container {
+    overflow-x: auto;
+  }
+  
+  .results-table {
+    min-width: 768px;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .results-table th {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .results-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
