@@ -81,7 +81,7 @@ export default function DriverPage() {
     };
     
     const totalSkills = Object.values(driverSkills).reduce((sum, value) => sum + value, 0);
-    const overallRating = Math.round(totalSkills / Object.keys(driverSkills).length);
+    const overallRating = driver.overall || Math.round(totalSkills / Object.keys(driverSkills).length);
     
     // Determine color based on rating
     let ratingColor;
@@ -265,10 +265,6 @@ export default function DriverPage() {
               <span className="label">Points:</span> 
               <span className="value">{driver.points}</span>
             </div>
-            <div className="info-item">
-              <span className="label">Date of Birth:</span> 
-              <span className="value">{driver.dob}</span>
-            </div>
           </div>
         </div>
         
@@ -330,7 +326,7 @@ export default function DriverPage() {
             
             {/* Overall rating on the right */}
             <div className="overall-rating">
-              {renderOverallRating()}
+              {renderOverallRating("Overall Rating", driver.overall || 70)}
             </div>
           </div>
         </div>

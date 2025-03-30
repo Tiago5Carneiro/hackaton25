@@ -310,7 +310,14 @@ def get_drivers_standings():
                 Points as points,
                 ChampionshipWins as championships,
                 PlayerNum as number,
-                IsActive as isActive
+                IsActive as isActive,
+                Pace as pace,
+                Agressiveness as agress,
+                Defense as def,
+                TireMan as tireman,
+                Consistency as consist,
+                Qualifying as quali,
+                Overall as overall
             FROM Player
             WHERE IsActive = 1
             ORDER BY Points DESC
@@ -331,12 +338,27 @@ def get_drivers_standings():
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
 
-            driver['pace'] = random.randint(50, 100)
-            driver['agress'] = random.randint(50, 100)
-            driver['def'] = random.randint(50, 100)
-            driver['tireman'] = random.randint(50, 100)
-            driver['consist'] = random.randint(50, 100)
-            driver['quali'] = random.randint(50, 100)
+            if driver['pace'] is None:
+                driver['pace'] = random.randint(70, 100)
+                
+            if driver['agress'] is None:
+                driver['agress'] = random.randint(70, 100)
+
+            if driver['def'] is None:
+                driver['def'] = random.randint(70, 100)
+
+            if driver['tireman'] is None:
+                driver['tireman'] = random.randint(70, 100)
+
+            if driver['consist'] is None:
+                driver['consist'] = random.randint(70, 100)
+
+            if driver['quali'] is None:
+                driver['quali'] = random.randint(70, 100)
+                    
+            if driver['overall'] is None:
+                driver['overall'] = random.randint(70, 100)
+                
 
             
         
@@ -462,7 +484,14 @@ def get_driver_by_slug(driver_slug):
             Points as points,
             ChampionshipWins as championships,
             PlayerNum as number,
-            IsActive as isActive
+            IsActive as isActive,
+            Pace as pace,
+            Agressiveness as agress,
+            Defense as def,
+            TireMan as tireman,
+            Consistency as consist,
+            Qualifying as quali,
+            Overall as overall
         FROM Player
         """
         
@@ -478,13 +507,26 @@ def get_driver_by_slug(driver_slug):
                 driver['nationality'] = driver_nationality(driver['name'])
                 driver['flag'] = get_driver_flag(driver['name'])
                 driver['teamColor'] = get_team_color(driver['team'])
-                driver['pace'] = random.randint(50, 100)
-                driver['agress'] = random.randint(50, 100)
-                driver['def'] = random.randint(50, 100)
-                driver['tireman'] = random.randint(50, 100)
-                driver['consist'] = random.randint(50, 100)
-                driver['quali'] = random.randint(50, 100)
-                driver['position'] = drivers.index(driver) + 1
+                if driver['pace'] is None:
+                    driver['pace'] = random.randint(70, 100)
+                
+                if driver['agress'] is None:
+                    driver['agress'] = random.randint(70, 100)
+
+                if driver['def'] is None:
+                    driver['def'] = random.randint(70, 100)
+
+                if driver['tireman'] is None:
+                    driver['tireman'] = random.randint(70, 100)
+
+                if driver['consist'] is None:
+                    driver['consist'] = random.randint(70, 100)
+
+                if driver['quali'] is None:
+                    driver['quali'] = random.randint(70, 100)
+
+                if driver['overall'] is None:
+                    driver['overall'] = random.randint(70, 100)
                 
                 return jsonify(driver)
         
