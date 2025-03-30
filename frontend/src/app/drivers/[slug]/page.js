@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import '../../styles/drivers.css';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useF1Data } from '../../context/F1DataContext';
@@ -26,7 +26,7 @@ export default function DriverPage() {
   
   // Mock data for driver skills (would come from API in real app)
   const driverSkills = {
-    pace: Math.floor(Math.random() * 30) + 70, // 70-100
+    pace: Math.floor(Math.random() * 30) + 70,
     consistency: Math.floor(Math.random() * 30) + 70,
     racecraft: Math.floor(Math.random() * 30) + 70,
     tireManagement: Math.floor(Math.random() * 30) + 70,
@@ -50,6 +50,96 @@ export default function DriverPage() {
     { race: "Hungarian GP", position: 5, points: 10 },
     { race: "British GP", position: 4, points: 12 },
   ];
+
+  // Function to render individual rating bars
+  function renderRatingBar(name, value) {
+    let ratingClass = "poor";
+    let ratingText = "Poor";
+    
+    if (value >= 90) {
+      ratingClass = "excellent";
+      ratingText = "Excellent";
+    } else if (value >= 80) {
+      ratingClass = "good";
+      ratingText = "Good";
+    } else if (value >= 70) {
+      ratingClass = "average";
+      ratingText = "Average";
+    }
+    
+    return (
+      <div className="rating-item" key={name}>
+        <div className="rating-header">
+          <span className="rating-label">{name}</span>
+          <span className="rating-value">{value}</span>
+        </div>
+        <div className="rating-bar-container">
+          <div 
+            className={`rating-bar ${ratingClass}`}
+            style={{ width: `${value}%` }}
+          ></div>
+        </div>
+        <div className="rating-category">{ratingText}</div>
+      </div>
+    );
+  }
+
+  // Function to render overall rating
+  function renderOverallRating() {
+    // Calculate average rating from all skills
+    const totalSkills = Object.values(driverSkills).reduce((sum, value) => sum + value, 0);
+    const overallRating = Math.round(totalSkills / Object.keys(driverSkills).length);
+    
+    // Determine color based on rating
+    let ratingColor;
+    let ratingDesc;
+    
+    if (overallRating >= 90) {
+      ratingColor = '#22c55e'; // green
+      ratingDesc = 'WORLD CLASS';
+    } else if (overallRating >= 85) {
+      ratingColor = '#84cc16'; // lime
+      ratingDesc = 'ELITE';
+    } else if (overallRating >= 80) {
+      ratingColor = '#84cc16'; // lime
+      ratingDesc = 'EXCELLENT';
+    } else if (overallRating >= 75) {
+      ratingColor = '#f59e0b'; // yellow
+      ratingDesc = 'GREAT';
+    } else if (overallRating >= 70) {
+      ratingColor = '#f59e0b'; // yellow
+      ratingDesc = 'GOOD';
+    } else {
+      ratingColor = '#ef4444'; // red
+      ratingDesc = 'AVERAGE';
+    }
+    
+    // Calculate percentage for the circle
+    const ratingPercent = `${overallRating}%`;
+    
+    return (
+      <>
+        <div 
+          className="rating-circle"
+          style={{
+            '--rating-percent': ratingPercent,
+            '--rating-color': ratingColor
+          }}
+        >
+          <div className="rating-circle-inner">
+            <div className="overall-value">{overallRating}</div>
+            <div className="overall-label">OVERALL</div>
+          </div>
+        </div>
+        <div 
+          className="rating-description"
+          style={{ '--rating-color': ratingColor }}
+        >
+          {ratingDesc}
+        </div>
+      </>
+    );
+  }
 
   useEffect(() => {
     const fetchDriverData = async () => {
@@ -203,10 +293,32 @@ export default function DriverPage() {
             </div>
           </div>
         </div>
+        
         <div className="driver-skills">
           <h2>Driver Skills</h2>
+          
+          {/* Radar chart on top */}
           <div className="radar-chart-container">
             <RechartsComponent driver={driver} skillsData={skillsData} />
+          </div>
+          
+          {/* Skills section with side-by-side layout */}
+          <div className="skills-layout">
+            {/* Football Manager style ratings on the left */}
+            <div className="football-manager-ratings">
+              <div className="rating-bars">
+                {renderRatingBar("Pace", driverSkills.pace)}
+                {renderRatingBar("Consistency", driverSkills.consistency)}
+                {renderRatingBar("Racecraft", driverSkills.racecraft)}
+                {renderRatingBar("Tire Management", driverSkills.tireManagement)}
+                {renderRatingBar("Wet Weather Driving", driverSkills.wetWeatherDriving)}
+              </div>
+            </div>
+            
+            {/* Overall rating on the right */}
+            <div className="overall-rating">
+              {renderOverallRating()}
+            </div>
           </div>
         </div>
       </div>

@@ -553,12 +553,37 @@
   margin-bottom: 3rem;
 }
 
-/* Replace the football manager style ratings with this modern version */
-.football-manager-ratings {
+/* New skills layout with side-by-side arrangement */
+.skills-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
   margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #333;
-  position: relative;
+}
+
+/* Adjust football manager ratings for new layout */
+.football-manager-ratings {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Ensure the radar chart has enough space */
+.radar-chart-container {
+  margin-bottom: 2rem;
+  min-height: 300px;
+  width: 100%;
+}
+
+/* Responsive layout for mobile */
+@media (max-width: 768px) {
+  .skills-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .football-manager-ratings {
+    margin-bottom: 2rem;
+  }
 }
 
 .football-manager-ratings h3 {
