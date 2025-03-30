@@ -22,30 +22,29 @@ export default function Home() {
     console.error("Failed to get F1 data from context:", error);
   }
   
-  const { drivers, constructors, nextRace, loading, error } = contextData;
+  const { drivers, constructors, nextRace, loading, error, getNextRace } = contextData;
   
   useEffect(() => {
     console.log("HomePage: Component mounted");
+    
+    // If next race is null, try to fetch it specifically
+    if (!nextRace && getNextRace) {
+      console.log("HomePage: Fetching next race specifically");
+      getNextRace().then(raceData => {
+        console.log("HomePage: Next race fetched:", raceData);
+      });
+    }
+    
     setIsLoaded(true);
     
     // Detailed logging of context data
-    console.log('HomePage: Drivers data received:', drivers);
-    console.log('HomePage: Constructors data received:', constructors);
+    console.log('HomePage: Drivers data received:', drivers?.length);
+    console.log('HomePage: Constructors data received:', constructors?.length);
     console.log('HomePage: Next race data received:', nextRace);
     console.log('HomePage: Loading state:', loading);
     console.log('HomePage: Error state:', error);
     
-    // If there's no data, log a warning
-    if (!drivers || drivers.length === 0) {
-      console.warn("HomePage: No drivers data available");
-    }
-    if (!constructors || constructors.length === 0) {
-      console.warn("HomePage: No constructors data available");
-    }
-    if (!nextRace) {
-      console.warn("HomePage: No next race data available");
-    }
-  }, [drivers, constructors, nextRace, loading, error]);
+  }, [drivers, constructors, nextRace, loading, error, getNextRace]);
 
   // Transform data for display with safer handling
   const driverStandings = Array.isArray(drivers) && drivers.length > 0 
@@ -114,16 +113,6 @@ export default function Home() {
     dateTime: new Date('2025-03-30T06:00:00Z').getTime()
   };
   
-  const formattedNextRace = nextRace ? {
-    name: nextRace.name || defaultRace.name,
-    circuit: nextRace.circuit || defaultRace.circuit,
-    location: nextRace.location || defaultRace.location,
-    flag: nextRace.flag || defaultRace.flag,
-    date: nextRace.date ? new Date(nextRace.date).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}) : defaultRace.date,
-    time: nextRace.time || defaultRace.time,
-    dateTime: nextRace.date && nextRace.time ? new Date(nextRace.date + 'T' + nextRace.time).getTime() : defaultRace.dateTime
-  } : defaultRace;
-  
   // Animation configurations
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -171,10 +160,10 @@ export default function Home() {
           <h1 className="hero-title">
             <span className="hero-logo-icon">
               <Image 
-                src="/images/f1.png"
+                src="/images/f1_logo.png"
                 alt="F1 Hub Logo" 
-                width={40} 
-                height={40}
+                width={90}
+                height={90}
                 className="hero-favicon"
               />
             </span>
@@ -198,15 +187,16 @@ export default function Home() {
         animate={isLoaded ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        <RaceCountdownCard race={formattedNextRace} />
+        {/* Use the actual nextRace from context if available, otherwise use default */}
+        <RaceCountdownCard race={nextRace || defaultRace} />
       </motion.section>
 
       {/* Featured News Section */}
       <section className="section-container">
         <div className="section-header">
-         <h2 className="section-title">Championship Standings</h2>
-          <Link href="/standings" className="view-all-link">
-            Full Standings
+         <h2 className="section-title">Latest News</h2>
+          <Link href="/news" className="view-all-link">
+            All News
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -278,15 +268,28 @@ export default function Home() {
         <div className="cta-content">
           <h2 className="cta-title">Try our F1 Pro Analysis Chat</h2>
           <p className="cta-description">
-            Ask questions, get insights, and discuss strategies
+            Get expert insights, race predictions, and technical analysis from our AI-powered F1 assistant.
           </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div 
+            className="cta-button-container"
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+          >
             <Link href="/chat" className="cta-button">
-              Chat
+              Start Chatting
             </Link>
           </motion.div>
         </div>
       </motion.section>
+    
+      
+      {/* Error display */}
+      {error && (
+        <div className="error-notification">
+          <p>There was an error loading some content. Please try refreshing.</p>
+          <button onClick={() => window.location.reload()}>Refresh</button>
+        </div>
+      )}
     </div>
   );
 }
