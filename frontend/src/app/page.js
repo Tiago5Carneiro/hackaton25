@@ -13,38 +13,48 @@ import StandingsCard from './components/StandingsCard';
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [upcomingRaces, setUpcomingRaces] = useState([]);
+  const [closestRace, setClosestRace] = useState(null);
   
   // Get data from context with try/catch
-  let contextData = { drivers: [], constructors: [], nextRace: null, loading: true, error: null };
+  let contextData = { drivers: [], constructors: [], loading: true, error: null };
   try {
     contextData = useF1Data();
   } catch (error) {
     console.error("Failed to get F1 data from context:", error);
   }
   
-  const { drivers, constructors, nextRace, loading, error, getNextRace } = contextData;
+  const { drivers, constructors, loading, error, getNextRaces } = contextData;
   
   useEffect(() => {
     console.log("HomePage: Component mounted");
     
-    // If next race is null, try to fetch it specifically
-    if (!nextRace && getNextRace) {
-      console.log("HomePage: Fetching next race specifically");
-      getNextRace().then(raceData => {
-        console.log("HomePage: Next race fetched:", raceData);
-      });
-    }
+    // Fetch upcoming races with getNextRaces instead of relying on nextRace
+    const fetchUpcomingRaces = async () => {
+      try {
+        const races = await getNextRaces(5); // Get next 5 races
+        console.log("HomePage: Upcoming races fetched:", races);
+        
+        if (Array.isArray(races) && races.length > 0) {
+          setUpcomingRaces(races);
+          // Use the first (closest) race for the countdown
+          setClosestRace(races[0]);
+        }
+      } catch (err) {
+        console.error("Error fetching upcoming races:", err);
+      }
+    };
     
+    fetchUpcomingRaces();
     setIsLoaded(true);
     
     // Detailed logging of context data
     console.log('HomePage: Drivers data received:', drivers?.length);
     console.log('HomePage: Constructors data received:', constructors?.length);
-    console.log('HomePage: Next race data received:', nextRace);
     console.log('HomePage: Loading state:', loading);
     console.log('HomePage: Error state:', error);
     
-  }, [drivers, constructors, nextRace, loading, error, getNextRace]);
+  }, [drivers, constructors, loading, error, getNextRaces]);
 
   // Transform data for display with safer handling
   const driverStandings = Array.isArray(drivers) && drivers.length > 0 
@@ -187,9 +197,37 @@ export default function Home() {
         animate={isLoaded ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        {/* Use the actual nextRace from context if available, otherwise use default */}
-        <RaceCountdownCard race={nextRace || defaultRace} />
+        {/* Use the closest race from nextRaces API call, fallback to default if needed */}
+        <RaceCountdownCard race={closestRace || defaultRace} />
       </motion.section>
+
+      {/* Upcoming Races Section (Optional - you can uncomment to show more upcoming races) */}
+      {/* {upcomingRaces.length > 1 && (
+        <section className="section-container">
+          <div className="section-header">
+            <h2 className="section-title">Upcoming Races</h2>
+            <Link href="/schedule" className="view-all-link">
+              Full Calendar
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+          <div className="upcoming-races-list">
+            {upcomingRaces.slice(1).map((race) => (
+              <div key={race.id} className="upcoming-race-item">
+                <div className="race-flag">
+                  {race.flag && <img src={race.flag} alt={race.country} />}
+                </div>
+                <div className="race-info">
+                  <h3>{race.name}</h3>
+                  <p>{race.date} • {race.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )} */}
 
       {/* Featured News Section */}
       <section className="section-container">
@@ -282,7 +320,6 @@ export default function Home() {
         </div>
       </motion.section>
     
-      
       {/* Error display */}
       {error && (
         <div className="error-notification">

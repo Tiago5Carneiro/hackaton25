@@ -15,6 +15,9 @@ export default function Standings() {
   // Get data from F1DataContext
   const { drivers, constructors, loading: contextLoading, error: contextError, refreshDrivers, refreshConstructors } = useF1Data();
   
+  // Filter active drivers
+  const activeDrivers = drivers.filter(driver => driver.isActive === 1);
+
   // Using the URL parameter to initialize the tab state ensures consistency
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam === 'constructors' ? 'constructors' : 'drivers');
@@ -25,6 +28,7 @@ export default function Standings() {
   
   // Local loading state for UI purposes
   const [loading, setLoading] = useState(true);
+  
   
   // Refresh data when component mounts
   useEffect(() => {
@@ -172,7 +176,7 @@ export default function Standings() {
         </div>
       </motion.div>
       
-      {activeTab === 'drivers' && drivers.length > 0 && (
+      {activeTab === 'drivers' && activeDrivers.length > 0 && (
         <motion.div
           key={motionKey}
           variants={containerVariants}
@@ -183,7 +187,7 @@ export default function Standings() {
         >
           {/* Top drivers */}
           <div className="drivers-container">
-            {drivers.map((driver, index) => (
+            {activeDrivers.map((driver, index) => (
               <motion.div 
                 key={driver.id}
                 className={index < 3 ? "highlighted-driver-card" : "driver-card"}

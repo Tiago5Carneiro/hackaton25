@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // API URL - change to your actual backend URL
 const API_URL = "http://localhost:5000/api";
@@ -15,144 +15,109 @@ export function F1DataProvider({ children }) {
   const [nextRace, setNextRace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dataInitialized, setDataInitialized] = useState(false);
 
   // Pre-fetch all data when the app loads
   useEffect(() => {
-    async function fetchAllData() {
-      setLoading(true);
-      try {
-        // Fetch data in parallel for better performance
-        const [driversResponse, constructorsResponse, racesResponse, nextRaceResponse] = await Promise.all([
-          fetch(`${API_URL}/standings/drivers`),
-          fetch(`${API_URL}/standings/constructors`),
-          fetch(`${API_URL}/events`),
-          fetch(`${API_URL}/next-race`) // New endpoint specifically for next race
-        ]);
+    // Only run once to prevent infinite loops
+    if (!dataInitialized) {
+      fetchAllData();
+    }
+  }, [dataInitialized]);
 
-        // Check for errors
-        if (!driversResponse.ok) throw new Error('Failed to fetch drivers');
-        if (!constructorsResponse.ok) throw new Error('Failed to fetch constructors');
-
-        // Parse responses
-        const driversData = await driversResponse.json();
-        const constructorsData = await constructorsResponse.json();
-        
-        // Parse races if available, otherwise use empty array
-        let racesData = [];
-        if (racesResponse.ok) {
-          racesData = await racesResponse.json();
-        }
-        
-        // Get next race data specifically
-        if (nextRaceResponse.ok) {
-          const nextRaceData = await nextRaceResponse.json();
-          if (nextRaceData) {
-            // Format the date for display
-            if (nextRaceData.startDate) {
-              const raceDate = new Date(nextRaceData.startDate);
-              nextRaceData.formattedDate = raceDate.toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              });
-              
-              nextRaceData.formattedTime = raceDate.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZoneName: 'short'
-              });
-              
-              // Add countdown timestamp
-              nextRaceData.dateTime = raceDate.getTime();
-            }
-            
-            // Set the next race with formatted data
-            setNextRace(nextRaceData);
-          }
+  // Function to fetch all initial data
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      // Concurrent fetch requests for better performance
+      const [driversRes, constructorsRes, eventsRes, nextRacesRes] = await Promise.allSettled([
+        fetch(`${API_URL}/standings/drivers`),
+        fetch(`${API_URL}/standings/constructors`),
+        fetch(`${API_URL}/all-events`),
+        fetch(`${API_URL}/next-races?limit=5`)
+      ]);
+      
+      // Process driver standings
+      if (driversRes.status === 'fulfilled' && driversRes.value.ok) {
+        const data = await driversRes.value.json();
+        setDrivers(data);
+      } else {
+        console.error("Failed to fetch driver standings");
+      }
+      
+      // Process constructor standings
+      if (constructorsRes.status === 'fulfilled' && constructorsRes.value.ok) {
+        const data = await constructorsRes.value.json();
+        setConstructors(data);
+      } else {
+        console.error("Failed to fetch constructor standings");
+      }
+      
+      // Process events/races
+      if (eventsRes.status === 'fulfilled' && eventsRes.value.ok) {
+        const data = await eventsRes.value.json();
+        setRaces(data);
+      } else {
+        console.error("Failed to fetch events/races");
+      }
+      
+      // Process next races - this is used for the home page countdown
+      if (nextRacesRes.status === 'fulfilled' && nextRacesRes.value.ok) {
+        const nextRacesData = await nextRacesRes.value.json();
+        if (nextRacesData && nextRacesData.length > 0) {
+          setNextRace(nextRacesData[0]);
         } else {
-          // Fallback to finding next race from races if specific endpoint failed
-          const now = new Date();
-          const upcomingRaces = racesData
-            .filter(race => race.completed === false)
-            .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-          
-          if (upcomingRaces.length > 0) {
-            const nextRaceFromList = upcomingRaces[0];
-            
-            // Format the date for display
-            if (nextRaceFromList.startDate) {
-              const raceDate = new Date(nextRaceFromList.startDate);
-              nextRaceFromList.formattedDate = raceDate.toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              });
-              
-              nextRaceFromList.formattedTime = raceDate.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZoneName: 'short'
-              });
-              
-              // Add countdown timestamp
-              nextRaceFromList.dateTime = raceDate.getTime();
-            }
-            
-            setNextRace(nextRaceFromList);
-          }
+          // If next-races endpoint returned empty, try to find the next race from all races
+          findNextRaceFromAllRaces();
         }
+      } else {
+        // If next-races endpoint failed, try to find the next race from all races
+        findNextRaceFromAllRaces();
+      }
+      
+      // Mark initialization as complete
+      setDataInitialized(true);
+    } catch (err) {
+      console.error("Error fetching initial data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        // Update state with fetched data
-        setDrivers(driversData);
-        setConstructors(constructorsData);
-        setRaces(racesData);
-        setError(null);
-        
-        console.log('Data fetched successfully:', { 
-          drivers: driversData.length,
-          constructors: constructorsData.length,
-          races: racesData.length,
-          nextRace: nextRace ? 'Found' : 'Not found'
+  // Helper function to find the next race from all races
+  const findNextRaceFromAllRaces = () => {
+    if (races && races.length > 0) {
+      const now = new Date();
+      const upcomingRaces = races.filter(race => {
+        const raceDate = new Date(race.startDate || race.date);
+        return raceDate > now;
+      });
+      
+      if (upcomingRaces.length > 0) {
+        // Sort by date and take the first one
+        const sortedRaces = [...upcomingRaces].sort((a, b) => {
+          const dateA = new Date(a.startDate || a.date);
+          const dateB = new Date(b.startDate || b.date);
+          return dateA - dateB;
         });
-      } catch (err) {
-        console.error('Error pre-loading F1 data:', err);
-        setError(err.message);
-        // Keep previous data if available, otherwise set empty arrays
-        setDrivers(prev => prev.length > 0 ? prev : []);
-        setConstructors(prev => prev.length > 0 ? prev : []);
-        setRaces(prev => prev.length > 0 ? prev : []);
-      } finally {
-        setLoading(false);
+        
+        setNextRace(sortedRaces[0]);
       }
     }
-
-    fetchAllData();
-  }, []);
+  };
 
   // Get next race information
   const getNextRace = async () => {
     try {
       const res = await fetch(`${API_URL}/next-race`);
-      if (!res.ok) throw new Error('Failed to fetch next race');
+      if (!res.ok) throw new Error(`Failed to fetch next race: ${res.status}`);
       const data = await res.json();
       
       // Format data for display
       if (data && data.startDate) {
-        const raceDate = new Date(data.startDate);
-        data.formattedDate = raceDate.toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric'
-        });
-        
-        data.formattedTime = raceDate.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        });
-        
-        // Add countdown timestamp
-        data.dateTime = raceDate.getTime();
+        data.formattedDate = formatDate(data.startDate);
+        data.formattedTime = formatTime(data.time, data.startDate);
       }
       
       // Update context state
@@ -164,11 +129,84 @@ export function F1DataProvider({ children }) {
     }
   };
 
+  // Format helper functions (can be used by consumers too)
+  const formatDate = (dateString) => {
+    if (!dateString) return "TBD";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  const formatTime = (timeString, dateString) => {
+    if (!timeString) {
+      if (dateString && dateString.includes('T')) {
+        try {
+          const date = new Date(dateString);
+          return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZoneName: 'short'
+          });
+        } catch (e) {
+          return "TBD";
+        }
+      }
+      return "TBD";
+    }
+    return timeString;
+  };
+
+  // Get next X races (including future events)
+  const getNextRaces = async (limit = 5) => {
+    try {
+      const res = await fetch(`${API_URL}/next-races?limit=${limit}`);
+      if (!res.ok) throw new Error(`Failed to fetch upcoming races: ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`Error fetching upcoming races:`, err);
+      return [];
+    }
+  };
+
+  // Get all events (past, present and future)
+  const getAllEvents = async () => {
+    try {
+      const res = await fetch(`${API_URL}/all-events`);
+      if (!res.ok) throw new Error(`Failed to fetch all events: ${res.status}`);
+      const data = await res.json();
+      setRaces(data); // Update races in context
+      return data;
+    } catch (err) {
+      console.error(`Error fetching all events:`, err);
+      return [];
+    }
+  };
+
+  // Get future events only
+  const getFutureEvents = async () => {
+    try {
+      const res = await fetch(`${API_URL}/future-events`);
+      if (!res.ok) throw new Error(`Failed to fetch future events: ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`Error fetching future events:`, err);
+      return [];
+    }
+  };
+
   // Get driver details by ID
   const getDriverById = async (id) => {
     try {
       const res = await fetch(`${API_URL}/driver/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch driver details');
+      if (!res.ok) throw new Error(`Failed to fetch driver ${id}: ${res.status}`);
       return await res.json();
     } catch (err) {
       console.error(`Error fetching driver ${id}:`, err);
@@ -180,7 +218,7 @@ export function F1DataProvider({ children }) {
   const getDriverBySlug = async (slug) => {
     try {
       const res = await fetch(`${API_URL}/driver/slug/${slug}`);
-      if (!res.ok) throw new Error('Failed to fetch driver details');
+      if (!res.ok) throw new Error(`Failed to fetch driver ${slug}: ${res.status}`);
       return await res.json();
     } catch (err) {
       console.error(`Error fetching driver ${slug}:`, err);
@@ -192,7 +230,7 @@ export function F1DataProvider({ children }) {
   const getTeamByName = async (name) => {
     try {
       const res = await fetch(`${API_URL}/team/${name}`);
-      if (!res.ok) throw new Error('Failed to fetch team details');
+      if (!res.ok) throw new Error(`Failed to fetch team ${name}: ${res.status}`);
       return await res.json();
     } catch (err) {
       console.error(`Error fetching team ${name}:`, err);
@@ -204,7 +242,7 @@ export function F1DataProvider({ children }) {
   const getEventById = async (id) => {
     try {
       const res = await fetch(`${API_URL}/event/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch event details');
+      if (!res.ok) throw new Error(`Failed to fetch event ${id}: ${res.status}`);
       return await res.json();
     } catch (err) {
       console.error(`Error fetching event ${id}:`, err);
@@ -217,7 +255,7 @@ export function F1DataProvider({ children }) {
     if (!query || query.length < 2) return [];
     try {
       const res = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error('Search failed');
+      if (!res.ok) throw new Error(`Search failed: ${res.status}`);
       return await res.json();
     } catch (err) {
       console.error(`Error searching for ${query}:`, err);
@@ -233,18 +271,24 @@ export function F1DataProvider({ children }) {
     nextRace,
     loading,
     error,
+    // Utility methods
+    formatDate,
+    formatTime,
     // Data access methods
     getDriverById,
     getDriverBySlug,
     getTeamByName,
     getEventById,
     getNextRace,
+    getNextRaces,
+    getAllEvents,
+    getFutureEvents,
     search,
     // Refresh methods
     refreshDrivers: async () => {
       try {
         const res = await fetch(`${API_URL}/standings/drivers`);
-        if (!res.ok) throw new Error('Failed to refresh drivers');
+        if (!res.ok) throw new Error(`Failed to refresh drivers: ${res.status}`);
         const data = await res.json();
         setDrivers(data);
         return true;
@@ -256,7 +300,7 @@ export function F1DataProvider({ children }) {
     refreshConstructors: async () => {
       try {
         const res = await fetch(`${API_URL}/standings/constructors`);
-        if (!res.ok) throw new Error('Failed to refresh constructors');
+        if (!res.ok) throw new Error(`Failed to refresh constructors: ${res.status}`);
         const data = await res.json();
         setConstructors(data);
         return true;
@@ -267,8 +311,8 @@ export function F1DataProvider({ children }) {
     },
     refreshRaces: async () => {
       try {
-        const res = await fetch(`${API_URL}/events`);
-        if (!res.ok) throw new Error('Failed to refresh races');
+        const res = await fetch(`${API_URL}/all-events`); // Changed to all-events
+        if (!res.ok) throw new Error(`Failed to refresh races: ${res.status}`);
         const data = await res.json();
         setRaces(data);
         
@@ -277,7 +321,7 @@ export function F1DataProvider({ children }) {
         
         return true;
       } catch (err) {
-        console.error(err);
+        console.error("Failed to refresh races:", err);
         return false;
       }
     }

@@ -247,19 +247,20 @@ def get_drivers_standings():
         
         # Query to fetch all driver data
         query = """
-        SELECT 
-            PlayerId as id,
-            Name as name,
-            Team as team,
-            Image as image,
-            Wins as wins,
-            Podiums as podiums,
-            Points as points,
-            ChampionshipWins as championships,
-            PlayerNum as number,
-            IsActive as isActive
-        FROM Player
-        ORDER BY Points DESC
+            SELECT 
+                PlayerId as id,
+                Name as name,
+                Team as team,
+                Image as image,
+                Wins as wins,
+                Podiums as podiums,
+                Points as points,
+                ChampionshipWins as championships,
+                PlayerNum as number,
+                IsActive as isActive
+            FROM Player
+            WHERE IsActive = 1
+            ORDER BY Points DESC
         """
         
         cursor.execute(query)
@@ -553,6 +554,143 @@ def get_event_by_id(event_id):
             cursor.close()
             connection.close()
 
+@app.route('/api/future-events', methods=['GET'])
+def get_future_events():
+    """Retrieve and return all future events data"""
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({"error": "Database connection failed"}), 500
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to fetch all future events
+        query = """
+        SELECT 
+            EventName as name,
+            Date as startDate,
+            Country as country,
+            Location as location
+        FROM FutureEvent
+        ORDER BY Date ASC
+        """
+        
+        cursor.execute(query)
+        events = cursor.fetchall()
+        
+        # Process data for frontend
+        for i, event in enumerate(events):
+            event['id'] = i + 1
+            event['circuit'] = event['location']
+            
+            # Format dates for display
+            start_date = event['startDate']
+            if isinstance(start_date, datetime):
+                event['date'] = start_date.strftime('%B %d, %Y')
+                event['time'] = start_date.strftime('%H:%M GMT')
+            
+            # Add future event flag
+            event['isFutureEvent'] = True
+            event['completed'] = False
+            event['flag'] = get_flag_url(event['country'])
+                
+        return jsonify(events)
+    
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+@app.route('/api/all-events', methods=['GET'])
+def get_all_events():
+    """Retrieve and return both past/current events and future events"""
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({"error": "Database connection failed"}), 500
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Query to fetch regular events
+        events_query = """
+        SELECT 
+            EventName as name,
+            StartDate as startDate,
+            EndDate as endDate,
+            Country as country,
+            Location as location,
+            Winner as winner,
+            FastLap as fastLap,
+            FALSE as isFutureEvent
+        FROM Event
+        ORDER BY StartDate ASC
+        """
+        
+        # Query to fetch future events
+        future_query = """
+        SELECT 
+            EventName as name,
+            Date as startDate,
+            NULL as endDate,
+            Country as country,
+            Location as location,
+            NULL as winner,
+            NULL as fastLap,
+            TRUE as isFutureEvent
+        FROM FutureEvent
+        ORDER BY Date ASC
+        """
+        
+        cursor.execute(events_query)
+        regular_events = cursor.fetchall()
+        
+        cursor.execute(future_query)
+        future_events = cursor.fetchall()
+        
+        # Combine and sort all events
+        all_events = regular_events + future_events
+        all_events.sort(key=lambda x: x['startDate'])
+        
+        # Process data for frontend
+        for i, event in enumerate(all_events):
+            event['id'] = i + 1
+            event['circuit'] = event['location']
+            
+            # Format dates for display
+            start_date = event['startDate']
+            if isinstance(start_date, datetime):
+                event['date'] = start_date.strftime('%B %d, %Y')
+                event['time'] = start_date.strftime('%H:%M GMT')
+            
+            # Determine if the race is completed
+            now = datetime.now()
+            if not event['isFutureEvent']:
+                event['completed'] = event['endDate'] < now if isinstance(event['endDate'], datetime) else False
+            else:
+                event['completed'] = False
+                
+            event['flag'] = get_flag_url(event['country'])
+
+            # Add fastest lap holder name if available
+            if not event['isFutureEvent'] and event['fastLap'] and event['fastLap'] > 0:
+                fastlap_query = "SELECT Name FROM Player WHERE PlayerId = %s"
+                cursor.execute(fastlap_query, (event['fastLap'],))
+                fastlap_result = cursor.fetchone()
+                event['fastestLap'] = fastlap_result['Name'] if fastlap_result else "Unknown"
+            else:
+                event['fastestLap'] = "N/A"
+                
+        return jsonify(all_events)
+    
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
 @app.route('/api/team/<string:team_name>', methods=['GET'])
 def get_team_details(team_name):
     """Retrieve and return team details and its drivers"""
@@ -682,6 +820,93 @@ def get_next_race():
             next_race['fastestLap'] = "TBD"
         
         return jsonify(next_race)
+    
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+@app.route('/api/next-races', methods=['GET'])
+def get_next_races():
+    """Return upcoming races including both scheduled and future events"""
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({"error": "Database connection failed"}), 500
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        
+        # Get current date
+        now = datetime.now()
+        
+        # Query to fetch upcoming regular events
+        events_query = """
+        SELECT 
+            EventName as name,
+            StartDate as startDate,
+            EndDate as endDate,
+            Country as country,
+            Location as location, 
+            Winner as winner,
+            FastLap as fastLap,
+            FALSE as isFutureEvent
+        FROM Event 
+        WHERE StartDate > %s
+        ORDER BY StartDate ASC
+        """
+        
+        # Query to fetch future events
+        future_query = """
+        SELECT 
+            EventName as name,
+            Date as startDate,
+            NULL as endDate,
+            Country as country,
+            Location as location,
+            NULL as winner,
+            NULL as fastLap,
+            TRUE as isFutureEvent
+        FROM FutureEvent
+        WHERE Date > %s
+        ORDER BY Date ASC
+        """
+        
+        cursor.execute(events_query, (now,))
+        upcoming_events = cursor.fetchall()
+        
+        cursor.execute(future_query, (now,))
+        future_events = cursor.fetchall()
+        
+        # Combine and sort all upcoming events
+        next_races = upcoming_events + future_events
+        next_races.sort(key=lambda x: x['startDate'])
+        
+        # Limit to a reasonable number for display
+        limit = int(request.args.get('limit', 5))
+        next_races = next_races[:limit]
+        
+        # Format event data
+        for i, race in enumerate(next_races):
+            race['id'] = i + 1
+            race['circuit'] = race['location']
+            race['completed'] = False
+            
+            # Format dates for display
+            start_date = race['startDate']
+            if isinstance(start_date, datetime):
+                race['date'] = start_date.strftime('%B %d, %Y')
+                race['time'] = start_date.strftime('%H:%M GMT')
+                race['dateTime'] = start_date.timestamp() * 1000  # Convert to milliseconds for JS
+            
+            # Add country flag
+            race['flag'] = get_flag_url(race['country'])
+            
+            # Set fastest lap information
+            race['fastestLap'] = "TBD"
+        
+        return jsonify(next_races)
     
     except mysql.connector.Error as err:
         return jsonify({"error": f"Database error: {err}"}), 500
