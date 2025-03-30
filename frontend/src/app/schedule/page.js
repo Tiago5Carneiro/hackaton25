@@ -3,94 +3,64 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import '../styles/schedule.css';
+import { useF1Data } from '../context/F1DataContext';
 
 export default function SchedulePage() {
   const [selectedRace, setSelectedRace] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "completed", "upcoming"
   const [isLoaded, setIsLoaded] = useState(false);
+  const [localRaces, setLocalRaces] = useState([]);
+  
+  // Get races from F1Data context
+  const { races, loading, error, getEventById } = useF1Data();
   
   useEffect(() => {
     setIsLoaded(true);
-  }, []);
+    
+    if (races && races.length > 0) {
+      setLocalRaces(races);
+      console.log("Loaded races from context:", races.length);
+    }
+  }, [races]);
+  
+  // Handle clicking on a race to show details
+  const handleRaceClick = async (raceId) => {
+    try {
+      // Try to get detailed race information
+      const raceDetails = await getEventById(raceId);
+      if (raceDetails) {
+        setSelectedRace(raceDetails);
+      } else {
+        // If API call fails, use basic race data
+        const basicRace = localRaces.find(r => r.id === raceId);
+        setSelectedRace(basicRace);
+      }
+    } catch (error) {
+      console.error("Failed to get race details:", error);
+      // Fallback to basic race data
+      const basicRace = localRaces.find(r => r.id === raceId);
+      setSelectedRace(basicRace);
+    }
+  };
   
   const currentDate = new Date();
-  
-  const races = [
-    {
-      id: 1,
-      name: "Bahrain Grand Prix",
-      circuit: "Bahrain International Circuit",
-      location: "Sakhir, Bahrain",
-      date: "March 2, 2025",
-      time: "16:00 GMT",
-      completed: true,
-      winner: "Max Verstappen",
-      fastestLap: "Lewis Hamilton",
-      image: "https://placehold.co/600x400",
-      description: "The Bahrain Grand Prix is a Formula One championship race which takes place at the Bahrain International Circuit. The 5.412 km circuit was designed by Hermann Tilke, and is located in the middle of the Sakhir desert."
-    },
-    {
-      id: 2,
-      name: "Saudi Arabian Grand Prix",
-      circuit: "Jeddah Corniche Circuit",
-      location: "Jeddah, Saudi Arabia",
-      date: "March 16, 2025",
-      time: "17:00 GMT",
-      completed: true,
-      winner: "Charles Leclerc",
-      fastestLap: "Max Verstappen",
-      image: "https://placehold.co/600x400",
-      description: "The Saudi Arabian Grand Prix takes place on the Jeddah Corniche Circuit, which is a street circuit running along the shores of the Red Sea. It is the fastest street circuit on the Formula One calendar, with an average speed of 250 km/h."
-    },
-    {
-      id: 3,
-      name: "Australian Grand Prix",
-      circuit: "Albert Park Circuit",
-      location: "Melbourne, Australia",
-      date: "March 30, 2025",
-      time: "06:00 GMT",
-      completed: false,
-      image: "https://placehold.co/600x400",
-      description: "The Australian Grand Prix is held at the Albert Park Circuit, a street circuit around Albert Park Lake. The circuit has hosted the Australian Grand Prix since 1996, with the event marking the start of the Formula One season for many years."
-    },
-    {
-      id: 4,
-      name: "Japanese Grand Prix",
-      circuit: "Suzuka Circuit",
-      location: "Suzuka, Japan",
-      date: "April 13, 2025",
-      time: "05:00 GMT",
-      completed: false,
-      image: "https://placehold.co/600x400",
-      description: "The Japanese Grand Prix is held at the Suzuka Circuit, which is one of the most challenging and popular circuits on the Formula One calendar. The figure-8 layout is unique in Formula One and features a wide variety of corners."
-    },
-    {
-      id: 5,
-      name: "Miami Grand Prix",
-      circuit: "Miami International Autodrome",
-      location: "Miami, United States",
-      date: "May 4, 2025",
-      time: "19:30 GMT",
-      completed: false,
-      image: "https://placehold.co/600x400",
-      description: "The Miami Grand Prix takes place at the Miami International Autodrome, set around Hard Rock Stadium. The 5.41 km circuit features 19 corners and three DRS zones, with top speeds expected to reach around 320 km/h."
-    },
-    // Add more races as needed
-  ];
 
-  const filteredRaces = filterStatus === "all" 
-    ? races 
-    : filterStatus === "completed" 
-      ? races.filter(race => race.completed)
-      : races.filter(race => !race.completed);
+  // Filter races based on selected filter
+  const filteredRaces = localRaces.length > 0 ? (
+    filterStatus === "all" 
+      ? localRaces 
+      : filterStatus === "completed" 
+        ? localRaces.filter(race => race.completed)
+        : localRaces.filter(race => !race.completed)
+  ) : [];
   
   // Find the next race (closest upcoming race)
-  const nextRace = races
+  const nextRace = localRaces
     .filter(race => !race.completed)
     .reduce((closest, race) => {
       if (!closest) return race;
-      const closestDate = new Date(closest.date);
-      const raceDate = new Date(race.date);
+      const closestDate = new Date(closest.startDate || closest.date);
+      const raceDate = new Date(race.startDate || race.date);
       return raceDate < closestDate ? race : closest;
     }, null);
 
@@ -111,6 +81,16 @@ export default function SchedulePage() {
       transition: { type: "spring", stiffness: 70, damping: 10 }
     }
   };
+
+  // Show loading state if API is still loading
+  if (loading && !localRaces.length) {
+    return (
+      <div className="schedule-container loading-state">
+        <div className="loading-spinner"></div>
+        <p>Loading race calendar...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="schedule-container">
@@ -175,12 +155,18 @@ export default function SchedulePage() {
             <div className="race-detail-meta">
               <p>{selectedRace.date} • {selectedRace.time}</p>
               <p>{selectedRace.circuit}, {selectedRace.location}</p>
+              {selectedRace.flag && (
+                <div className="country-flag">
+                  <img src={selectedRace.flag} alt={selectedRace.country} width={30} height={20} />
+                  <span>{selectedRace.country}</span>
+                </div>
+              )}
             </div>
           </div>
           
           <div className="race-image">
             <img 
-              src={selectedRace.image} 
+              src={selectedRace.image || "https://placehold.co/600x400?text=Circuit+Map"}
               alt={selectedRace.name}
             />
           </div>
@@ -188,7 +174,7 @@ export default function SchedulePage() {
           <div className="race-detail-content">
             <div className="race-detail-section">
               <h3 className="section-title">About the race</h3>
-              <p className="race-description">{selectedRace.description}</p>
+              <p className="race-description">{selectedRace.description || `The ${selectedRace.name} takes place at the ${selectedRace.circuit} in ${selectedRace.location}.`}</p>
             </div>
             
             {selectedRace.completed && (
@@ -197,11 +183,11 @@ export default function SchedulePage() {
                 <div className="results-grid">
                   <div className="result-item">
                     <span className="result-label">Winner</span>
-                    <span className="result-value">{selectedRace.winner}</span>
+                    <span className="result-value">{selectedRace.winner || "TBD"}</span>
                   </div>
                   <div className="result-item">
                     <span className="result-label">Fastest Lap</span>
-                    <span className="result-value">{selectedRace.fastestLap}</span>
+                    <span className="result-value">{selectedRace.fastestLap || "N/A"}</span>
                   </div>
                 </div>
               </div>
@@ -215,44 +201,57 @@ export default function SchedulePage() {
           initial="hidden"
           animate={isLoaded ? "visible" : "hidden"}
         >
-          {filteredRaces.map(race => {
-            const isNextRace = nextRace && race.id === nextRace.id;
-            const cardClassName = `race-card ${race.completed ? 'race-card-completed' : ''} ${isNextRace ? 'race-card-next' : ''}`;
-            
-            return (
-              <motion.div 
-                key={race.id}
-                variants={itemVariants}
-                onClick={() => setSelectedRace(race)}
-                className={cardClassName}
-              >
-                <div className="race-content">
-                  <div className="race-header">
-                    <h2 className="race-name">{race.name}</h2>
-                    {race.completed ? (
-                      <span className="race-status status-completed">Completed</span>
-                    ) : isNextRace ? (
-                      <span className="race-status status-next">Next Race</span>
-                    ) : (
-                      <span className="race-status status-upcoming">Upcoming</span>
+          {filteredRaces.length > 0 ? (
+            filteredRaces.map(race => {
+              const isNextRace = nextRace && race.id === nextRace.id;
+              const cardClassName = `race-card ${race.completed ? 'race-card-completed' : ''} ${isNextRace ? 'race-card-next' : ''}`;
+              
+              return (
+                <motion.div 
+                  key={race.id}
+                  variants={itemVariants}
+                  onClick={() => handleRaceClick(race.id)}
+                  className={cardClassName}
+                >
+                  <div className="race-content">
+                    <div className="race-header">
+                      <h2 className="race-name">{race.name}</h2>
+                      {race.completed ? (
+                        <span className="race-status status-completed">Completed</span>
+                      ) : isNextRace ? (
+                        <span className="race-status status-next">Next Race</span>
+                      ) : (
+                        <span className="race-status status-upcoming">Upcoming</span>
+                      )}
+                    </div>
+                    
+                    <p className="race-date">{race.date} • {race.time}</p>
+                    <p className="race-circuit">{race.circuit}, {race.location}</p>
+                    
+                    {race.flag && (
+                      <div className="race-flag">
+                        <img src={race.flag} alt={race.country} width={25} height={15} />
+                      </div>
+                    )}
+                    
+                    {race.completed && race.winner && (
+                      <div className="race-results">
+                        <div className="winner-info">
+                          <span className="trophy-icon">🏆</span>
+                          <span className="winner-name">{race.winner}</span>
+                        </div>
+                      </div>
                     )}
                   </div>
-                  
-                  <p className="race-date">{race.date} • {race.time}</p>
-                  <p className="race-circuit">{race.circuit}, {race.location}</p>
-                  
-                  {race.completed && (
-                    <div className="race-results">
-                      <div className="winner-info">
-                        <span className="trophy-icon">🏆</span>
-                        <span className="winner-name">{race.winner}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="no-races-message">
+              <p>No races found matching the current filter.</p>
+              {error && <p className="error-message">Error: {error}</p>}
+            </div>
+          )}
         </motion.div>
       )}
     </div>
