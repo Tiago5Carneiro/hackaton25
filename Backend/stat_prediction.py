@@ -2,7 +2,7 @@ from google import genai
 from google.genai import types
 from time import sleep
 
-gemini_token = "AIzaSyDuCpQYdMwCnbkIlPys9CQTJ8HcM6yhCcA"
+gemini_token = "AIzaSyDfe63b91SVI9f9bMba82KqX8vODkTE2Z4"
 
 client = None 
 config = None
@@ -276,6 +276,7 @@ def qualifying_prediction_function(pilot_list, pilot_name):
 def card_creation(pilots_stats):
     create_client()
     pilot_cards = {}
+    sleep_c = 0
     
     for key in pilots_stats.keys():
        
@@ -284,7 +285,8 @@ def card_creation(pilots_stats):
             try:
                 pace = pace_prediction_function(pilots_stats, key)
             except:
-                print("Slepping")
+                print("Slepping -> {}".format(sleep_c))
+                sleep_c = sleep_c + 1
                 sleep(61)
 
         agress = None
@@ -292,7 +294,8 @@ def card_creation(pilots_stats):
             try:
                 agress = agress_prediction_function(pilots_stats, key)
             except:
-                print("Slepping")
+                print("Slepping -> {}".format(sleep_c))
+                sleep_c = sleep_c + 1
                 sleep(61)
         defense = 165 - agress
         tireman = None
@@ -300,31 +303,34 @@ def card_creation(pilots_stats):
             try:
                 tireman = tireman_prediction_function(pilots_stats, key)
             except:
-                print("Slepping")
+                print("Slepping -> {}".format(sleep_c))
+                sleep_c = sleep_c + 1
                 sleep(61)
         consist = None
         while consist is None:
             try:
                 consist = consist_prediction_function(pilots_stats, key)
             except:
-                print("Slepping")
+                print("Slepping -> {}".format(sleep_c))
+                sleep_c = sleep_c + 1
                 sleep(61)
         qualifying = None
         while qualifying is None:
             try:
                 qualifying = qualifying_prediction_function(pilots_stats, key)
             except:
-                print("Slepping")
+                print("Slepping -> {}".format(sleep_c))
+                sleep_c = sleep_c + 1
                 sleep(61)
             
         pilot_cards[key] = {
-            "Pace": round(pace),
-            "Agressiveness": round(agress),
-            "Defense": round(defense),
-            "TireMan" : round(tireman),
-            "Consistency" : round(consist),
-            "Qualifying" : round(qualifying),
-            "Overall" : round(max(0,min(pace*0.4 + agress*0.05 + defense*0.05 + tireman*0.3 + consist*0.15 + qualifying*0.15,99))),
+            "Pace": int(round(pace)),
+            "Agressiveness": int(round(agress)),
+            "Defense": int(round(defense)),
+            "TireMan" : int(round(tireman)),
+            "Consistency" : int(round(consist)),
+            "Qualifying" : int(round(qualifying)),
+            "Overall" : int(round(max(0,min(pace*0.4 + agress*0.05 + defense*0.05 + tireman*0.3 + consist*0.15 + qualifying*0.15,99)))),
         }
         
     return pilot_cards

@@ -373,7 +373,7 @@ if __name__ == "__main__":
 
             new_player_stats = {}
 
-            for driver in player_stats:
+            for driver in drivers:
                 new_player_stats[drivers[driver]["DriverId"]] = player_stats[driver]
 
         max_speed = 0
