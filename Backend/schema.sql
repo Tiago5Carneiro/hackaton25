@@ -12,7 +12,14 @@ CREATE TABLE Player (
     Points INT NOT NULL,
     ChampionshipWins INT NOT NULL,
     PlayerNum INT NOT NULL,
-    IsActive BOOLEAN NOT NULL
+    IsActive BOOLEAN NOT NULL,
+    Pace Int,
+    Agressiveness Int,
+    Defense Int,
+    TireMan Int,
+    Consistency Int,
+    Qualifying Int,
+    Overall Int
 );
 
 CREATE TABLE FutureEvent(

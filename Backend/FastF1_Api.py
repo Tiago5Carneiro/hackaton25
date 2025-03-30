@@ -4,6 +4,7 @@ import numpy as np
 import mysql.connector 
 import datetime
 import time
+import stat_prediction
 
 
 conn = mysql.connector.connect(
@@ -61,6 +62,14 @@ def get_year_events(year):
 
     return events
 
+def get_qualifying(events):
+    qualifyings = []
+    current_date = datetime.datetime.now()
+    for event in events:
+        if event.EventDate < current_date:
+            qualifyings.append(event.get_qualifying())
+    return qualifyings
+
 def get_races(events):
     races = []
     current_date = datetime.datetime.now()
@@ -80,12 +89,31 @@ def get_sprints(events):
                 pass
     return sprints 
 
+def get_stats_qualifyings(session):
+    session.load(messages = False)
+
+    ret = {}
+
+    for i in session.drivers:
+        results = session.results
+        results = results[results.DriverNumber == i]
+
+        if not pd.isnull(results.Q1).item():
+            ret[i] =  0.2
+        elif not pd.isnull(results.Q2).item():
+            ret[i] =  0.5
+        elif not pd.isnull(results.Q3).item():
+            ret[i] =  1
+
+    return ret
+
 def get_stats_race(session):
     print(session)
     session.load(messages = False)
     
     laps = session.laps
     car_data = session.car_data
+    n_lap = 1 if session.total_laps == 0 else session.total_laps 
     
     event_info = {}
     drivers = {}
@@ -107,6 +135,8 @@ def get_stats_race(session):
             driver["Points"] = int(results[results.DriverNumber == i].Points.iloc[0])
         else:
             driver["Points"] = 0 
+
+        driver["Stint"] = 0
     
         laps_info = laps[laps.Driver == driver.Abbreviation]
         car_info = car_data[i]
@@ -114,26 +144,42 @@ def get_stats_race(session):
     
         last_lap = session.session_start_time
         last_position = driver.GridPosition
-        n_lap = 0
+        last_stint = 0
         stats_laps = []
         #falta detetar se se espetou
         # verificar qualidade de dados para filtrar
+        event_speed_average = 0
+        event_delta_position = 0
         for _,lap in laps_info.iterrows():
             stats_lap = {}
     
             car_info_lap = car_info[np.logical_and(last_lap < car_info.Time, car_info.Time < lap.Time)] 
             mean_speed = int(car_info_lap.Speed.mean())
+            event_speed_average = event_speed_average + mean_speed 
+            event_delta_position = event_delta_position + lap.Position - last_position
     
             stats_lap["Speed"] = mean_speed
             stats_lap["CurrentPosition"] = lap.Position
             stats_lap["DeltaPosition"] = lap.Position - last_position
+
+            if last_stint != lap.Stint:
+                last_stint = lap.Stint
+                stint = 0
+                if lap.Compound in ["HARD","WET"]:
+                    stint = 3
+                elif lap.Compound in ["MEDIUM","INTERMEDIATE"]:
+                    stint = 1.5
+                else:
+                    stint = 1
+                driver["Stint"] = driver["Stint"] + stint
     
             stats_laps.append(stats_lap)
-            n_lap = n_lap + 1
     
             last_lap = lap.Time
             last_position = lap.Position
     
+        driver["AverageSpeed"] = event_speed_average/n_lap
+        driver["AverageDeltaPosition"] = 0 if np.isnan(event_delta_position/n_lap) else event_delta_position/n_lap
         driver["Lap"] = stats_laps
         drivers[i] = driver
     
@@ -178,7 +224,25 @@ def add_event_bd(event_info):
     cursor.close()
 
 
+def add_card_driver_bd(driver,card):
 
+    cursor = conn.cursor()
+
+    insert = ''' UPDATE Player SET %s = %s, %s = %s, %s = %s, %s = %s, %s = %s, %s = %s, %s = %s 
+                 WHERE PlayerId = %s;
+             '''
+
+    tup = ()
+    for info in card:
+        tup = tup + (info,card[info])
+
+    tup = tup + driver 
+
+    cursor.execute(insert,driver)
+
+    conn.commit()
+
+    cursor.close()
 
 def add_driver_bd(driver,driverId):
    
@@ -239,7 +303,6 @@ if __name__ == "__main__":
 
     current_year = datetime.datetime.now().year
 
-    player_stats = {}
     races = []
 
     flag = True
@@ -248,8 +311,25 @@ if __name__ == "__main__":
         events = get_year_events(year)
         races = get_races(events)
         sprints = get_sprints(events)
+        qualifyings = get_qualifying(events)
+
+        player_stats = {}
 
         player_points = {}
+
+        for qualification in qualifyings:
+            stats = get_stats_qualifyings(qualification)
+
+            for driver in stats:
+                if driver in player_stats:
+                    player_stats[driver]["Qualifying"].append(stats[driver])
+                else:
+                    player_stats[driver] = {}
+                    player_stats[driver]["Qualifying"] = [stats[driver]]
+                    player_stats[driver]["AvgSpeed"] = []
+                    player_stats[driver]["DeltaPos"] = []
+                    player_stats[driver]["Consistency"] = []
+                    player_stats[driver]["TireMan"] = []
 
         for race in races:
             stats = get_stats_race(race)
@@ -278,7 +358,66 @@ if __name__ == "__main__":
                 else:
                     player_points[driver] = (drivers[driver]["Points"],aux_driver["DriverId"])
 
+                if driver in player_stats:
+                    player_stats[driver]["AvgSpeed"].append(drivers[driver]["AverageSpeed"])
+                    player_stats[driver]["DeltaPos"].append(drivers[driver]["AverageDeltaPosition"])
+                    player_stats[driver]["Consistency"].append(drivers[driver]["ClassifiedPosition"])
+                    player_stats[driver]["TireMan"].append(drivers[driver]["Stint"])
+                else:
+                    player_stats[driver]["AvgSpeed"] = [drivers[driver]["AverageSpeed"]]
+                    player_stats[driver]["DeltaPos"] = [drivers[driver]["AverageDeltaPosition"]]
+                    player_stats[driver]["Consistency"] = [drivers[driver]["ClassifiedPosition"]]
+                    player_stats[driver]["TireMan"] = [drivers[driver]["Stint"]]
+
             add_event_bd(stats)
+
+            new_player_stats = {}
+
+            for driver in player_stats:
+                new_player_stats[drivers[driver]["DriverId"]] = player_stats[driver]
+
+        max_speed = 0
+        max_delta_position = 0
+        min_delta_position = 0
+        max_stint_position = 0
+        for player in player_stats:
+            player_dic = player_stats[player]
+            max_speed = max(player_dic["AvgSpeed"]) if max(player_dic["AvgSpeed"]) > max_speed else max_speed
+            max_delta_position = max(player_dic["DeltaPos"]) if max(player_dic["DeltaPos"]) > max_delta_position else max_delta_position 
+            min_delta_position = min(player_dic["DeltaPos"]) if min(player_dic["DeltaPos"]) < min_delta_position else min_delta_position 
+            max_stint_position = max(player_dic["TireMan"]) if max(player_dic["TireMan"]) > max_stint_position else max_stint_position 
+
+        for player in player_stats:
+            player_dic = player_stats[player]
+            player_stats[player]["AvgSpeed"] = [int((x/max_speed) * 50 + 50) for x in player_dic["AvgSpeed"]]
+            player_stats[player]["DeltaPos"] = [((x - min_delta_position)/(max_delta_position - min_delta_position)) * 50 + 50 for x in player_dic["DeltaPos"]]
+            player_stats[player]["TireMan"] = [(x/max_stint_position) * 50 +50 for x in player_dic["TireMan"]]
+            player_stats[player]["Qualifying"] = [x * 50 + 50 for x in player_dic["Qualifying"]]
+            l_data = player_stats[player]["Consistency"]
+            new_data = []
+
+            for data in l_data:
+                try:
+                    new_data.append(int(data))
+                except:
+                    new_data.append(20)
+
+            new_data = [((21 - x)/20) * 50 +50 for x in new_data]
+            player_stats[player]["Consistency"] = new_data
+
+            for entry in player_stats[player]:
+                player_stats[player][entry] = [int(round(x)) for x in player_stats[player][entry]]
+
+
+        if year == 2024:
+            cards = stat_prediction.card_creation(player_stats)
+        
+            print(cards)
+
+            for card in cards:
+                add_card_driver_bd(card,cards[card])
+
+
 
         sorted_points = [player_points[key] for key in player_points]
         sorted_points.sort(key = lambda x: x[0])
