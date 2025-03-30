@@ -13,13 +13,15 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import '../styles/comparison.css';
+import { useF1Data } from '../context/F1DataContext';
 
 export default function DriverComparison() {
   const searchParams = useSearchParams();
   const driver1Slug = searchParams.get('driver1');
   const driver2Slug = searchParams.get('driver2');
   
-  const [drivers, setDrivers] = useState([]);
+  const { drivers, loading: contextLoading, error: contextError } = useF1Data();
+  
   const [driver1, setDriver1] = useState(null);
   const [driver2, setDriver2] = useState(null);
   const [selectedDriver1, setSelectedDriver1] = useState(driver1Slug || '');
@@ -27,175 +29,129 @@ export default function DriverComparison() {
   const [comparisonData, setComparisonData] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Load all drivers
-  useEffect(() => {
-    // Fetch or use hard-coded driver data
-    const driverData = [
-      {
-        id: 1,
-        position: 1,
-        name: "Max Verstappen",
-        slug: "max-verstappen",
-        nationality: "Dutch",
-        team: "Red Bull Racing",
-        points: 342,
-        dob: "30 Sep 1997",
-        wins: 56,
-        podiums: 102,
-        championships: 3,
-        imageUrl: "https://www.formula1.com/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/2col/image.png",
-        skills: {
-          pace: 97,
-          consistency: 95,
-          racecraft: 96,
-          tireManagement: 92,
-          wetWeatherDriving: 98,
-        }
-      },
-      {
-        id: 2,
-        position: 2,
-        name: "Lando Norris",
-        slug: "lando-norris",
-        nationality: "British",
-        team: "McLaren",
-        points: 275,
-        dob: "13 Nov 1999",
-        wins: 2,
-        podiums: 17,
-        championships: 0,
-        imageUrl: "https://www.formula1.com/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/2col/image.png",
-        skills: {
-          pace: 94,
-          consistency: 90,
-          racecraft: 91,
-          tireManagement: 89,
-          wetWeatherDriving: 92,
-        }
-      },
-      {
-        id: 3,
-        position: 3,
-        name: "Charles Leclerc",
-        slug: "charles-leclerc",
-        nationality: "Monégasque",
-        team: "Ferrari",
-        points: 246,
-        dob: "16 Oct 1997",
-        wins: 5,
-        podiums: 28,
-        championships: 0,
-        imageUrl: "https://www.formula1.com/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/2col/image.png",
-        skills: {
-          pace: 96,
-          consistency: 88,
-          racecraft: 90,
-          tireManagement: 87,
-          wetWeatherDriving: 90,
-        }
-      },
-      {
-        id: 4,
-        position: 4,
-        name: "Lewis Hamilton",
-        slug: "lewis-hamilton",
-        nationality: "British",
-        team: "Mercedes",
-        points: 189,
-        dob: "7 Jan 1985",
-        wins: 103,
-        podiums: 197,
-        championships: 7,
-        imageUrl: "https://www.formula1.com/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/2col/image.png",
-        skills: {
-          pace: 95,
-          consistency: 94,
-          racecraft: 97,
-          tireManagement: 95,
-          wetWeatherDriving: 99,
-        }
-      },
-      {
-        id: 5,
-        position: 5,
-        name: "Carlos Sainz",
-        slug: "carlos-sainz",
-        nationality: "Spanish",
-        team: "Ferrari",
-        points: 185,
-        dob: "1 Sep 1994",
-        wins: 3,
-        podiums: 19,
-        championships: 0,
-        imageUrl: "https://www.formula1.com/content/dam/fom-website/drivers/C/CARSAI01_Carlos_Sainz/carsai01.png.transform/2col/image.png",
-        skills: {
-          pace: 92,
-          consistency: 90,
-          racecraft: 89,
-          tireManagement: 91,
-          wetWeatherDriving: 87,
-        }
-      },
-    ];
+  // Generate skill values for drivers that don't have them
+  const generateDriverSkills = (driver) => {
+    if (!driver) return null;
     
-    // Add flag URLs and team logo URLs to each driver
-    const driversWithExtras = driverData.map(driver => ({
+    // If driver already has skills, use them
+    if (driver.skills) return driver;
+    
+    // Otherwise generate random skills (would come from API in real app)
+    const enhancedDriver = {
       ...driver,
-      flagUrl: `https://flagcdn.com/w80/${getNationalityCode(driver.nationality).toLowerCase()}.png`,
-      teamLogoUrl: getTeamLogoUrl(driver.team)
-    }));
+      skills: {
+        pace: Math.floor(Math.random() * 20) + 80, // 80-100
+        consistency: Math.floor(Math.random() * 20) + 80,
+        racecraft: Math.floor(Math.random() * 20) + 80,
+        tireManagement: Math.floor(Math.random() * 20) + 80,
+        wetWeatherDriving: Math.floor(Math.random() * 20) + 80,
+      },
+      flagUrl: `https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/${getNationalityCode(driver.nationality).toLowerCase()}-flag.png`,
+      teamLogoUrl: getTeamLogoUrl(driver.team),
+      imageUrl: driver.image // Use the existing image URL from the API
+    };
     
-    setDrivers(driversWithExtras);
-    setLoading(false);
-  }, []);
-
-  // Load driver details when selection changes
+    return enhancedDriver;
+  };
+  
+  // Effect to process drivers once context is loaded
   useEffect(() => {
-    if (drivers.length > 0) {
-      const foundDriver1 = selectedDriver1 ? drivers.find(d => d.slug === selectedDriver1) : null;
-      const foundDriver2 = selectedDriver2 ? drivers.find(d => d.slug === selectedDriver2) : null;
+    if (!contextLoading && drivers && drivers.length > 0) {
+      // Create enhanced drivers with additional properties
+      const enhancedDrivers = drivers.map(driver => ({
+        ...driver,
+        slug: driver.id, // Use id as slug if not provided
+        flagUrl: `https://flagcdn.com/w80/${getNationalityCode(driver.nationality || '').toLowerCase()}.png`,
+        teamLogoUrl: getTeamLogoUrl(driver.team),
+        imageUrl: driver.image,
+        championships: driver.championships || 0,
+        wins: driver.wins || 0,
+        podiums: driver.podiums || 0,
+        points: driver.points || 0,
+        // Generate random skills if not available
+        skills: {
+          pace: Math.floor(Math.random() * 20) + 80, // 80-100
+          consistency: Math.floor(Math.random() * 20) + 80,
+          racecraft: Math.floor(Math.random() * 20) + 80,
+          tireManagement: Math.floor(Math.random() * 20) + 80,
+          wetWeatherDriving: Math.floor(Math.random() * 20) + 80,
+        }
+      }));
       
-      setDriver1(foundDriver1);
-      setDriver2(foundDriver2);
+      setLoading(false);
+      
+      // If driver1Slug is provided in URL, find and select that driver
+      if (driver1Slug && !selectedDriver1) {
+        const found = enhancedDrivers.find(d => d.id === driver1Slug || d.slug === driver1Slug);
+        if (found) {
+          setSelectedDriver1(found.id);
+          setDriver1(generateDriverSkills(found));
+        }
+      }
+      
+      // If driver2Slug is provided in URL, find and select that driver
+      if (driver2Slug && !selectedDriver2) {
+        const found = enhancedDrivers.find(d => d.id === driver2Slug || d.slug === driver2Slug);
+        if (found) {
+          setSelectedDriver2(found.id);
+          setDriver2(generateDriverSkills(found));
+        }
+      }
+    }
+  }, [contextLoading, drivers, driver1Slug, driver2Slug, selectedDriver1, selectedDriver2]);
+
+  // Effect to update selected drivers
+  useEffect(() => {
+    if (!contextLoading && drivers && drivers.length > 0) {
+      // Find selected drivers
+      const foundDriver1 = selectedDriver1 ? drivers.find(d => d.id === selectedDriver1 || d.slug === selectedDriver1) : null;
+      const foundDriver2 = selectedDriver2 ? drivers.find(d => d.id === selectedDriver2 || d.slug === selectedDriver2) : null;
+      
+      // Generate skills for selected drivers
+      const enhancedDriver1 = foundDriver1 ? generateDriverSkills(foundDriver1) : null;
+      const enhancedDriver2 = foundDriver2 ? generateDriverSkills(foundDriver2) : null;
+      
+      setDriver1(enhancedDriver1);
+      setDriver2(enhancedDriver2);
       
       // Create comparison data for the chart
-      if (foundDriver1 && foundDriver2) {
+      if (enhancedDriver1 && enhancedDriver2) {
         const comparisonData = [
           {
             skill: "Pace",
-            [foundDriver1.name]: foundDriver1.skills.pace,
-            [foundDriver2.name]: foundDriver2.skills.pace,
+            [enhancedDriver1.name]: enhancedDriver1.skills.pace,
+            [enhancedDriver2.name]: enhancedDriver2.skills.pace,
             fullMark: 100
           },
           {
             skill: "Consistency",
-            [foundDriver1.name]: foundDriver1.skills.consistency,
-            [foundDriver2.name]: foundDriver2.skills.consistency,
+            [enhancedDriver1.name]: enhancedDriver1.skills.consistency,
+            [enhancedDriver2.name]: enhancedDriver2.skills.consistency,
             fullMark: 100
           },
           {
             skill: "Racecraft",
-            [foundDriver1.name]: foundDriver1.skills.racecraft,
-            [foundDriver2.name]: foundDriver2.skills.racecraft,
+            [enhancedDriver1.name]: enhancedDriver1.skills.racecraft,
+            [enhancedDriver2.name]: enhancedDriver2.skills.racecraft,
             fullMark: 100
           },
           {
             skill: "Tire Management",
-            [foundDriver1.name]: foundDriver1.skills.tireManagement,
-            [foundDriver2.name]: foundDriver2.skills.tireManagement,
+            [enhancedDriver1.name]: enhancedDriver1.skills.tireManagement,
+            [enhancedDriver2.name]: enhancedDriver2.skills.tireManagement,
             fullMark: 100
           },
           {
             skill: "Wet Weather Driving",
-            [foundDriver1.name]: foundDriver1.skills.wetWeatherDriving,
-            [foundDriver2.name]: foundDriver2.skills.wetWeatherDriving,
+            [enhancedDriver1.name]: enhancedDriver1.skills.wetWeatherDriving,
+            [enhancedDriver2.name]: enhancedDriver2.skills.wetWeatherDriving,
             fullMark: 100
           },
         ];
         setComparisonData(comparisonData);
       }
     }
-  }, [drivers, selectedDriver1, selectedDriver2]);
+  }, [drivers, selectedDriver1, selectedDriver2, contextLoading]);
 
   const handleDriver1Change = (e) => {
     setSelectedDriver1(e.target.value);
@@ -205,8 +161,12 @@ export default function DriverComparison() {
     setSelectedDriver2(e.target.value);
   };
 
-  if (loading) {
+  if (loading || contextLoading) {
     return <div className="comparison-page loading">Loading driver data...</div>;
+  }
+
+  if (contextError) {
+    return <div className="comparison-page error">Error loading driver data: {contextError}</div>;
   }
 
   return (
@@ -231,7 +191,7 @@ export default function DriverComparison() {
           >
             <option value="">Select Driver 1</option>
             {drivers.map(driver => (
-              <option key={`d1-${driver.id}`} value={driver.slug}>
+              <option key={`d1-${driver.id}`} value={driver.id}>
                 {driver.name}
               </option>
             ))}
@@ -241,7 +201,7 @@ export default function DriverComparison() {
             <div className="selected-driver-card">
               <div className="driver-card-header">
                 <img 
-                  src={driver1.imageUrl} 
+                  src={driver1.imageUrl || driver1.image} 
                   alt={driver1.name} 
                   className="driver-mini-image"
                 />
@@ -272,7 +232,7 @@ export default function DriverComparison() {
           >
             <option value="">Select Driver 2</option>
             {drivers.map(driver => (
-              <option key={`d2-${driver.id}`} value={driver.slug}>
+              <option key={`d2-${driver.id}`} value={driver.id}>
                 {driver.name}
               </option>
             ))}
@@ -282,7 +242,7 @@ export default function DriverComparison() {
             <div className="selected-driver-card">
               <div className="driver-card-header">
                 <img 
-                  src={driver2.imageUrl} 
+                  src={driver2.imageUrl || driver2.image} 
                   alt={driver2.name} 
                   className="driver-mini-image"
                 />
@@ -378,36 +338,36 @@ export default function DriverComparison() {
               <div className="stat-comparison">
                 <div className="stat-label">Championships</div>
                 <div className="stat-values">
-                  <div className="stat-value driver1">{driver1.championships}</div>
+                  <div className="stat-value driver1">{driver1.championships || 0}</div>
                   <div className="stat-divider">vs</div>
-                  <div className="stat-value driver2">{driver2.championships}</div>
+                  <div className="stat-value driver2">{driver2.championships || 0}</div>
                 </div>
               </div>
               
               <div className="stat-comparison">
                 <div className="stat-label">Race Wins</div>
                 <div className="stat-values">
-                  <div className="stat-value driver1">{driver1.wins}</div>
+                  <div className="stat-value driver1">{driver1.wins || 0}</div>
                   <div className="stat-divider">vs</div>
-                  <div className="stat-value driver2">{driver2.wins}</div>
+                  <div className="stat-value driver2">{driver2.wins || 0}</div>
                 </div>
               </div>
               
               <div className="stat-comparison">
                 <div className="stat-label">Podiums</div>
                 <div className="stat-values">
-                  <div className="stat-value driver1">{driver1.podiums}</div>
+                  <div className="stat-value driver1">{driver1.podiums || 0}</div>
                   <div className="stat-divider">vs</div>
-                  <div className="stat-value driver2">{driver2.podiums}</div>
+                  <div className="stat-value driver2">{driver2.podiums || 0}</div>
                 </div>
               </div>
               
               <div className="stat-comparison">
                 <div className="stat-label">Current Points</div>
                 <div className="stat-values">
-                  <div className="stat-value driver1">{driver1.points}</div>
+                  <div className="stat-value driver1">{driver1.points || 0}</div>
                   <div className="stat-divider">vs</div>
-                  <div className="stat-value driver2">{driver2.points}</div>
+                  <div className="stat-value driver2">{driver2.points || 0}</div>
                 </div>
               </div>
             </div>
@@ -424,6 +384,8 @@ export default function DriverComparison() {
 
 // Helper function to get country code from nationality
 function getNationalityCode(nationality) {
+  if (!nationality) return 'unknown';
+  
   const nationalityCodes = {
     'Dutch': 'nl',
     'British': 'gb',
@@ -439,7 +401,9 @@ function getNationalityCode(nationality) {
     'Danish': 'dk',
     'German': 'de',
     'American': 'us',
-    'Chinese': 'cn'
+    'Chinese': 'cn',
+    'Italian': 'it',
+    'Brazilian': 'br'
   };
   
   return nationalityCodes[nationality] || 'unknown';
@@ -447,10 +411,13 @@ function getNationalityCode(nationality) {
 
 // Helper function to get team logo URL
 function getTeamLogoUrl(team) {
+  if (!team) return '';
+  
   // Replace spaces with hyphens and convert to lowercase for URL
   const teamSlug = team.toLowerCase().replace(/\s+/g, '-');
   return `https://www.formula1.com/content/dam/fom-website/teams/2023/${teamSlug}.png.transform/2col/image.png`;
 }
+
 
 // Helper function to get rating category based on value
 function getRatingCategory(value) {

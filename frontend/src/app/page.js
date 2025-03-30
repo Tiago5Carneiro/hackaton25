@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import './styles/homepage.css';
+import { useF1Data } from './context/F1DataContext';
 
 import NewsCard from './components/NewsCard';
 import RaceCountdownCard from './components/RaceCountdown';
@@ -12,11 +13,78 @@ import StandingsCard from './components/StandingsCard';
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [upcomingRaces, setUpcomingRaces] = useState([]);
+  const [closestRace, setClosestRace] = useState(null);
+  
+  // Get data from context with try/catch
+  let contextData = { drivers: [], constructors: [], loading: true, error: null };
+  try {
+    contextData = useF1Data();
+  } catch (error) {
+    console.error("Failed to get F1 data from context:", error);
+  }
+  
+  const { drivers, constructors, loading, error, getNextRaces } = contextData;
   
   useEffect(() => {
+    console.log("HomePage: Component mounted");
+    
+    // Fetch upcoming races with getNextRaces instead of relying on nextRace
+    const fetchUpcomingRaces = async () => {
+      try {
+        const races = await getNextRaces(5); // Get next 5 races
+        console.log("HomePage: Upcoming races fetched:", races);
+        
+        if (Array.isArray(races) && races.length > 0) {
+          setUpcomingRaces(races);
+          // Use the first (closest) race for the countdown
+          setClosestRace(races[0]);
+        }
+      } catch (err) {
+        console.error("Error fetching upcoming races:", err);
+      }
+    };
+    
+    fetchUpcomingRaces();
     setIsLoaded(true);
-  }, []);
+    
+    // Detailed logging of context data
+    console.log('HomePage: Drivers data received:', drivers?.length);
+    console.log('HomePage: Constructors data received:', constructors?.length);
+    console.log('HomePage: Loading state:', loading);
+    console.log('HomePage: Error state:', error);
+    
+  }, [drivers, constructors, loading, error, getNextRaces]);
 
+  // Transform data for display with safer handling
+  const driverStandings = Array.isArray(drivers) && drivers.length > 0 
+    ? drivers.slice(0, 3).map(driver => ({
+        position: driver.position || '?',
+        name: driver.name || 'Unknown Driver',
+        team: driver.team || 'Unknown Team',
+        points: driver.points || 0,
+        change: "+0"
+      }))
+    : [
+        { position: 1, name: "Max Verstappen", team: "Red Bull Racing", points: 240, change: "+0" },
+        { position: 2, name: "Lando Norris", team: "McLaren", points: 189, change: "+0" },
+        { position: 3, name: "Charles Leclerc", team: "Ferrari", points: 162, change: "+0" }
+      ];
+
+  const constructorStandings = Array.isArray(constructors) && constructors.length > 0 
+    ? constructors.slice(0, 3).map(team => ({
+        position: team.position || '?',
+        name: team.name || 'Unknown Team',
+        points: team.points || 0,
+        change: "0"
+      }))
+    : [
+        { position: 1, name: "Red Bull Racing", points: 400, change: "0" },
+        { position: 2, name: "McLaren", points: 310, change: "0" },
+        { position: 3, name: "Ferrari", points: 296, change: "0" }
+      ];
+
+  // Use default news data
   const featuredNews = [
     {
       id: 1,
@@ -44,53 +112,8 @@ export default function Home() {
     },
   ];
   
-  const driverStandings = [
-    { 
-      position: 1, 
-      name: "Max Verstappen", 
-      team: "Red Bull Racing",
-      points: 342, 
-      change: "+2" 
-    },
-    { 
-      position: 2, 
-      name: "Lando Norris", 
-      team: "McLaren", 
-      points: 275, 
-      change: "0" 
-    },
-    { 
-      position: 3, 
-      name: "Charles Leclerc", 
-      team: "Ferrari", 
-      points: 246, 
-      change: "+1" 
-    },
-  ];
-
-  const constructorStandings = [
-    { 
-      position: 1, 
-      name: "Red Bull Racing", 
-      points: 492, 
-      change: "0" 
-    },
-    { 
-      position: 2, 
-      name: "McLaren", 
-      points: 452, 
-      change: "+1" 
-    },
-    { 
-      position: 3, 
-      name: "Ferrari", 
-      points: 431, 
-      change: "-1" 
-    },
-  ];
-  
-  // Informações atualizadas sobre a próxima corrida
-  const nextRace = {
+  // Handle next race data with fallback
+  const defaultRace = {
     name: "Australian Grand Prix",
     circuit: "Albert Park Circuit",
     location: "Melbourne, Australia",
@@ -100,6 +123,7 @@ export default function Home() {
     dateTime: new Date('2025-03-30T06:00:00Z').getTime()
   };
   
+  // Animation configurations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -123,6 +147,17 @@ export default function Home() {
     }
   };
 
+  // Show loading state if context is still loading
+  if (loading) {
+    console.log("HomePage: Displaying loading spinner");
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading F1 Hub data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className={`${isLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
       {/* Hero Section */}
@@ -135,10 +170,10 @@ export default function Home() {
           <h1 className="hero-title">
             <span className="hero-logo-icon">
               <Image 
-                src="/images/f1.png"
+                src="/images/f1_logo.png"
                 alt="F1 Hub Logo" 
-                width={40} 
-                height={40}
+                width={90}
+                height={90}
                 className="hero-favicon"
               />
             </span>
@@ -162,15 +197,44 @@ export default function Home() {
         animate={isLoaded ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        <RaceCountdownCard race={nextRace} />
+        {/* Use the closest race from nextRaces API call, fallback to default if needed */}
+        <RaceCountdownCard race={closestRace || defaultRace} />
       </motion.section>
 
+      {/* Upcoming Races Section (Optional - you can uncomment to show more upcoming races) */}
+      {/* {upcomingRaces.length > 1 && (
+        <section className="section-container">
+          <div className="section-header">
+            <h2 className="section-title">Upcoming Races</h2>
+            <Link href="/schedule" className="view-all-link">
+              Full Calendar
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+          <div className="upcoming-races-list">
+            {upcomingRaces.slice(1).map((race) => (
+              <div key={race.id} className="upcoming-race-item">
+                <div className="race-flag">
+                  {race.flag && <img src={race.flag} alt={race.country} />}
+                </div>
+                <div className="race-info">
+                  <h3>{race.name}</h3>
+                  <p>{race.date} • {race.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )} */}
+
       {/* Featured News Section */}
-      <section className="section-container racing-section">
+      <section className="section-container">
         <div className="section-header">
-          <h2 className="section-title">Latest News</h2>
+         <h2 className="section-title">Latest News</h2>
           <Link href="/news" className="view-all-link">
-            View All
+            All News
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -242,15 +306,27 @@ export default function Home() {
         <div className="cta-content">
           <h2 className="cta-title">Try our F1 Pro Analysis Chat</h2>
           <p className="cta-description">
-            Ask questions, get insights, and discuss strategies
+            Get expert insights, race predictions, and technical analysis from our AI-powered F1 assistant.
           </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div 
+            className="cta-button-container"
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+          >
             <Link href="/chat" className="cta-button">
-              Chat
+              Start Chatting
             </Link>
           </motion.div>
         </div>
       </motion.section>
+    
+      {/* Error display */}
+      {error && (
+        <div className="error-notification">
+          <p>There was an error loading some content. Please try refreshing.</p>
+          <button onClick={() => window.location.reload()}>Refresh</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -28,7 +28,7 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  
+
   useEffect(() => {
     setIsLoaded(true);
     setTimeout(() => {
@@ -44,10 +44,16 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (e) => {
+  useEffect(() => {
+    if (newMessage === '' && inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+  }, [newMessage]);
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    
+    console.log('Sending message:', newMessage);
     const message = {
       id: Date.now(),
       user: 'You',
@@ -57,12 +63,70 @@ export default function Chat() {
       isUser: true
     };
     
-    setMessages([...messages, message]);
+    // Store message temporarily
+    const currentMessage = newMessage;
+    
+    // Clear message first, then update the messages state
     setNewMessage('');
     
-    // Simulate analyst response
-    simulateAnalystResponse(newMessage);
+    // Reset textarea height immediately
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+    
+    // Add slight delay to ensure the textarea resets before updating messages
+    setTimeout(() => {
+      setMessages(prev => [...prev, message]);
+      setIsTyping(true);
+    }, 10);
+    
+    try {
+      // Send request to the backend chat service
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: currentMessage }),
+      });
+
+      console.log('Response from backend:', response);
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json();
+      setIsTyping(false);
+      
+      const analytMessage = {
+        id: Date.now(),
+        user: "F1 Analyst",
+        message: data.message,
+        timestamp: 'Just now',
+        avatar: 'F',
+        isBot: true
+      };
+      
+      setMessages(prev => [...prev, analytMessage]);
+    } catch (error) {
+      console.error('Error fetching chat response:', error);
+      setIsTyping(false);
+      
+      // Show error message
+      const errorMessage = {
+        id: Date.now(),
+        user: "F1 Analyst",
+        message: "I'm sorry, I encountered an error while analyzing your question. Please try again.",
+        timestamp: 'Just now',
+        avatar: 'F',
+        isBot: true
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
+    
   
   const simulateAnalystResponse = (userMessage) => {
     // Show typing indicator
@@ -206,7 +270,8 @@ export default function Chat() {
                 </div>
               </motion.div>
             )}
-            // ...existing code...
+            
+            {/* Suggestion buttons when conversation starts */}
             {messages.length === 1 && (
               <motion.div 
                 className="suggestion-container"
