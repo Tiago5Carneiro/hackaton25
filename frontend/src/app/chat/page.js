@@ -44,6 +44,12 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (newMessage === '' && inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+  }, [newMessage]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -57,9 +63,22 @@ export default function Chat() {
       isUser: true
     };
     
-    setMessages([...messages, message]);
+    // Store message temporarily
+    const currentMessage = newMessage;
+    
+    // Clear message first, then update the messages state
     setNewMessage('');
-    setIsTyping(true);
+    
+    // Reset textarea height immediately
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+    
+    // Add slight delay to ensure the textarea resets before updating messages
+    setTimeout(() => {
+      setMessages(prev => [...prev, message]);
+      setIsTyping(true);
+    }, 10);
     
     try {
       // Send request to the backend chat service
@@ -68,7 +87,7 @@ export default function Chat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: newMessage }),
+        body: JSON.stringify({ message: currentMessage }),
       });
 
       console.log('Response from backend:', response);
