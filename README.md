@@ -1,24 +1,24 @@
 # F1Hub 🏎️
 
-A central hub for Formula 1 enthusiasts, offering driver statistics, news, ratings, and driver comparisons.
+A central hub for Formula 1 enthusiasts, offering driver statistics, news, ratings, and driver comparisons powered by AI technology.
 
 ## 📊 Features
 
 - **Driver Statistics**: Detailed and up-to-date data on each driver's performance
 - **News Feed**: Latest news from the F1 world
-- **Rating System**: Objective evaluation of each driver based on performance
-- **Driver Comparison**: Tool for comparative analysis between drivers
+- **AI-Powered Rating System**: Sophisticated evaluation of each driver using IA to analyze critical performance metrics, considering factors beyond traditional statistics.
+- **Driver Comparison**: Tool for comparative analysis between drivers with detailed attribute breakdown
+- **F1 Assistant**: Interactive chatbot powered by IA to answer all your F1 questions
 
 ## 🔮 In Development
 
 - **Race Simulator**: Realistic simulations based on historical data
-- **GP Predictions**: Forecasts for upcoming Grand Prix events using statistical analysis
+- **GP Predictions**: AI-driven forecasts for upcoming Grand Prix events using LLM to analyze historical statistics and current form. The user will be allowed to select any upcoming race to receive AI-generated predictions based on historical data, current form, and track-specific variables.
 
-## 🛠️ Technologies Used
+## 🛠️ Key Technologies
 
-- **Frontend**: Next.js and Tailwind CSS
-- **Backend**: Python (data analysis and processing)
-- **Database**: SingleStore (cloud database)
+- **Frontend**: Next.js and Tailwind CSS for a responsive and modern UI
+- **Backend**: Python for sophisticated data analysis and processing
 
 ## 🚀 Installation
 
