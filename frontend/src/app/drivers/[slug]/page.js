@@ -24,24 +24,6 @@ export default function DriverPage() {
   // API URL - change to your actual backend URL
   const API_URL = "http://localhost:5000/api";
   
-  // Mock data for driver skills (would come from API in real app)
-  const driverSkills = {
-    pace: Math.floor(Math.random() * 30) + 70,
-    consistency: Math.floor(Math.random() * 30) + 70,
-    racecraft: Math.floor(Math.random() * 30) + 70,
-    tireManagement: Math.floor(Math.random() * 30) + 70,
-    wetWeatherDriving: Math.floor(Math.random() * 30) + 70,
-  };
-
-  // Format skills data for Recharts
-  const skillsData = [
-    { skill: "Pace", value: driverSkills.pace, fullMark: 100 },
-    { skill: "Consistency", value: driverSkills.consistency, fullMark: 100 },
-    { skill: "Racecraft", value: driverSkills.racecraft, fullMark: 100 },
-    { skill: "Tire Management", value: driverSkills.tireManagement, fullMark: 100 },
-    { skill: "Wet Weather", value: driverSkills.wetWeatherDriving, fullMark: 100 },
-  ];
-  
   // Recent results - mock data
   const recentResults = [
     { race: "Italian GP", position: 3, points: 15 },
@@ -86,9 +68,20 @@ export default function DriverPage() {
 
   // Function to render overall rating
   function renderOverallRating() {
+    if (!driver) return null;
+    
     // Calculate average rating from all skills
+    const driverSkills = {
+      pace: driver.pace || 70,
+      aggression: driver.agress || 70,
+      defense: driver.def || 70,
+      tireManagement: driver.tireman || 70,
+      consistency: driver.consist || 70,
+      qualifying: driver.quali || 70,
+    };
+    
     const totalSkills = Object.values(driverSkills).reduce((sum, value) => sum + value, 0);
-    const overallRating = Math.round(totalSkills / Object.keys(driverSkills).length);
+    const overallRating = driver.overall || Math.round(totalSkills / Object.keys(driverSkills).length);
     
     // Determine color based on rating
     let ratingColor;
@@ -148,17 +141,22 @@ export default function DriverPage() {
         const driverFromContext = drivers.find(d => d.id === slug || d.slug === slug);
         
         if (driverFromContext) {
-          // Enhance driver data with additional info
-          const enhancedDriver = {
-            ...driverFromContext,
-            position: drivers.findIndex(d => d.id === driverFromContext.id) + 1,
-            dob: getRandomBirthday(), // This would come from API in a real app
-            teamLogoUrl: getTeamLogoUrl(driverFromContext.team),
-          };
-          
-          setDriver(enhancedDriver);
-          setLoading(false);
-          return;
+          try {
+            
+            // Enhance driver data with additional info
+            const enhancedDriver = {
+              ...driverFromContext,
+              position: drivers.findIndex(d => d.id === driverFromContext.id) + 1,
+              dob: getRandomBirthday(), // This would come from API in a real app
+              teamLogoUrl: getTeamLogoUrl(driverFromContext.team),
+            };
+            
+            setDriver(enhancedDriver);
+            setLoading(false);
+            return;
+          } catch (err) {
+            console.error('Error fetching driver details:', err);
+          }
         }
       }
       
@@ -205,6 +203,20 @@ export default function DriverPage() {
     
     fetchDriverData();
   }, [slug, drivers, contextLoading]);
+  
+  // Format skills data for Recharts
+  const getSkillsData = () => {
+    if (!driver) return [];
+    
+    return [
+      { skill: "Pace", value: driver.pace || 70, fullMark: 100 },
+      { skill: "Aggression", value: driver.agress || 70, fullMark: 100 },
+      { skill: "Defense", value: driver.def || 70, fullMark: 100 },
+      { skill: "Tire Management", value: driver.tireman || 70, fullMark: 100 },
+      { skill: "Consistency", value: driver.consist || 70, fullMark: 100 },
+      { skill: "Qualifying", value: driver.quali || 70, fullMark: 100 },
+    ];
+  };
   
   // Show loading state if either local or context loading is true
   if (loading || contextLoading) {
@@ -253,10 +265,6 @@ export default function DriverPage() {
               <span className="label">Points:</span> 
               <span className="value">{driver.points}</span>
             </div>
-            <div className="info-item">
-              <span className="label">Date of Birth:</span> 
-              <span className="value">{driver.dob}</span>
-            </div>
           </div>
         </div>
         
@@ -299,7 +307,7 @@ export default function DriverPage() {
           
           {/* Radar chart on top */}
           <div className="radar-chart-container">
-            <RechartsComponent driver={driver} skillsData={skillsData} />
+            <RechartsComponent driver={driver} skillsData={getSkillsData()} />
           </div>
           
           {/* Skills section with side-by-side layout */}
@@ -307,17 +315,18 @@ export default function DriverPage() {
             {/* Football Manager style ratings on the left */}
             <div className="football-manager-ratings">
               <div className="rating-bars">
-                {renderRatingBar("Pace", driverSkills.pace)}
-                {renderRatingBar("Consistency", driverSkills.consistency)}
-                {renderRatingBar("Racecraft", driverSkills.racecraft)}
-                {renderRatingBar("Tire Management", driverSkills.tireManagement)}
-                {renderRatingBar("Wet Weather Driving", driverSkills.wetWeatherDriving)}
+                {renderRatingBar("Pace", driver.pace || 70)}
+                {renderRatingBar("Aggression", driver.agress || 70)}
+                {renderRatingBar("Defense", driver.def || 70)}
+                {renderRatingBar("Tire Management", driver.tireman || 70)}
+                {renderRatingBar("Consistency", driver.consist || 70)}
+                {renderRatingBar("Qualifying", driver.quali || 70)}
               </div>
             </div>
             
             {/* Overall rating on the right */}
             <div className="overall-rating">
-              {renderOverallRating()}
+              {renderOverallRating("Overall Rating", driver.overall || 70)}
             </div>
           </div>
         </div>

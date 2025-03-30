@@ -1,3 +1,4 @@
+import random
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -309,7 +310,14 @@ def get_drivers_standings():
                 Points as points,
                 ChampionshipWins as championships,
                 PlayerNum as number,
-                IsActive as isActive
+                IsActive as isActive,
+                Pace as pace,
+                Agressiveness as agress,
+                Defense as def,
+                TireMan as tireman,
+                Consistency as consist,
+                Qualifying as quali,
+                Overall as overall
             FROM Player
             WHERE IsActive = 1
             ORDER BY Points DESC
@@ -329,6 +337,30 @@ def get_drivers_standings():
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+
+            if driver['pace'] is None:
+                driver['pace'] = random.randint(70, 100)
+                
+            if driver['agress'] is None:
+                driver['agress'] = random.randint(70, 100)
+
+            if driver['def'] is None:
+                driver['def'] = random.randint(70, 100)
+
+            if driver['tireman'] is None:
+                driver['tireman'] = random.randint(70, 100)
+
+            if driver['consist'] is None:
+                driver['consist'] = random.randint(70, 100)
+
+            if driver['quali'] is None:
+                driver['quali'] = random.randint(70, 100)
+                    
+            if driver['overall'] is None:
+                driver['overall'] = random.randint(70, 100)
+                
+
+            
         
         return jsonify(drivers)
     
@@ -418,6 +450,7 @@ def get_driver_by_id(driver_id):
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+            
             return jsonify(driver)
         else:
             return jsonify({"error": "Driver not found"}), 404
@@ -451,7 +484,14 @@ def get_driver_by_slug(driver_slug):
             Points as points,
             ChampionshipWins as championships,
             PlayerNum as number,
-            IsActive as isActive
+            IsActive as isActive,
+            Pace as pace,
+            Agressiveness as agress,
+            Defense as def,
+            TireMan as tireman,
+            Consistency as consist,
+            Qualifying as quali,
+            Overall as overall
         FROM Player
         """
         
@@ -467,6 +507,27 @@ def get_driver_by_slug(driver_slug):
                 driver['nationality'] = driver_nationality(driver['name'])
                 driver['flag'] = get_driver_flag(driver['name'])
                 driver['teamColor'] = get_team_color(driver['team'])
+                if driver['pace'] is None:
+                    driver['pace'] = random.randint(70, 100)
+                
+                if driver['agress'] is None:
+                    driver['agress'] = random.randint(70, 100)
+
+                if driver['def'] is None:
+                    driver['def'] = random.randint(70, 100)
+
+                if driver['tireman'] is None:
+                    driver['tireman'] = random.randint(70, 100)
+
+                if driver['consist'] is None:
+                    driver['consist'] = random.randint(70, 100)
+
+                if driver['quali'] is None:
+                    driver['quali'] = random.randint(70, 100)
+
+                if driver['overall'] is None:
+                    driver['overall'] = random.randint(70, 100)
+                
                 return jsonify(driver)
         
         # If we get here, no driver was found
@@ -527,10 +588,8 @@ def get_events():
 
             # Add fastest lap holder name if available
             if event['fastLap'] and event['fastLap'] > 0:
-                fastlap_query = "SELECT Name FROM Player WHERE PlayerId = %s"
-                cursor.execute(fastlap_query, (event['fastLap'],))
-                fastlap_result = cursor.fetchone()
-                event['fastestLap'] = fastlap_result['Name'] if fastlap_result else "Unknown"
+                # miliseconds to m:s:ms
+                event['fastLap'] = event['fastLap'] / 1000
             else:
                 event['fastestLap'] = "N/A"
 
