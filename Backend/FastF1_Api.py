@@ -228,17 +228,13 @@ def add_card_driver_bd(driver,card):
 
     cursor = conn.cursor()
 
-    insert = ''' UPDATE Player SET %s = %s, %s = %s, %s = %s, %s = %s, %s = %s, %s = %s, %s = %s 
+    insert = ''' UPDATE Player SET Pace = %s, Agressiveness = %s, Defense = %s, TireMan = %s, Consistency = %s, Qualifying = %s, Overall = %s 
                  WHERE PlayerId = %s;
              '''
 
-    tup = ()
-    for info in card:
-        tup = tup + (info,card[info])
+    tup = (card["Pace"],card["Agressiveness"],card["Defense"],card["TireMan"],card["Consistency"],card["Qualifying"],card["Overall"],driver)
 
-    tup = tup + driver 
-
-    cursor.execute(insert,driver)
+    cursor.execute(insert,tup)
 
     conn.commit()
 
@@ -316,6 +312,7 @@ if __name__ == "__main__":
         player_stats = {}
 
         player_points = {}
+        new_player_stats = {}
 
         for qualification in qualifyings:
             stats = get_stats_qualifyings(qualification)
@@ -371,10 +368,13 @@ if __name__ == "__main__":
 
             add_event_bd(stats)
 
-            new_player_stats = {}
 
             for driver in drivers:
                 new_player_stats[drivers[driver]["DriverId"]] = player_stats[driver]
+
+        player_stats = new_player_stats
+
+
 
         max_speed = 0
         max_delta_position = 0

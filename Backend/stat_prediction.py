@@ -2,7 +2,7 @@ from google import genai
 from google.genai import types
 from time import sleep
 
-gemini_token = "AIzaSyDfe63b91SVI9f9bMba82KqX8vODkTE2Z4"
+gemini_token = "AIzaSyDZjrA_OOIgBvrL-m4SCyYzWKvgDAOUuT0"
 
 client = None 
 config = None
