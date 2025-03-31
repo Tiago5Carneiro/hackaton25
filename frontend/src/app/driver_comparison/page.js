@@ -36,25 +36,24 @@ export default function DriverComparison() {
     // If driver already has skills, use them
     if (driver.skills) return driver;
     
-    // Otherwise generate random skills (would come from API in real app)
+    // Use the same properties as in the driver detail page
     const enhancedDriver = {
       ...driver,
       skills: {
-        pace: Math.floor(Math.random() * 20) + 80, // 80-100
-        consistency: Math.floor(Math.random() * 20) + 80,
-        racecraft: Math.floor(Math.random() * 20) + 80,
-        tireManagement: Math.floor(Math.random() * 20) + 80,
-        wetWeatherDriving: Math.floor(Math.random() * 20) + 80,
+        pace: driver.pace || 85,
+        consist: driver.consist || 85, // Alterado de consistency para consist
+        tireman: driver.tireman || 85, // Mantém o mesmo nome que está sendo usado
+        def: driver.def || 85,
+        agress: driver.agress || 85,
+        quali: driver.quali || 85,
       },
       flagUrl: `https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/${getNationalityCode(driver.nationality).toLowerCase()}-flag.png`,
       teamLogoUrl: getTeamLogoUrl(driver.team),
-      imageUrl: driver.image // Use the existing image URL from the API
+      imageUrl: driver.image
     };
-    
     return enhancedDriver;
   };
   
-  // Effect to process drivers once context is loaded
   useEffect(() => {
     if (!contextLoading && drivers && drivers.length > 0) {
       // Create enhanced drivers with additional properties
@@ -68,13 +67,14 @@ export default function DriverComparison() {
         wins: driver.wins || 0,
         podiums: driver.podiums || 0,
         points: driver.points || 0,
-        // Generate random skills if not available
+        // Use os mesmos nomes de propriedades
         skills: {
-          pace: Math.floor(Math.random() * 20) + 80, // 80-100
-          consistency: Math.floor(Math.random() * 20) + 80,
-          racecraft: Math.floor(Math.random() * 20) + 80,
-          tireManagement: Math.floor(Math.random() * 20) + 80,
-          wetWeatherDriving: Math.floor(Math.random() * 20) + 80,
+          pace: driver.pace || 85,
+          consist: driver.consist || 85, // Alterado de consistency para consist
+          tireman: driver.tireman || 85,
+          def: driver.def || 85,
+          agress: driver.agress || 85,
+          quali: driver.quali || 85,
         }
       }));
       
@@ -99,59 +99,67 @@ export default function DriverComparison() {
       }
     }
   }, [contextLoading, drivers, driver1Slug, driver2Slug, selectedDriver1, selectedDriver2]);
+  
 
-  // Effect to update selected drivers
-  useEffect(() => {
-    if (!contextLoading && drivers && drivers.length > 0) {
-      // Find selected drivers
-      const foundDriver1 = selectedDriver1 ? drivers.find(d => d.id === selectedDriver1 || d.slug === selectedDriver1) : null;
-      const foundDriver2 = selectedDriver2 ? drivers.find(d => d.id === selectedDriver2 || d.slug === selectedDriver2) : null;
-      
-      // Generate skills for selected drivers
-      const enhancedDriver1 = foundDriver1 ? generateDriverSkills(foundDriver1) : null;
-      const enhancedDriver2 = foundDriver2 ? generateDriverSkills(foundDriver2) : null;
-      
-      setDriver1(enhancedDriver1);
-      setDriver2(enhancedDriver2);
-      
-      // Create comparison data for the chart
-      if (enhancedDriver1 && enhancedDriver2) {
-        const comparisonData = [
-          {
-            skill: "Pace",
-            [enhancedDriver1.name]: enhancedDriver1.skills.pace,
-            [enhancedDriver2.name]: enhancedDriver2.skills.pace,
-            fullMark: 100
-          },
-          {
-            skill: "Consistency",
-            [enhancedDriver1.name]: enhancedDriver1.skills.consistency,
-            [enhancedDriver2.name]: enhancedDriver2.skills.consistency,
-            fullMark: 100
-          },
-          {
-            skill: "Racecraft",
-            [enhancedDriver1.name]: enhancedDriver1.skills.racecraft,
-            [enhancedDriver2.name]: enhancedDriver2.skills.racecraft,
-            fullMark: 100
-          },
-          {
-            skill: "Tire Management",
-            [enhancedDriver1.name]: enhancedDriver1.skills.tireManagement,
-            [enhancedDriver2.name]: enhancedDriver2.skills.tireManagement,
-            fullMark: 100
-          },
-          {
-            skill: "Wet Weather Driving",
-            [enhancedDriver1.name]: enhancedDriver1.skills.wetWeatherDriving,
-            [enhancedDriver2.name]: enhancedDriver2.skills.wetWeatherDriving,
-            fullMark: 100
-          },
-        ];
-        setComparisonData(comparisonData);
-      }
+  // Update the selected drivers effect to use the same approach
+useEffect(() => {
+  if (!contextLoading && drivers && drivers.length > 0) {
+    // Find selected drivers
+    const foundDriver1 = selectedDriver1 ? drivers.find(d => d.id === selectedDriver1 || d.slug === selectedDriver1) : null;
+    const foundDriver2 = selectedDriver2 ? drivers.find(d => d.id === selectedDriver2 || d.slug === selectedDriver2) : null;
+    
+    // Generate skills for selected drivers using consistent values
+    const enhancedDriver1 = foundDriver1 ? generateDriverSkills(foundDriver1) : null;
+    const enhancedDriver2 = foundDriver2 ? generateDriverSkills(foundDriver2) : null;
+    
+    setDriver1(enhancedDriver1);
+    setDriver2(enhancedDriver2);
+    
+    // Create comparison data for the chart
+    if (enhancedDriver1 && enhancedDriver2) {
+      // Use the same skill names as in the driver detail page
+      const comparisonData = [
+        {
+          skill: "Pace",
+          [enhancedDriver1.name]: enhancedDriver1.skills.pace,
+          [enhancedDriver2.name]: enhancedDriver2.skills.pace,
+          fullMark: 100
+        },
+        {
+          skill: "Consistency",
+          [enhancedDriver1.name]: enhancedDriver1.skills.consist,
+          [enhancedDriver2.name]: enhancedDriver2.skills.consist,
+          fullMark: 100
+        },
+        {
+          skill: "Agression",
+          [enhancedDriver1.name]: enhancedDriver1.skills.agress, // Use skills.agress here
+          [enhancedDriver2.name]: enhancedDriver2.skills.agress, // Use skills.agress here
+          fullMark: 100
+        },
+        {
+          skill: "Tire Management",
+          [enhancedDriver1.name]: enhancedDriver1.skills.tireman, // Use skills.tireman here
+          [enhancedDriver2.name]: enhancedDriver2.skills.tireman, // Use skills.tireman here
+          fullMark: 100
+        },
+        {
+          skill: "Qualifying",
+          [enhancedDriver1.name]: enhancedDriver1.skills.quali, // Use skills.quali here
+          [enhancedDriver2.name]: enhancedDriver2.skills.quali, // Use skills.quali here
+          fullMark: 100
+        },
+        {
+          skill: "Defense",
+          [enhancedDriver1.name]: enhancedDriver1.skills.def, // Use skills.def here
+          [enhancedDriver2.name]: enhancedDriver2.skills.def, // Use skills.def here
+          fullMark: 100
+        },
+      ];
+      setComparisonData(comparisonData);
     }
-  }, [drivers, selectedDriver1, selectedDriver2, contextLoading]);
+  }
+}, [drivers, selectedDriver1, selectedDriver2, contextLoading]);
 
   const handleDriver1Change = (e) => {
     setSelectedDriver1(e.target.value);
@@ -271,7 +279,7 @@ export default function DriverComparison() {
               <RadarChart outerRadius="80%" data={comparisonData}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="skill" />
-                <PolarRadiusAxis angle={30} domain={[75, 100]} />
+                <PolarRadiusAxis angle={30} domain={[60, 100]} />
                 
                 <Radar
                   name={driver1.name}

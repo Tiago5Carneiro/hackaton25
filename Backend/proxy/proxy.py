@@ -1,3 +1,4 @@
+import random
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -211,6 +212,58 @@ def get_flag_url(nationality):
     # Construct and return the full URL
     return base_url + flag_filename
 
+def get_event_image(location):
+    base_url = "https://media.formula1.com/image/upload/f_auto,c_limit,w_1440,q_auto/f_auto/q_auto/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/"
+    
+    # Map locations to their corresponding image file names
+    location_map = {
+        "Sakhir": "Bahrain.jpg",
+        "Bahrain": "Bahrain.jpg",
+        "Jeddah": "Saudi_Arabia.jpg",
+        "Saudi Arabia": "Saudi_Arabia.jpg",
+        "Suzuka": "Japan.jpg",
+        "Japan": "Japan.jpg",
+        "Imola": "Italy.jpg",
+        "Monaco": "Monaco.jpg",
+        "Barcelona": "Spain.jpg",
+        "Spain": "Spain.jpg",
+        "Montréal": "Canada.jpg", 
+        "Montreal": "Canada.jpg",
+        "Canada": "Canada.jpg",
+        "Spielberg": "Austria.jpg",
+        "Austria": "Austria.jpg",
+        "Silverstone": "Great_Britain.jpg",
+        "Great Britain": "Great_Britain.jpg",
+        "Budapest": "Hungary.jpg",
+        "Hungary": "Hungary.jpg",
+        "Zandvoort": "Netherlands.jpg",
+        "Netherlands": "Netherlands.jpg",
+        "Monza": "Italy.jpg",
+        "Italy": "Italy.jpg",
+        "Baku": "Azerbaijan.jpg",
+        "Azerbaijan": "Azerbaijan.jpg",
+        "Marina Bay": "Singapore.jpg",
+        "Singapore": "Singapore.jpg",
+        "Mexico City": "Mexico.jpg",
+        "Mexico": "Mexico.jpg",
+        "Australia": "Australia.jpg",
+        "Belgium": "Belgium.jpg",
+        "Brazil": "Brazil.jpg",
+        "Las Vegas": "Las_Vegas.jpg",
+        "Abu Dhabi": "Abu_Dhabi.jpg",
+        "Qatar": "Qatar.jpg",
+        "United States": "USA.jpg",
+        "Miami": "Miami.jpg",
+        "China": "China.jpg",
+    }
+    
+    # Return the full image URL if location is in the map
+    if location in location_map:
+        return base_url + location_map[location]
+    
+    # Return a default image or None if the location isn't mapped
+    return base_url + "Formula1.jpg"  # A default F1 image as fallback
+
 
 # You can also add a convenience function that combines nationality lookup with flag URL
 def get_driver_flag(driver_name):
@@ -257,7 +310,14 @@ def get_drivers_standings():
                 Points as points,
                 ChampionshipWins as championships,
                 PlayerNum as number,
-                IsActive as isActive
+                IsActive as isActive,
+                Pace as pace,
+                Agressiveness as agress,
+                Defense as def,
+                TireMan as tireman,
+                Consistency as consist,
+                Qualifying as quali,
+                Overall as overall
             FROM Player
             WHERE IsActive = 1
             ORDER BY Points DESC
@@ -277,6 +337,30 @@ def get_drivers_standings():
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+
+            if driver['pace'] is None:
+                driver['pace'] = random.randint(70, 100)
+                
+            if driver['agress'] is None:
+                driver['agress'] = random.randint(70, 100)
+
+            if driver['def'] is None:
+                driver['def'] = random.randint(70, 100)
+
+            if driver['tireman'] is None:
+                driver['tireman'] = random.randint(70, 100)
+
+            if driver['consist'] is None:
+                driver['consist'] = random.randint(70, 100)
+
+            if driver['quali'] is None:
+                driver['quali'] = random.randint(70, 100)
+                    
+            if driver['overall'] is None:
+                driver['overall'] = random.randint(70, 100)
+                
+
+            
         
         return jsonify(drivers)
     
@@ -366,6 +450,7 @@ def get_driver_by_id(driver_id):
             driver['nationality'] = driver_nationality(driver['name'])
             driver['flag'] = get_driver_flag(driver['name'])
             driver['teamColor'] = get_team_color(driver['team'])
+            
             return jsonify(driver)
         else:
             return jsonify({"error": "Driver not found"}), 404
@@ -399,7 +484,14 @@ def get_driver_by_slug(driver_slug):
             Points as points,
             ChampionshipWins as championships,
             PlayerNum as number,
-            IsActive as isActive
+            IsActive as isActive,
+            Pace as pace,
+            Agressiveness as agress,
+            Defense as def,
+            TireMan as tireman,
+            Consistency as consist,
+            Qualifying as quali,
+            Overall as overall
         FROM Player
         """
         
@@ -415,6 +507,27 @@ def get_driver_by_slug(driver_slug):
                 driver['nationality'] = driver_nationality(driver['name'])
                 driver['flag'] = get_driver_flag(driver['name'])
                 driver['teamColor'] = get_team_color(driver['team'])
+                if driver['pace'] is None:
+                    driver['pace'] = random.randint(70, 100)
+                
+                if driver['agress'] is None:
+                    driver['agress'] = random.randint(70, 100)
+
+                if driver['def'] is None:
+                    driver['def'] = random.randint(70, 100)
+
+                if driver['tireman'] is None:
+                    driver['tireman'] = random.randint(70, 100)
+
+                if driver['consist'] is None:
+                    driver['consist'] = random.randint(70, 100)
+
+                if driver['quali'] is None:
+                    driver['quali'] = random.randint(70, 100)
+
+                if driver['overall'] is None:
+                    driver['overall'] = random.randint(70, 100)
+                
                 return jsonify(driver)
         
         # If we get here, no driver was found
@@ -458,6 +571,9 @@ def get_events():
         for i, event in enumerate(events):
             event['id'] = i + 1
             event['circuit'] = event['location']
+            event['completed'] = False
+            print(f"Processing event: {event['location']}")
+
             
             # Format dates for display
             start_date = event['startDate']
@@ -472,12 +588,12 @@ def get_events():
 
             # Add fastest lap holder name if available
             if event['fastLap'] and event['fastLap'] > 0:
-                fastlap_query = "SELECT Name FROM Player WHERE PlayerId = %s"
-                cursor.execute(fastlap_query, (event['fastLap'],))
-                fastlap_result = cursor.fetchone()
-                event['fastestLap'] = fastlap_result['Name'] if fastlap_result else "Unknown"
+                # miliseconds to m:s:ms
+                event['fastLap'] = event['fastLap'] / 1000
             else:
                 event['fastestLap'] = "N/A"
+
+            
                 
         return jsonify(events)
     
@@ -520,6 +636,7 @@ def get_event_by_id(event_id):
             event = all_events[event_id - 1]
             event['id'] = event_id
             event['circuit'] = event['location']
+            event['image'] = get_event_image(event['location'])
             
             # Format dates
             start_date = event['startDate']
@@ -657,6 +774,8 @@ def get_all_events():
         for i, event in enumerate(all_events):
             event['id'] = i + 1
             event['circuit'] = event['location']
+            event['image'] = get_event_image(event['location'])
+            print(f"Processing event: {event['location']}")
             
             # Format dates for display
             start_date = event['startDate']
